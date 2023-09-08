@@ -27,6 +27,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column
     private String businessCardImage;
 
     @Column(nullable = false, unique = true)
@@ -35,12 +36,8 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
-
-
-
 
 }
