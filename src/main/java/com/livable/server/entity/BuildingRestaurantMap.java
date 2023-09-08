@@ -23,11 +23,11 @@ public class BuildingRestaurantMap extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "building_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Building building;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "restaurant_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Restaurant restaurant;
 
