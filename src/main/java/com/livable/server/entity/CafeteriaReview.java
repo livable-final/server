@@ -27,4 +27,7 @@ public class CafeteriaReview extends BaseTimeEntity {
     @Column(nullable = false)
     private Evaluation taste;
 
+    @Column(nullable = false)
+    private String description;
+
 }
