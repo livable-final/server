@@ -25,15 +25,15 @@ public class MenuChoiceResult extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "building_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Building building;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "menu_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Menu menu;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "date")
     private LocalDate date;
 
     @Column(nullable = false)
