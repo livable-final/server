@@ -24,7 +24,7 @@ public class MenuChoiceLog extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "member_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
@@ -36,6 +36,6 @@ public class MenuChoiceLog extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Menu menu;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "date")
     private LocalDate date;
 }
