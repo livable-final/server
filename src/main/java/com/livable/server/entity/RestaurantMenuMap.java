@@ -23,11 +23,11 @@ public class RestaurantMenuMap extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "restaurant_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Restaurant restaurant;
 
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "menu_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Menu menu;
 }
