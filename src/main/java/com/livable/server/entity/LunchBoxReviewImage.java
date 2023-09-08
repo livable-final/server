@@ -15,7 +15,7 @@ public class LunchBoxReviewImage extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private LunchBoxReview lunchBoxReview;
 
