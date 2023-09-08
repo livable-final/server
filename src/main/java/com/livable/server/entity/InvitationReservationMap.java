@@ -8,6 +8,14 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "invitation_reservation_map",
+        uniqueConstraints =
+        @UniqueConstraint(
+                name = "INVITATION_RESERVATION_UNIQUE_IDX",
+                columnNames = {"invitation_id", "reservation_id"}
+        )
+)
 @Entity
 public class InvitationReservationMap extends BaseTimeEntity {
 
