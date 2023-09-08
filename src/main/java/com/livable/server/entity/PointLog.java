@@ -34,10 +34,10 @@ public class PointLog extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer amount;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "reference_id")
     private Long referenceId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "reference_type")
     private ReferenceType referenceType;
 }
