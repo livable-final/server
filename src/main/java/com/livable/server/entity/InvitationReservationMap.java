@@ -28,6 +28,6 @@ public class InvitationReservationMap extends BaseTimeEntity {
     private Invitation invitation;
 
     @JoinColumn(nullable = false, unique = true)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Reservation reservation;
 }
