@@ -21,7 +21,7 @@ public class CommonPlace extends BaseTimeEntity {
 
     private String roomNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Building building;
 }
