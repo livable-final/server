@@ -18,4 +18,7 @@ public class Menu extends BaseTimeEntity {
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
+
+    @Column(nullable = false, unique = true)
+    private String name;
 }
