@@ -16,6 +16,10 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Company company;
+
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -35,9 +39,4 @@ public class Member extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String name;
-
-    @JoinColumn(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Company company;
-
 }

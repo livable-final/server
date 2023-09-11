@@ -15,13 +15,13 @@ public class CommonPlace extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Building building;
+
     private String name;
 
     private String floor;
 
     private String roomNumber;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
-    private Building building;
 }

@@ -15,13 +15,16 @@ public class Restaurant extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String contact;
 
     @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
     private String restaurantUrl;
 
     @Column(nullable = false)

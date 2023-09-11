@@ -37,6 +37,5 @@ public class MenuChoiceResult extends BaseTimeEntity {
     private LocalDate date;
 
     @Column(nullable = false)
-    @ColumnDefault("0")
     private Integer count;
 }

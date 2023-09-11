@@ -2,9 +2,11 @@ package com.livable.server.entity;
 
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Builder
@@ -18,16 +20,20 @@ public class Building extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
+    @ColumnDefault("true")
+    private Boolean hasCafeteria;
+
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String address;
 
     @Column(nullable = false)
-    private LocalDateTime startTime;
+    private LocalTime startTime;
 
     @Column(nullable = false)
-    private LocalDateTime endTime;
+    private LocalTime endTime;
 
     @Column(nullable = false)
     private String scale;
@@ -37,8 +43,4 @@ public class Building extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String latitude;
-
-    @Column(nullable = false)
-    @ColumnDefault("1")
-    private boolean hasCafeteria;
 }

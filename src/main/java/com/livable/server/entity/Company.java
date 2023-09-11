@@ -15,11 +15,10 @@ public class Company extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(nullable = false)
-    private String name;
-
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Building building;
+
+    @Column(nullable = false)
+    private String name;
 }

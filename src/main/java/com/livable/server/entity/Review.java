@@ -1,45 +1,41 @@
 package com.livable.server.entity;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicInsert;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Inheritance(strategy = InheritanceType.JOINED)
+@EntityListeners(AuditingEntityListener.class)
 @Entity
-public class Review extends BaseTimeEntity {
+@ToString
+public class Review {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String description;
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @JoinColumn(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Restaurant restaurant;
-
+    @CreatedDate
     @Column(nullable = false)
-    private String description;
+    private LocalDateTime createdAt;
 
-    @Enumerated(EnumType.STRING)
+    @LastModifiedDate
     @Column(nullable = false)
-    private Evaluation taste;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Evaluation amount;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Evaluation speed;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Evaluation service;
-
+    private LocalDateTime updatedAt;
 }

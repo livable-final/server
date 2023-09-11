@@ -32,5 +32,5 @@ public class BuildingRestaurantMap extends BaseTimeEntity {
     private Restaurant restaurant;
 
     @Column(nullable = false)
-    private Long distance;
+    private Integer distance;
 }

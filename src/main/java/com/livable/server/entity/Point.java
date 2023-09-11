@@ -1,6 +1,7 @@
 package com.livable.server.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -19,6 +20,6 @@ public class Point extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    @Column(nullable = false, columnDefinition = "int unsigned default 0")
+    @Column(nullable = false)
     private Integer balance;
 }
