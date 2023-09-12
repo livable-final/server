@@ -8,14 +8,6 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(
-        name = "point_log",
-        uniqueConstraints =
-        @UniqueConstraint(
-                name = "REFERENCE_UNIQUE_IDX",
-                columnNames = {"reference_id", "reference_type"}
-        )
-)
 @Entity
 public class PointLog extends BaseTimeEntity {
 
@@ -27,17 +19,14 @@ public class PointLog extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Point point;
 
+    @JoinColumn(nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Review review;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PointCode code;
 
     @Column(nullable = false)
     private Integer amount;
-
-    @Column(nullable = false, name = "reference_id")
-    private Long referenceId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "reference_type")
-    private ReferenceType referenceType;
 }
