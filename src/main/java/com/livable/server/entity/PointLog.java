@@ -19,7 +19,7 @@ public class PointLog extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Point point;
 
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
