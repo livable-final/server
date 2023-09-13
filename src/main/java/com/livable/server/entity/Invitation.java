@@ -26,8 +26,7 @@ public class Invitation extends BaseTimeEntity {
     private String description;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private InvitationPurpose purpose;
+    private String purpose;
 
     @Column(nullable = false)
     private String officeName;

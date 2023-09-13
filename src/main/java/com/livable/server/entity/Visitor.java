@@ -3,6 +3,7 @@ package com.livable.server.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -24,4 +25,7 @@ public class Visitor extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String contact;
+
+    @Column
+    private LocalDateTime firstVisitedTime;
 }
