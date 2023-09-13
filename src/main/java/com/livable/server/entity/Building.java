@@ -43,4 +43,13 @@ public class Building extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String latitude;
+
+    @Column(nullable = false)
+    private String representativeImageUrl;
+
+    @Column(nullable = false)
+    private String parkingCostInformation;
+
+    @Column
+    private String subwayStation;
 }

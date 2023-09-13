@@ -31,12 +31,18 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(nullable = false)
+    private String profileImageUrl;
+
     @Column
-    private String businessCardImage;
+    private String businessCardImageUrl;
 
     @Column(nullable = false, unique = true)
     private String contact;
 
     @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false, unique = true)
+    private String employeeNumber;
 }

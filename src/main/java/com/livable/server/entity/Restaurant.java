@@ -28,5 +28,12 @@ public class Restaurant extends BaseTimeEntity {
     private String restaurantUrl;
 
     @Column(nullable = false)
-    private String thumbnailImage;
+    private String thumbnailImageUrl;
+
+    @Column(nullable = false)
+    private String representativeCategory;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RestaurantCategory restaurantCategory;
 }
