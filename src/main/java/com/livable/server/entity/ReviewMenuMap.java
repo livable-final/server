@@ -3,14 +3,21 @@ package com.livable.server.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "review_menu_map",
+        uniqueConstraints =
+        @UniqueConstraint(
+                name = "REVIEW_MENU_UNIQUE_IDX",
+                columnNames = {"review_Id", "menu_id"}
+        )
+)
 @Entity
-public class PointLog extends BaseTimeEntity {
+public class ReviewMenuMap extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,16 +25,9 @@ public class PointLog extends BaseTimeEntity {
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Point point;
+    private Review review;
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Review review;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PointCode code;
-
-    @Column(nullable = false)
-    private Integer amount;
+    private Menu menu;
 }

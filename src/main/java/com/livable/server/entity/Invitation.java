@@ -23,6 +23,7 @@ public class Invitation extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
+    @Column
     private String description;
 
     @Column(nullable = false)

@@ -24,12 +24,15 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String description;
-
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private String selectedDishes;
 
     @CreatedDate
     @Column(nullable = false)

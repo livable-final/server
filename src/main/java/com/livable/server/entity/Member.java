@@ -20,16 +20,15 @@ public class Member extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false)
-    @ColumnDefault("'USER'")
-    @Enumerated(EnumType.STRING)
-    private Role role;
 
     @Column(nullable = false)
     private String profileImageUrl;
