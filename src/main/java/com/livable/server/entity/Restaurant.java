@@ -15,6 +15,10 @@ public class Restaurant extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RestaurantCategory restaurantCategory;
+
     @Column(nullable = false)
     private String name;
 
@@ -32,8 +36,4 @@ public class Restaurant extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String representativeCategory;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RestaurantCategory restaurantCategory;
 }

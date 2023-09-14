@@ -20,7 +20,6 @@ public class Building extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    @ColumnDefault("true")
     private Boolean hasCafeteria;
 
     @Column(nullable = false)
