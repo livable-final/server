@@ -16,15 +16,19 @@ public class RestaurantReview extends Review {
     @ManyToOne(fetch = FetchType.LAZY)
     private Restaurant restaurant;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Evaluation taste;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Evaluation speed;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Evaluation amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Evaluation service;
 }

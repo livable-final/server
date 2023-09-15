@@ -13,6 +13,8 @@ import javax.persistence.*;
 @ToString(callSuper = true)
 public class CafeteriaReview extends Review {
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Evaluation taste;
 
     @ManyToOne(fetch = FetchType.LAZY)
