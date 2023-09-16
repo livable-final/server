@@ -13,8 +13,7 @@ public enum PointCode {
     PA03("오점완 7일차 달성 보상"),
     PA04("오점완 14일차 달성 보상"),
     PA05("오점완 21일차 달성 보상"),
-    PM00("제휴 카페 메뉴 할인에 대한 포인트 사용"),
-    ;
+    PM00("제휴 카페 메뉴 할인에 대한 포인트 사용");
 
     private final String description;
 }

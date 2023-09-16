@@ -1,9 +1,11 @@
 package com.livable.server.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

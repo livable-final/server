@@ -1,11 +1,9 @@
 package com.livable.server.entity;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -43,5 +41,4 @@ public class Invitation extends BaseTimeEntity {
 
     @Column(nullable = false)
     private LocalTime endTime;
-
 }
