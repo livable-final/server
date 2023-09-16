@@ -7,6 +7,5 @@ public enum InvitationPurpose {
     PERIOD_WORK,
     SEMINAR,
     AFTER_SERVICE,
-    ETC,
-    ;
+    ETC;
 }

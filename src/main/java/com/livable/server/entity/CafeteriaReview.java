@@ -17,6 +17,7 @@ public class CafeteriaReview extends Review {
     @Column(nullable = false)
     private Evaluation taste;
 
+    @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Building building;
 }
