@@ -46,13 +46,13 @@ public class InvitationService {
         combineConsecutiveReservation(reservations);
 
         // 5. DTO 변환 작업
-        List<InvitationResponse.OfficeDTO> officeDTOList = officeEntities.stream()
+        List<InvitationResponse.OfficeDTO> offices = officeEntities.stream()
                 .map(InvitationResponse.OfficeDTO::from).collect(Collectors.toList());
 
         List<InvitationResponse.CommonPlaceDTO> commonPlaces = reservations.stream()
                 .map(InvitationResponse.CommonPlaceDTO::from).collect(Collectors.toList());
 
-        return ApiResponse.success(new InvitationResponse.AvailablePlacesDTO(officeDTOList, commonPlaces), HttpStatus.OK);
+        return ApiResponse.success(new InvitationResponse.AvailablePlacesDTO(offices, commonPlaces), HttpStatus.OK);
     }
 
     private void combineConsecutiveReservation(List<InvitationProjection.ReservationDTO> reservations) {
