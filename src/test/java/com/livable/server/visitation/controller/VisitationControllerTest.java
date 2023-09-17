@@ -1,6 +1,7 @@
 package com.livable.server.visitation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.livable.server.core.exception.ErrorCode;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationRequest;
@@ -178,6 +179,33 @@ class VisitationControllerTest {
 
         // then
         resultActions.andExpect(status().isOk());
+
+        then(visitationFacadeService).should(times(1)).validateQrCode(anyString());
+    }
+
+    @DisplayName("[POST][/api/visitation/qr] - QR인증 성공")
+    @Test
+    void validateQrCodeFail() throws Exception {
+        // given
+        String qr = "qr";
+        ErrorCode errorCode = VisitationErrorCode.INVALID_PERIOD;
+        String errorMessage = errorCode.getMessage();
+        VisitationRequest.ValidateQrDto validateQrCodeSuccessMockRequest = new ValidateQrCodeSuccessMockRequest(qr);
+
+
+        willThrow(new GlobalRuntimeException(errorCode)).given(visitationFacadeService).validateQrCode(anyString());
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/visitation/qr")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validateQrCodeSuccessMockRequest))
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(errorMessage));
 
         then(visitationFacadeService).should(times(1)).validateQrCode(anyString());
     }
