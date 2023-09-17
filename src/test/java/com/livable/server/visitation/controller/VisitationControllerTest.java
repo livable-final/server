@@ -37,7 +37,7 @@ class VisitationControllerTest {
 
     @DisplayName("[GET][/api/visitation/qr] - QR을 생성 정상 응답")
     @Test
-    void createQrSuccessTest() throws Exception {
+    void createQrCodeSuccessTest() throws Exception {
 
         VisitationResponse.InvitationTimeDto invitationTimeDto = VisitationResponse.InvitationTimeDto.builder()
                 .startDate(LocalDate.now())
@@ -69,7 +69,7 @@ class VisitationControllerTest {
 
     @DisplayName("[GET][/api/visitation/qr] - QR생성 오류_1")
     @Test
-    void createQrFailTest_1() throws Exception {
+    void createQrCodeFailTest_1() throws Exception {
 
         // given
         String errorMessage = VisitationErrorCode.NOT_FOUND.getMessage();
@@ -92,7 +92,7 @@ class VisitationControllerTest {
 
     @DisplayName("[GET][/api/visitation/qr] - QR생성 오류_2")
     @Test
-    void createQrFailTest_2() throws Exception {
+    void createQrCodeFailTest_2() throws Exception {
 
         // given
         VisitationResponse.InvitationTimeDto invitationTimeDto = VisitationResponse.InvitationTimeDto.builder()
@@ -125,7 +125,7 @@ class VisitationControllerTest {
 
     @DisplayName("[GET][/api/visitation/qr] - QR생성 오류_3")
     @Test
-    void createQrFailTest_3() throws Exception {
+    void createQrCodeFailTest_3() throws Exception {
 
         // given
         VisitationResponse.InvitationTimeDto invitationTimeDto = VisitationResponse.InvitationTimeDto.builder()
