@@ -3,7 +3,9 @@ package com.livable.server.visitation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.visitation.domain.VisitationErrorCode;
+import com.livable.server.visitation.dto.VisitationRequest;
 import com.livable.server.visitation.dto.VisitationResponse;
+import com.livable.server.visitation.mock.ValidateQrCodeSuccessMockRequest;
 import com.livable.server.visitation.service.VisitationFacadeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,14 +15,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(VisitationController.class)
@@ -154,5 +158,27 @@ class VisitationControllerTest {
 
         then(visitationFacadeService).should(times(1)).findInvitationTime(anyLong());
         then(visitationFacadeService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
+    }
+
+    @DisplayName("[POST][/api/visitation/qr] - QR인증 성공")
+    @Test
+    void validateQrCodeSuccess() throws Exception {
+        // given
+        String qr = "qr";
+        VisitationRequest.ValidateQrDto validateQrCodeSuccessMockRequest = new ValidateQrCodeSuccessMockRequest(qr);
+
+        willDoNothing().given(visitationFacadeService).validateQrCode(anyString());
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/visitation/qr")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validateQrCodeSuccessMockRequest))
+        );
+
+        // then
+        resultActions.andExpect(status().isOk());
+
+        then(visitationFacadeService).should(times(1)).validateQrCode(anyString());
     }
 }
