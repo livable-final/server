@@ -17,7 +17,7 @@ public class VisitationController {
     private final VisitationFacadeService visitationFacadeService;
 
     @GetMapping("/qr")
-    public ResponseEntity<ApiResponse.Success<Object>> getQrCode() {
+    public ResponseEntity<ApiResponse.Success<Object>> createQrCode() {
 
         Long visitorId = 1L;
         VisitationResponse.InvitationTimeDto invitationTime = visitationFacadeService.findInvitationTime(visitorId);
