@@ -1,6 +1,8 @@
 package com.livable.server.visitation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationResponse;
 import com.livable.server.visitation.service.VisitationFacadeService;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +35,7 @@ class VisitationControllerTest {
     @MockBean
     private VisitationFacadeService visitationFacadeService;
 
-    @DisplayName("[GET][/api/visitation/qr] - QR을 생성합니다.")
+    @DisplayName("[GET][/api/visitation/qr] - QR을 생성 정상 응답")
     @Test
     void createQrSuccessTest() throws Exception {
 
@@ -64,6 +66,27 @@ class VisitationControllerTest {
         then(visitationFacadeService).should(times(1)).findInvitationTime(anyLong());
         then(visitationFacadeService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
     }
+    
+    @DisplayName("[GET][/api/visitation/qr] - QR생성 오류")
+    @Test
+    void createQrFailTest_1() throws Exception {
 
+        String errorMessage = VisitationErrorCode.NOT_FOUND.getMessage();
 
+        // given
+        given(visitationFacadeService.findInvitationTime(anyLong())).willThrow(new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/visitation/qr")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(errorMessage));
+
+        then(visitationFacadeService).should(times(1)).findInvitationTime(anyLong());
+    }
 }
