@@ -66,14 +66,14 @@ class VisitationControllerTest {
         then(visitationFacadeService).should(times(1)).findInvitationTime(anyLong());
         then(visitationFacadeService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
     }
-    
-    @DisplayName("[GET][/api/visitation/qr] - QR생성 오류")
+
+    @DisplayName("[GET][/api/visitation/qr] - QR생성 오류_1")
     @Test
     void createQrFailTest_1() throws Exception {
 
+        // given
         String errorMessage = VisitationErrorCode.NOT_FOUND.getMessage();
 
-        // given
         given(visitationFacadeService.findInvitationTime(anyLong())).willThrow(new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
 
         // when
@@ -88,5 +88,38 @@ class VisitationControllerTest {
                 .andExpect(jsonPath("$.message").value(errorMessage));
 
         then(visitationFacadeService).should(times(1)).findInvitationTime(anyLong());
+    }
+
+    @DisplayName("[GET][/api/visitation/qr] - QR생성 오류_2")
+    @Test
+    void createQrFailTest_2() throws Exception {
+
+        // given
+        VisitationResponse.InvitationTimeDto invitationTimeDto = VisitationResponse.InvitationTimeDto.builder()
+                .startDate(LocalDate.now())
+                .startTime(LocalTime.now())
+                .endTime(LocalTime.now())
+                .endDate(LocalDate.now())
+                .build();
+
+        String errorMessage = VisitationErrorCode.INVALID_PERIOD.getMessage();
+
+        given(visitationFacadeService.findInvitationTime(anyLong())).willReturn(invitationTimeDto);
+        given(visitationFacadeService.createQrCode(any(LocalDateTime.class), any(LocalDateTime.class))).willThrow(new GlobalRuntimeException(VisitationErrorCode.INVALID_PERIOD));
+
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/visitation/qr")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value(errorMessage));
+
+        then(visitationFacadeService).should(times(1)).findInvitationTime(anyLong());
+        then(visitationFacadeService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
     }
 }
