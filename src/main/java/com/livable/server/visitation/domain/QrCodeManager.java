@@ -2,6 +2,7 @@ package com.livable.server.visitation.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -64,7 +65,7 @@ public class QrCodeManager {
         try {
 
             HashMap<String, LocalDateTime> expirationPeriodMap = getExpirationPeriodMap(startDateTime, endDateTime);
-            String contents = objectMapper.writeValueAsString(expirationPeriodMap);
+            String contents = objectMapper.registerModule(new JavaTimeModule()).writeValueAsString(expirationPeriodMap);
 
             Map<EncodeHintType, Object> encodeHints = getEncodeHints();
 
