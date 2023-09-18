@@ -56,4 +56,19 @@ class QrCodeManagerTest {
         // Then
         assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.INVALID_PERIOD);
     }
+
+    @DisplayName("QrCodeManager.createQrCode 실패 테스트_2")
+    @Test
+    void createQrCodeFailTest_2() throws JsonProcessingException {
+
+        // Given
+        LocalDateTime startDate = LocalDateTime.now().minusDays(2);
+        LocalDateTime endDate = LocalDateTime.now().minusDays(1);
+
+        // When
+        GlobalRuntimeException globalRuntimeException = assertThrows(GlobalRuntimeException.class, () -> qrCodeManager.createQrCode(startDate, endDate));
+
+        // Then
+        assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.INVALID_QR_PERIOD);
+    }
 }
