@@ -2,13 +2,18 @@ package com.livable.server.invitation.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.core.response.ApiResponse.Success;
+import com.livable.server.entity.*;
 import com.livable.server.invitation.domain.InvitationErrorCode;
+import com.livable.server.invitation.dto.InvitationRequest;
 import com.livable.server.invitation.dto.InvitationResponse.AvailablePlacesDTO;
 import com.livable.server.invitation.dto.InvitationResponse.CommonPlaceDTO;
-import com.livable.server.member.repository.MemberRepository;
+import com.livable.server.invitation.repository.InvitationRepository;
+import com.livable.server.invitation.repository.InvitationReservationMapRepository;
 import com.livable.server.invitation.repository.OfficeRepository;
-import com.livable.server.reservation.repository.ReservationRepository;
 import com.livable.server.invitation.service.data.InvitationBasicData;
+import com.livable.server.member.repository.MemberRepository;
+import com.livable.server.reservation.repository.ReservationRepository;
+import com.livable.server.visitation.repository.VisitorRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +33,8 @@ import java.util.Optional;
 import static com.livable.server.invitation.dto.InvitationProjection.ReservationDTO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,6 +48,15 @@ class InvitationServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
+
+    @Mock
+    private InvitationRepository invitationRepository;
+
+    @Mock
+    private VisitorRepository visitorRepository;
+
+    @Mock
+    private InvitationReservationMapRepository invitationReservationMapRepository;
 
     @InjectMocks
     private InvitationService invitationService;
@@ -106,6 +123,199 @@ class InvitationServiceTest {
         CommonPlaceDTO combinedItem = data.getCommonPlaces().get(2);
         assertThat(combinedItem.getStartTime()).isEqualTo(LocalTime.of(10, 30, 0));
         assertThat(combinedItem.getEndTime()).isEqualTo(LocalTime.of(11, 30, 0));
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 면접 초대 인원 2명")
+    @Test
+    void createInvitationFail_01() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .visitors(List.of(
+                        InvitationRequest.VisitorCreateDTO.builder().build(),
+                        InvitationRequest.VisitorCreateDTO.builder().build()
+                ))
+                .build();
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_INTERVIEW_MAXIMUM_NUMBER);
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 존재하지 않는 Member")
+    @Test
+    void createInvitationFail_02() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.MEMBER_NOT_EXIST);
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 종료 날짜가 시작 날짜보다 과거일 경우")
+    @Test
+    void createInvitationFail_03() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .startDate(LocalDateTime.of(2025, 10, 30, 0, 0, 0))
+                .endDate(LocalDateTime.of(2025, 10, 29, 0, 0, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_DATE);
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 종료 시간이 시작 시간과 같은 경우")
+    @Test
+    void createInvitationFail_04() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_TIME);
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 종료 시간이 시작 시간보다 과거인 경우")
+    @Test
+    void createInvitationFail_05() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 30, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_TIME);
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 입력된 시간 범위의 예상 예약 개수와 실제 예약 개수가 다른 경우")
+    @Test
+    void createInvitationFail_06() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .commonPlaceId(1L)
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+        given(reservationRepository.findReservationsByCommonPlaceIdAndStartDateAndEndDate(
+                anyLong(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).willReturn(List.of());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_RESERVATION_COUNT);
+    }
+
+    @DisplayName("[성공] 초대장 생성 - 예약 장소가 있는 경우")
+    @Test
+    void createInvitationSuccess_01() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .commonPlaceId(1L)
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+        given(reservationRepository.findReservationsByCommonPlaceIdAndStartDateAndEndDate(
+                anyLong(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).willReturn(List.of(
+                Reservation.builder().build(), // 2025-10-30T10:00:00
+                Reservation.builder().build(), // 2025-10-30T10:30:00
+                Reservation.builder().build(), // 2025-10-30T11:00:00
+                Reservation.builder().build() // 2025-10-30T11:30:00
+        ));
+        given(invitationReservationMapRepository.save(any(InvitationReservationMap.class)))
+                .willReturn(InvitationReservationMap.builder().build());
+
+        // When & Then
+        ResponseEntity<?> result = invitationService.createInvitation(dto, memberId);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+    }
+
+    @DisplayName("[성공] 초대장 생성 - 예약 장소가 없는 경우")
+    @Test
+    void createInvitationSuccess_02() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .commonPlaceId(null)
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+
+        // When & Then
+        ResponseEntity<?> result = invitationService.createInvitation(dto, memberId);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     private List<ReservationDTO> createReservations() {
