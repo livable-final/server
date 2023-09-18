@@ -52,7 +52,12 @@ public class InvitationService {
         List<InvitationResponse.CommonPlaceDTO> commonPlaces = reservations.stream()
                 .map(InvitationResponse.CommonPlaceDTO::from).collect(Collectors.toList());
 
-        return ApiResponse.success(new InvitationResponse.AvailablePlacesDTO(offices, commonPlaces), HttpStatus.OK);
+        InvitationResponse.AvailablePlacesDTO responseBody = InvitationResponse.AvailablePlacesDTO.builder()
+                .offices(offices)
+                .commonPlaces(commonPlaces)
+                .build();
+
+        return ApiResponse.success(responseBody, HttpStatus.OK);
     }
 
     private void combineConsecutiveReservation(List<InvitationProjection.ReservationDTO> reservations) {

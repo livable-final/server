@@ -12,14 +12,14 @@ public class InvitationResponse {
 
 
     @Getter
-    @AllArgsConstructor
+    @Builder
     public static class AvailablePlacesDTO {
         private List<OfficeDTO> offices;
         private List<CommonPlaceDTO> commonPlaces;
     }
 
     @Getter
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder
     public static class OfficeDTO {
         private String officeName;
 
@@ -33,7 +33,7 @@ public class InvitationResponse {
     }
 
     @Getter
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Builder
     public static class CommonPlaceDTO {
         private Long commonPlaceId;
         private String commonPlaceName;
