@@ -20,8 +20,7 @@ public class VisitationController {
     public ResponseEntity<ApiResponse.Success<Object>> createQrCode() {
 
         Long visitorId = 1L;
-        VisitationResponse.InvitationTimeDto invitationTime = visitationFacadeService.findInvitationTime(visitorId);
-        String base64QrCode = visitationFacadeService.createQrCode(invitationTime.getStartDateTime().minusHours(1), invitationTime.getEndDateTime().plusHours(1));
+        String base64QrCode = visitationFacadeService.createQrCode(visitorId);
 
         return ApiResponse.success(base64QrCode, HttpStatus.OK);
     }

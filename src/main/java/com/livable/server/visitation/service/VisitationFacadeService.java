@@ -16,16 +16,14 @@ public class VisitationFacadeService {
     private final InvitationService invitationService;
     private final VisitorService visitorService;
 
-    public String createQrCode(LocalDateTime startDate, LocalDateTime endDate) {
-        return visitationService.createQrCode(startDate, endDate);
+    public String createQrCode(Long visitorId) {
+        Long invitationId = visitorService.findInvitationId(visitorId);
+        VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(invitationId);
+
+        return visitationService.createQrCode(invitationTime.getStartDateTime(), invitationTime.getEndDateTime());
     }
 
     public void validateQrCode(String qr) {
         visitationService.validateQrCode(qr);
-    }
-
-    public VisitationResponse.InvitationTimeDto findInvitationTime(Long visitorId) {
-        Long invitationId = visitorService.findInvitationId(visitorId);
-        return invitationService.findInvitationTime(invitationId);
     }
 }
