@@ -1,4 +1,4 @@
-package com.livable.server.visitation.repository;
+package com.livable.server.invitation.repository;
 
 import com.livable.server.entity.Invitation;
 import org.springframework.data.jpa.repository.JpaRepository;

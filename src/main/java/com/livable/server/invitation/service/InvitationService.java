@@ -3,14 +3,18 @@ package com.livable.server.invitation.service;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.core.response.ApiResponse;
 import com.livable.server.core.response.ApiResponse.Success;
+import com.livable.server.entity.Invitation;
 import com.livable.server.entity.Member;
 import com.livable.server.entity.Office;
 import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.dto.InvitationProjection;
 import com.livable.server.invitation.dto.InvitationResponse;
-import com.livable.server.invitation.repository.MemberRepository;
+import com.livable.server.invitation.repository.InvitationRepository;
+import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.invitation.repository.OfficeRepository;
-import com.livable.server.invitation.repository.ReservationRepository;
+import com.livable.server.reservation.repository.ReservationRepository;
+import com.livable.server.visitation.domain.VisitationErrorCode;
+import com.livable.server.visitation.dto.VisitationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +33,14 @@ public class InvitationService {
     private final MemberRepository memberRepository;
     private final OfficeRepository officeRepository;
     private final ReservationRepository reservationRepository;
+    private final InvitationRepository invitationRepository;
+
+    public VisitationResponse.InvitationTimeDto findInvitationTime(Long invitationId) {
+        Invitation invitation = invitationRepository.findById(invitationId)
+                .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
+
+        return VisitationResponse.InvitationTimeDto.from(invitation);
+    }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Success<InvitationResponse.AvailablePlacesDTO>> getAvailablePlaces(Long memberId) {

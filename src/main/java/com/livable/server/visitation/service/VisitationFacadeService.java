@@ -1,11 +1,10 @@
 package com.livable.server.visitation.service;
 
+import com.livable.server.invitation.service.InvitationService;
 import com.livable.server.visitation.dto.VisitationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service

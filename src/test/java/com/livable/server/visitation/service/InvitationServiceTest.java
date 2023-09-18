@@ -2,9 +2,10 @@ package com.livable.server.visitation.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.Invitation;
+import com.livable.server.invitation.service.InvitationService;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationResponse;
-import com.livable.server.visitation.repository.InvitationRepository;
+import com.livable.server.invitation.repository.InvitationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
