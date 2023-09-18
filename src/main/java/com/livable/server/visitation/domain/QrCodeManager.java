@@ -51,8 +51,12 @@ public class QrCodeManager {
     }
 
     private void validatePeriod(LocalDateTime startDate, LocalDateTime endDate) {
-        if (!(startDate.isBefore(LocalDateTime.now()) && endDate.isAfter(LocalDateTime.now()))) {
+        if (startDate.isAfter(endDate) || endDate.isBefore(startDate)) {
             throw new GlobalRuntimeException(VisitationErrorCode.INVALID_PERIOD);
+        }
+
+        if (!(startDate.isBefore(LocalDateTime.now()) && endDate.isAfter(LocalDateTime.now()))) {
+            throw new GlobalRuntimeException(VisitationErrorCode.INVALID_QR_PERIOD);
         }
     }
 

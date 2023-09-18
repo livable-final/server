@@ -107,10 +107,10 @@ class VisitationControllerTest {
                 .endDate(LocalDate.now())
                 .build();
 
-        String errorMessage = VisitationErrorCode.INVALID_PERIOD.getMessage();
+        String errorMessage = VisitationErrorCode.INVALID_QR_PERIOD.getMessage();
 
         given(visitationFacadeService.findInvitationTime(anyLong())).willReturn(invitationTimeDto);
-        given(visitationFacadeService.createQrCode(any(LocalDateTime.class), any(LocalDateTime.class))).willThrow(new GlobalRuntimeException(VisitationErrorCode.INVALID_PERIOD));
+        given(visitationFacadeService.createQrCode(any(LocalDateTime.class), any(LocalDateTime.class))).willThrow(new GlobalRuntimeException(VisitationErrorCode.INVALID_QR_PERIOD));
 
 
         // when
@@ -188,7 +188,7 @@ class VisitationControllerTest {
     void validateQrCodeFail() throws Exception {
         // given
         String qr = "qr";
-        ErrorCode errorCode = VisitationErrorCode.INVALID_PERIOD;
+        ErrorCode errorCode = VisitationErrorCode.INVALID_QR_PERIOD;
         String errorMessage = errorCode.getMessage();
         VisitationRequest.ValidateQrDto validateQrCodeSuccessMockRequest = new ValidateQrCodeSuccessMockRequest(qr);
 
