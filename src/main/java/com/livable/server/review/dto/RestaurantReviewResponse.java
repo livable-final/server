@@ -1,5 +1,6 @@
 package com.livable.server.review.dto;
 
+import com.livable.server.entity.Evaluation;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,6 @@ public class RestaurantReviewResponse {
 
     @Getter
     @Builder
-    @ToString
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ListDTO {
@@ -17,6 +17,11 @@ public class RestaurantReviewResponse {
         private Long reviewId;
         private LocalDateTime reviewCreatedAt;
         private String reviewDescription;
+
+        private Evaluation reviewTaste;
+        private Evaluation reviewAmount;
+        private Evaluation reviewService;
+        private Evaluation reviewSpeed;
 
         private Long restaurantId;
         private String restaurantName;

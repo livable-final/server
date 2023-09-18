@@ -32,6 +32,10 @@ public class RestaurantReviewCustomRepositoryImpl implements RestaurantReviewCus
                         review.id,
                         review.createdAt,
                         review.description,
+                        restaurantReview.taste,
+                        restaurantReview.amount,
+                        restaurantReview.service,
+                        restaurantReview.speed,
                         restaurantReview.restaurant.id,
                         restaurant.name,
                         review.member.id,
@@ -49,7 +53,8 @@ public class RestaurantReviewCustomRepositoryImpl implements RestaurantReviewCus
                 ))
                 .orderBy(review.createdAt.desc());
 
-        List<RestaurantReviewResponse.ListDTO> content = query.offset(pageable.getOffset())
+        List<RestaurantReviewResponse.ListDTO> content = query
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchJoin().fetch();
 
