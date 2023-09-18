@@ -16,8 +16,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,4 +59,17 @@ class VisitationFacadeServiceTest {
         then(visitationService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
     }
 
+    @DisplayName("VisitationFacadeService.validateQrCode 성공 테스트")
+    @Test
+    void validateQrCodeSuccessTest() {
+
+        // Given
+        willDoNothing().given(visitationService).validateQrCode(anyString());
+
+        // When
+        visitationFacadeService.validateQrCode(QR_CODE);
+
+        // Then
+        then(visitationService).should(times(1)).validateQrCode(anyString());
+    }
 }
