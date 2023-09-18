@@ -43,19 +43,10 @@ class VisitationControllerTest {
     @DisplayName("[GET][/api/visitation/qr] - QR을 생성 정상 응답")
     @Test
     void createQrCodeSuccessTest() throws Exception {
-
-        VisitationResponse.InvitationTimeDto invitationTimeDto = VisitationResponse.InvitationTimeDto.builder()
-                .startDate(LocalDate.now())
-                .startTime(LocalTime.now())
-                .endTime(LocalTime.now())
-                .endDate(LocalDate.now())
-                .build();
-
         String base64QrCode = "base64QrCode임 ㅋㅋ";
 
         // given
-        given(visitationFacadeService.findInvitationTime(anyLong())).willReturn(invitationTimeDto);
-        given(visitationFacadeService.createQrCode(any(LocalDateTime.class), any(LocalDateTime.class))).willReturn(base64QrCode);
+        given(visitationFacadeService.createQrCode(1L)).willReturn(base64QrCode);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -68,8 +59,7 @@ class VisitationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data").value(base64QrCode));
 
-        then(visitationFacadeService).should(times(1)).findInvitationTime(anyLong());
-        then(visitationFacadeService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
+        then(visitationFacadeService).should(times(1)).createQrCode(1L);
     }
 
     @DisplayName("[GET][/api/visitation/qr] - QR생성 오류_1")
