@@ -2,6 +2,7 @@ package com.livable.server.visitation.dto;
 
 import com.beust.ah.A;
 import com.livable.server.entity.Invitation;
+import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -29,12 +30,12 @@ public class VisitationResponse {
             return LocalDateTime.of(endDate, endTime);
         }
 
-        public static InvitationTimeDto from(Invitation invitation) {
+        public static InvitationTimeDto from(InvitationDetailTimeDto invitationDetailTimeDto) {
             return InvitationTimeDto.builder()
-                    .startTime(invitation.getStartTime())
-                    .endTime(invitation.getEndTime())
-                    .startDate(invitation.getStartDate())
-                    .endDate(invitation.getEndDate())
+                    .startTime(invitationDetailTimeDto.getStartTime())
+                    .endTime(invitationDetailTimeDto.getEndTime())
+                    .startDate(invitationDetailTimeDto.getStartDate())
+                    .endDate(invitationDetailTimeDto.getEndDate())
                     .build();
         }
     }

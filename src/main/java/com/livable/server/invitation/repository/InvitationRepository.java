@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
 
     @Query("select i.startTime as startTime, i.endTime as endTime, i.startDate as startDate, i.endDate as endDate" +
@@ -13,5 +15,5 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
             " join fetch Invitation i" +
             " on v.invitation = i" +
             " where v.id = :visitorId")
-    InvitationDetailTimeDto findInvitationDetailTimeByVisitorId(@Param("visitorId") Long visitorId);
+    Optional<InvitationDetailTimeDto> findInvitationDetailTimeByVisitorId(@Param("visitorId") Long visitorId);
 }

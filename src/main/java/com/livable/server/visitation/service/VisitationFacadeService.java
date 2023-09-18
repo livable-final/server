@@ -13,11 +13,9 @@ public class VisitationFacadeService {
 
     private final VisitationService visitationService;
     private final InvitationService invitationService;
-    private final VisitorService visitorService;
 
     public String createQrCode(Long visitorId) {
-        Long invitationId = visitorService.findInvitationId(visitorId);
-        VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(invitationId);
+        VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(visitorId);
 
         return visitationService.createQrCode(invitationTime.getStartDateTime(), invitationTime.getEndDateTime());
     }

@@ -46,7 +46,6 @@ class VisitationFacadeServiceTest {
                 .endTime(LocalTime.now())
                 .build();
 
-        given(visitorService.findInvitationId(anyLong())).willReturn(1L);
         given(invitationService.findInvitationTime(anyLong())).willReturn(invitationTimeDto);
         given(visitationService.createQrCode(any(LocalDateTime.class), any(LocalDateTime.class))).willReturn(QR_CODE);
 
@@ -55,7 +54,6 @@ class VisitationFacadeServiceTest {
 
         // Then
         assertThat(qrCode).isEqualTo(QR_CODE);
-        then(visitorService).should(times(1)).findInvitationId(anyLong());
         then(invitationService).should(times(1)).findInvitationTime(anyLong());
         then(visitationService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
     }

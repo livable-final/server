@@ -95,7 +95,8 @@ class InvitationRepositoryTest {
     @DisplayName("InvitationRepository.findInvitationDetailTimeByVisitorId 쿼리 성공 테스트")
     @Test
     void findInvitationDetailTimeByVisitorIdSuccessTest() {
-        InvitationDetailTimeDto invitationDetailTimeDto = invitationRepository.findInvitationDetailTimeByVisitorId(1L);
+        InvitationDetailTimeDto invitationDetailTimeDto = invitationRepository.findInvitationDetailTimeByVisitorId(1L)
+                .get();
 
         assertAll(
                 () -> assertThat(START_TIME).isEqualTo(invitationDetailTimeDto.getStartTime()),
