@@ -18,6 +18,11 @@ public class InvitationBasicData {
         return instance;
     }
 
+    private final Building building;
+    private final Company company;
+    private final Member member;
+    private final List<Office> offices;
+
     private InvitationBasicData() {
         this.building = Building.builder()
                 .id(1L)
@@ -39,11 +44,6 @@ public class InvitationBasicData {
                 Office.builder().id(3L).company(company).build()
         );
     }
-
-    private final Building building;
-    private final Company company;
-    private final Member member;
-    private final List<Office> offices;
 
     public Building getBuilding() {
         return building;

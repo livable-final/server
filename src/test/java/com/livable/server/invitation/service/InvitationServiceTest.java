@@ -87,10 +87,8 @@ class InvitationServiceTest {
         // Given
         InvitationBasicData basicData = InvitationBasicData.getInstance();
 
-        given(memberRepository.findById(basicData.getMember().getId()))
-                .willReturn(Optional.of(basicData.getMember()));
-        given(officeRepository.findAllByCompanyId(basicData.getCompany().getId()))
-                .willReturn(basicData.getOffices());
+        given(memberRepository.findById(basicData.getMember().getId())).willReturn(Optional.of(basicData.getMember()));
+        given(officeRepository.findAllByCompanyId(basicData.getCompany().getId())).willReturn(basicData.getOffices());
         given(reservationRepository.findReservationsByCompanyId(basicData.getCompany().getId()))
                 .willReturn(createReservations());
 
