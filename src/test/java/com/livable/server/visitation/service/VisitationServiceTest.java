@@ -41,4 +41,19 @@ class VisitationServiceTest {
         assertThat(qrCode).isEqualTo(resultQrCode);
         then(qrCodeManager).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
     }
+
+    @DisplayName("VisitationService.validateQrCode 성공 테스트")
+    @Test
+    void validateQrCodeSuccessTest() {
+        // Given
+        String qrCode = "qrCode";
+
+        willDoNothing().given(qrCodeManager).validateQrCode(anyString());
+
+        // When
+        visitationService.validateQrCode(anyString());
+
+        // Then
+        then(qrCodeManager).should(times(1)).validateQrCode(anyString());
+    }
 }
