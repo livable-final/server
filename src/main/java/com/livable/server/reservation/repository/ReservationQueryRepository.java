@@ -1,4 +1,4 @@
-package com.livable.server.invitation.repository;
+package com.livable.server.reservation.repository;
 
 import com.livable.server.invitation.dto.InvitationProjection;
 

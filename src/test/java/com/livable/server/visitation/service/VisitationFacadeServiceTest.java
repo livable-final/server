@@ -1,5 +1,6 @@
 package com.livable.server.visitation.service;
 
+import com.livable.server.invitation.service.InvitationService;
 import com.livable.server.visitation.dto.VisitationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
