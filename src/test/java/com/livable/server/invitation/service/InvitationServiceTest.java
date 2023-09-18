@@ -44,8 +44,8 @@ class InvitationServiceTest {
     @InjectMocks
     private InvitationService invitationService;
 
-    @Test
     @DisplayName("[실패] 예약 가능한 리스트 목록 - 존재하지 않는 Member (400)")
+    @Test
     void getAvailablePlacesFailTest_01() {
         // Given
         Long memberId = -1L;
@@ -59,8 +59,8 @@ class InvitationServiceTest {
         assertThat(exception.getErrorCode().getMessage()).isEqualTo(InvitationErrorCode.MEMBER_NOT_EXIST.getMessage());
     }
 
-    @Test
     @DisplayName("[성공] 예약 가능한 리스트 목록 - 예약 목록이 없는 경우")
+    @Test
     void getAvailablePlacesSuccess_01() {
         // Given
         InvitationBasicData basicData = InvitationBasicData.getInstance();
@@ -81,8 +81,8 @@ class InvitationServiceTest {
         assertThat(data.getCommonPlaces().size()).isEqualTo(0);
     }
 
-    @Test
     @DisplayName("[성공] 예약 가능한 리스트 목록 - 예약 목록이 있는 경우")
+    @Test
     void getAvailablePlacesSuccess_02() {
         // Given
         InvitationBasicData basicData = InvitationBasicData.getInstance();
