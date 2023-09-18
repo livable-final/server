@@ -25,4 +25,8 @@ public class VisitationFacadeService {
     public void validateQrCode(String qr) {
         visitationService.validateQrCode(qr);
     }
+
+    public void registerParking(Long visitorId, String carNumber) {
+
+    }
 }
