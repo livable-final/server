@@ -18,11 +18,6 @@ public class InvitationService {
         Invitation invitation = invitationRepository.findById(invitationId)
                 .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
 
-        return VisitationResponse.InvitationTimeDto.builder()
-                .startTime(invitation.getStartTime())
-                .endTime(invitation.getEndTime())
-                .startDate(invitation.getStartDate())
-                .endDate(invitation.getEndDate())
-                .build();
+        return VisitationResponse.InvitationTimeDto.from(invitation);
     }
 }
