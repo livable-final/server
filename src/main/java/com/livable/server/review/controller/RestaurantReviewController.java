@@ -31,4 +31,15 @@ public class RestaurantReviewController {
 
         return ApiResponse.success(list, HttpStatus.OK);
     }
+
+    @GetMapping("/menus/{menuId}")
+    public ResponseEntity<ApiResponse.Success<Page<RestaurantReviewResponse.ListForMenuDTO>>> listForMenu(
+            @PathVariable Long menuId,
+            @PageableDefault Pageable pageable) {
+
+        Page<RestaurantReviewResponse.ListForMenuDTO> allListForMenu =
+                restaurantReviewService.getAllListForMenu(menuId, pageable);
+
+        return ApiResponse.success(allListForMenu, HttpStatus.OK);
+    }
 }
