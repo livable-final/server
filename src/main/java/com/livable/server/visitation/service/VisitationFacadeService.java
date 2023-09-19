@@ -19,24 +19,24 @@ public class VisitationFacadeService {
     private final VisitorService visitorService;
     private final ParkingLogService parkingLogService;
 
-    public String createQrCode(Long visitorId) {
+    public String createQrCode(final Long visitorId) {
         VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(visitorId);
 
         return visitationService.createQrCode(invitationTime.getStartDateTime(), invitationTime.getEndDateTime());
     }
 
-    public void validateQrCode(String qr) {
+    public void validateQrCode(final String qr) {
         visitationService.validateQrCode(qr);
     }
 
     @Transactional
-    public void registerParking(Long visitorId, String carNumber) {
+    public void registerParking(final Long visitorId, final String carNumber) {
         validateDuplicationRegister(visitorId);
         Visitor visitor = visitorService.findById(visitorId);
         parkingLogService.registerParkingLog(visitor, carNumber);
     }
 
-    private void validateDuplicationRegister(Long visitorId) {
+    private void validateDuplicationRegister(final Long visitorId) {
         if (parkingLogService.findParkingLogByVisitorId(visitorId).isPresent()) {
             throw new GlobalRuntimeException(VisitationErrorCode.ALREADY_REGISTER_PARKING);
         }

@@ -14,19 +14,19 @@ public class VisitorService {
 
     private final VisitorRepository visitorRepository;
 
-    public Long findInvitationId(Long visitorId) {
+    public Long findInvitationId(final Long visitorId) {
         return visitorRepository.findById(visitorId)
                 .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND))
                 .getInvitation()
                 .getId();
     }
 
-    public Visitor findById(Long visitorId) {
+    public Visitor findById(final Long visitorId) {
         return visitorRepository.findById(visitorId)
                 .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
     }
 
-    public VisitationResponse.DetailInformationDto findVisitationDetailInformation(Long visitorId) {
+    public VisitationResponse.DetailInformationDto findVisitationDetailInformation(final Long visitorId) {
         return visitorRepository.findVisitationDetailInformationById(visitorId);
     }
 }

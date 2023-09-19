@@ -4,5 +4,5 @@ import com.livable.server.visitation.dto.VisitationResponse;
 
 public interface VisitorCustomRepository {
 
-    VisitationResponse.DetailInformationDto findVisitationDetailInformationById(Long visitorId);
+    VisitationResponse.DetailInformationDto findVisitationDetailInformationById(final Long visitorId);
 }

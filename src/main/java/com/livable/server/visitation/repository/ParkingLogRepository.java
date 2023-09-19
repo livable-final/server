@@ -11,5 +11,5 @@ public interface ParkingLogRepository extends JpaRepository<ParkingLog, Long> {
 
     @Query("select p from ParkingLog p" +
             " where p.visitor.id = :visitorId")
-    Optional<ParkingLog> findParkingLogByVisitorId(@Param("visitorId") Long visitorId);
+    Optional<ParkingLog> findParkingLogByVisitorId(@Param("visitorId") final Long visitorId);
 }

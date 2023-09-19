@@ -56,7 +56,7 @@ public class VisitationResponse {
             return LocalDateTime.of(endDate, endTime);
         }
 
-        public static InvitationTimeDto from(InvitationDetailTimeDto invitationDetailTimeDto) {
+        public static InvitationTimeDto from(final InvitationDetailTimeDto invitationDetailTimeDto) {
             return InvitationTimeDto.builder()
                     .startTime(invitationDetailTimeDto.getStartTime())
                     .endTime(invitationDetailTimeDto.getEndTime())

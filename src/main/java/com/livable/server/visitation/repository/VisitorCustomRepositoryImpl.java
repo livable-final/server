@@ -13,7 +13,7 @@ public class VisitorCustomRepositoryImpl implements VisitorCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public VisitationResponse.DetailInformationDto findVisitationDetailInformationById(Long visitorId) {
+    public VisitationResponse.DetailInformationDto findVisitationDetailInformationById(final Long visitorId) {
         final QInvitation invitation = QInvitation.invitation;
         final QBuilding building = QBuilding.building;
         final QCompany company = QCompany.company;
