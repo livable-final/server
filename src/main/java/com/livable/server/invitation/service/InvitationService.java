@@ -174,6 +174,16 @@ public class InvitationService {
         if (!endDateTime.toLocalTime().isAfter(startDateTime.toLocalTime())) {
             throw new GlobalRuntimeException(InvitationErrorCode.INVALID_TIME);
         }
+        checkTimeUnitValidation(startDateTime.toLocalTime(), endDateTime.toLocalTime());
+    }
+
+    private void checkTimeUnitValidation(LocalTime startTime, LocalTime endTime) {
+        int startMinute = startTime.getMinute();
+        int endMinute = endTime.getMinute();
+
+        if ((startMinute % 30 != 0) || (endMinute % 30 != 0)) {
+            throw new GlobalRuntimeException(InvitationErrorCode.INVALID_TIME_UNIT);
+        }
     }
 
     private boolean isReservedCommonPlace(Long commonPlaceId) {
