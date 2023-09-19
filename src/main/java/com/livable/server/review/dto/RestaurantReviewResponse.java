@@ -29,4 +29,26 @@ public class RestaurantReviewResponse {
         private Long memberId;
         private String memberName;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ListForMenuDTO {
+
+        private Long reviewId;
+        private LocalDateTime reviewCreatedAt;
+        private String reviewDescription;
+
+        private Evaluation reviewTaste;
+        private Evaluation reviewAmount;
+        private Evaluation reviewService;
+        private Evaluation reviewSpeed;
+
+        private Long restaurantId;
+        private String restaurantName;
+
+        private Long memberId;
+        private String memberName;
+    }
 }

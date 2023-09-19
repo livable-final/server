@@ -69,4 +69,44 @@ class RestaurantReviewControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data.content.length()").value(10));
         }
     }
+
+    @Nested
+    @DisplayName("특정 메뉴에 대한 레스토랑 리뷰 리스트 컨트롤러 단위 테스트")
+    class listForMenu {
+
+        @DisplayName("성공")
+        @Test
+        void success_Test() throws Exception {
+            // Given
+            String uri = "/api/reviews/menus/1";
+
+            List<RestaurantReviewResponse.ListForMenuDTO> mockList = List.of(
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(1L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(2L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(3L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(4L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(6L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(5L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(7L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(8L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(9L).build(),
+                    RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(10L).build()
+            );
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<RestaurantReviewResponse.ListForMenuDTO> mockPage = new PageImpl<>(mockList, pageable, 1);
+
+            Mockito.when(restaurantReviewService
+                            .getAllListForMenu(ArgumentMatchers.anyLong(), ArgumentMatchers.any(Pageable.class)))
+                    .thenReturn(mockPage);
+
+            // When
+            // Then
+            mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.content").isArray())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.content.length()").value(10));
+        }
+    }
 }

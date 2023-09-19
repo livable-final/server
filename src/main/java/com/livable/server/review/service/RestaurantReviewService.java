@@ -18,4 +18,9 @@ public class RestaurantReviewService {
     public Page<RestaurantReviewResponse.ListDTO> getAllList(Long buildingId, Pageable pageable) {
         return restaurantReviewRepository.findRestaurantReviewByBuildingId(buildingId, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<RestaurantReviewResponse.ListForMenuDTO> getAllListForMenu(Long menuId, Pageable pageable) {
+        return restaurantReviewRepository.findRestaurantReviewByMenuId(menuId, pageable);
+    }
 }
