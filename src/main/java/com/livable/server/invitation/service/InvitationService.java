@@ -228,4 +228,21 @@ public class InvitationService {
 
         return ApiResponse.success(invitationDTOs, HttpStatus.OK);
     }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Success<InvitationResponse.DetailDTO>> getInvitation(Long invitationId, Long memberId) {
+        Member member = findMemberById(memberId);
+        checkInvitationOwner(invitationId, member.getId());
+
+        InvitationResponse.DetailDTO invitationDTO
+                = invitationRepository.findInvitationAndVisitorsByInvitationId(invitationId);
+
+        return ApiResponse.success(invitationDTO, HttpStatus.OK);
+    }
+
+    private void checkInvitationOwner(Long invitationId, Long memberId) {
+        if (invitationRepository.countByIdAndMemberId(invitationId, memberId).equals(0L)) {
+            throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_OWNER);
+        }
+    }
 }
