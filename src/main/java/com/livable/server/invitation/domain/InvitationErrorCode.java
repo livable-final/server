@@ -14,7 +14,8 @@ public enum InvitationErrorCode implements ErrorCode {
     INVALID_DATE(HttpStatus.BAD_REQUEST, "종료 날짜가 시작 날짜보다 과거일 수 없습니다."),
     INVALID_TIME(HttpStatus.BAD_REQUEST, "종료 시간이 시작 시간보다 과거일 수 없습니다."),
     INVALID_TIME_UNIT(HttpStatus.BAD_REQUEST, "시간의 분 단위는 0분 또는 30분이어야 합니다."),
-    INVALID_RESERVATION_COUNT(HttpStatus.BAD_REQUEST, "해당 날짜 또는 시간에 예약된 장소 정보가 없습니다.");
+    INVALID_RESERVATION_COUNT(HttpStatus.BAD_REQUEST, "해당 날짜 또는 시간에 예약된 장소 정보가 없습니다."),
+    INVALID_INVITATION_OWNER(HttpStatus.FORBIDDEN, "초대장을 작성한 회원만 접근이 가능합니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
