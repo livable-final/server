@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 public class VisitationRequest {
 
     @Getter
-    public static class ValidateQrDto {
+    public static class ValidateQrCodeDto {
         private String qr;
     }
 
