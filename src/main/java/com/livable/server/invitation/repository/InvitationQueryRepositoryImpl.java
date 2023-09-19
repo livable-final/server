@@ -7,6 +7,7 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.livable.server.entity.QInvitation.invitation;
@@ -43,8 +44,13 @@ public class InvitationQueryRepositoryImpl implements InvitationQueryRepository 
                 ))
                 .from(visitor)
                 .innerJoin(invitation)
-                .on(visitor.invitation.id.eq(invitation.id), invitation.member.id.eq(memberId))
+                .on(
+                        visitor.invitation.id.eq(invitation.id),
+                        invitation.member.id.eq(memberId),
+                        invitation.startDate.goe(LocalDate.now())
+                )
                 .groupBy(visitor.invitation.id)
+                .orderBy(invitation.startDate.asc(), invitation.startTime.asc())
                 .fetch();
     }
 }
