@@ -43,4 +43,12 @@ public class InvitationController {
         return invitationService.getInvitations(memberId);
     }
 
+    @GetMapping("/{invitationId}")
+    public ResponseEntity<Success<InvitationResponse.DetailDTO>> getInvitation(@PathVariable Long invitationId) {
+
+        Long memberId = 1L; // TODO: JWT 토큰에서 추출한 값으로 수정
+
+        return invitationService.getInvitation(invitationId, memberId);
+    }
+
 }
