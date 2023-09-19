@@ -1,5 +1,6 @@
 package com.livable.server.invitation.dto;
 
+import com.livable.server.entity.Invitation;
 import com.livable.server.entity.Office;
 import lombok.*;
 
@@ -58,6 +59,19 @@ public class InvitationResponse {
 
     private static String getFormattedPlaceName(String name, String floor, String roomNumber) {
         return String.format("%s (%s층 %s호)", name, floor, roomNumber);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class ListDTO {
+        private Long invitationId;
+        private String visitorName;
+        private Long visitorCount;
+        private String purpose;
+        private String officeName;
+        private LocalDate startDate;
+        private LocalTime startTime;
+        private LocalTime endTime;
     }
 
 }

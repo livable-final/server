@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/invitation")
@@ -32,6 +33,14 @@ public class InvitationController {
         Long memberId = 1L; // TODO: JWT 토큰에서 추출한 값으로 수정
 
         return invitationService.createInvitation(dto, memberId);
+    }
+
+    @GetMapping
+    public ResponseEntity<Success<List<InvitationResponse.ListDTO>>> getInvitations() {
+
+        Long memberId = 1L; // TODO: JWT 토큰에서 추출한 값으로 수정
+
+        return invitationService.getInvitations(memberId);
     }
 
 }

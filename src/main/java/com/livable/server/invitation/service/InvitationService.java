@@ -221,4 +221,12 @@ public class InvitationService {
             invitationReservationMapRepository.save(invitationReservationMap);
         }
     }
+
+    @Transactional(readOnly = true)
+    public ResponseEntity<Success<List<InvitationResponse.ListDTO>>> getInvitations(Long memberId) {
+        Member member = findMemberById(memberId);
+        List<InvitationResponse.ListDTO> invitationDTOs = invitationRepository.findInvitationsByMemberId(member.getId());
+
+        return ApiResponse.success(invitationDTOs, HttpStatus.OK);
+    }
 }
