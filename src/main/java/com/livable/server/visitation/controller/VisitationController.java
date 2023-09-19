@@ -18,6 +18,15 @@ public class VisitationController {
 
     private final VisitationFacadeService visitationFacadeService;
 
+    @GetMapping
+    public ResponseEntity<ApiResponse.Success<Object>> findVisitationDetailInformation() {
+        Long visitorId = 1L;
+//        VisitationResponse.DetailInformationDto = visitationFacadeService.findVisitationDetailInformation(1L);
+
+//        return ApiResponse.success()
+        return null;
+    }
+
     @GetMapping("/qr")
     public ResponseEntity<ApiResponse.Success<Object>> createQrCode() {
 
