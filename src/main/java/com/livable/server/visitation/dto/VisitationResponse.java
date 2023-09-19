@@ -1,7 +1,5 @@
 package com.livable.server.visitation.dto;
 
-import com.beust.ah.A;
-import com.livable.server.entity.Invitation;
 import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import lombok.*;
 
@@ -31,7 +29,7 @@ public class VisitationResponse {
         private String buildingScale;
 
 //        private String placeImageUrl;
-        private String placeDescription;
+        private String invitationTip;
 
         private String hostName;
         private String hostCompanyName;
