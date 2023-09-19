@@ -1,7 +1,7 @@
 package com.livable.server.reservation.repository;
 
 import com.livable.server.entity.Reservation;
-import com.livable.server.invitation.dto.InvitationProjection;
+import com.livable.server.invitation.dto.InvitationResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,9 +22,9 @@ public class ReservationQueryRepositoryImpl implements ReservationQueryRepositor
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<InvitationProjection.ReservationDTO> findReservationsByCompanyId(Long companyId) {
+    public List<InvitationResponse.ReservationDTO> findReservationsByCompanyId(Long companyId) {
         return queryFactory
-                .select(Projections.constructor(InvitationProjection.ReservationDTO.class,
+                .select(Projections.constructor(InvitationResponse.ReservationDTO.class,
                         commonPlace.id,
                         commonPlace.floor,
                         commonPlace.roomNumber,

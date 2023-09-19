@@ -5,6 +5,7 @@ import com.livable.server.core.response.ApiResponse.Success;
 import com.livable.server.entity.*;
 import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.dto.InvitationRequest;
+import com.livable.server.invitation.dto.InvitationResponse;
 import com.livable.server.invitation.dto.InvitationResponse.AvailablePlacesDTO;
 import com.livable.server.invitation.dto.InvitationResponse.CommonPlaceDTO;
 import com.livable.server.invitation.repository.InvitationRepository;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.livable.server.invitation.dto.InvitationProjection.ReservationDTO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -390,9 +390,9 @@ class InvitationServiceTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
-    private List<ReservationDTO> createReservations() {
+    private List<InvitationResponse.ReservationDTO> createReservations() {
         return new ArrayList<>(List.of(
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         1L,
                         "1",
                         "101",
@@ -400,7 +400,7 @@ class InvitationServiceTest {
                         LocalDate.of(2023, 10, 29),
                         LocalTime.of(10, 0, 0)
                 ),
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         1L,
                         "1",
                         "101",
@@ -408,7 +408,7 @@ class InvitationServiceTest {
                         LocalDate.of(2023, 10, 30),
                         LocalTime.of(10, 0, 0)
                 ),
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         2L,
                         "2",
                         "201",
@@ -416,7 +416,7 @@ class InvitationServiceTest {
                         LocalDate.of(2023, 10, 30),
                         LocalTime.of(10, 30, 0)
                 ),
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         2L,
                         "2",
                         "201",

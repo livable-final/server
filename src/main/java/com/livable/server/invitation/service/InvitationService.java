@@ -7,7 +7,6 @@ import com.livable.server.entity.*;
 import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import com.livable.server.invitation.domain.InvitationPurpose;
-import com.livable.server.invitation.dto.InvitationProjection;
 import com.livable.server.invitation.dto.InvitationRequest;
 import com.livable.server.invitation.dto.InvitationResponse;
 import com.livable.server.invitation.repository.InvitationRepository;
@@ -61,7 +60,7 @@ public class InvitationService {
         List<Office> officeEntities = officeRepository.findAllByCompanyId(companyId);
 
         // 3. company 가 예약한 공용 공간 리스트를 가져옴
-        List<InvitationProjection.ReservationDTO> reservations = reservationRepository
+        List<InvitationResponse.ReservationDTO> reservations = reservationRepository
                 .findReservationsByCompanyId(companyId);
 
         // 4. ReservationDTO 를 연속된 시간은 하나로 합치는 작업을 진행
@@ -82,11 +81,11 @@ public class InvitationService {
         return ApiResponse.success(responseBody, HttpStatus.OK);
     }
 
-    private void combineConsecutiveReservation(List<InvitationProjection.ReservationDTO> reservations) {
-        Iterator<InvitationProjection.ReservationDTO> reservationsIterator = reservations.iterator();
-        InvitationProjection.ReservationDTO beforeReservation = null;
+    private void combineConsecutiveReservation(List<InvitationResponse.ReservationDTO> reservations) {
+        Iterator<InvitationResponse.ReservationDTO> reservationsIterator = reservations.iterator();
+        InvitationResponse.ReservationDTO beforeReservation = null;
         while (reservationsIterator.hasNext()) {
-            InvitationProjection.ReservationDTO currentReservation = reservationsIterator.next();
+            InvitationResponse.ReservationDTO currentReservation = reservationsIterator.next();
 
             if (isNotCombineTarget(beforeReservation, currentReservation)) {
                 beforeReservation = currentReservation;
@@ -98,8 +97,8 @@ public class InvitationService {
     }
 
     private boolean isNotCombineTarget(
-            InvitationProjection.ReservationDTO before,
-            InvitationProjection.ReservationDTO current
+            InvitationResponse.ReservationDTO before,
+            InvitationResponse.ReservationDTO current
     ) {
         // null 이거나 commonPlaceId가 다르거나, 날짜가 다르거나, 연속된 시간이 아닌 경우에는 시간을 합치는 목표가 아님
         return before == null

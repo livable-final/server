@@ -1,6 +1,5 @@
 package com.livable.server.invitation.dto;
 
-import com.livable.server.entity.Invitation;
 import com.livable.server.entity.Office;
 import lombok.*;
 
@@ -42,7 +41,7 @@ public class InvitationResponse {
         private LocalTime startTime;
         private LocalTime endTime;
 
-        public static CommonPlaceDTO from(InvitationProjection.ReservationDTO reservationDTO) {
+        public static CommonPlaceDTO from(ReservationDTO reservationDTO) {
             return new CommonPlaceDTO(
                     reservationDTO.getCommonPlaceId(),
                     getFormattedPlaceName(
@@ -59,6 +58,35 @@ public class InvitationResponse {
 
     private static String getFormattedPlaceName(String name, String floor, String roomNumber) {
         return String.format("%s (%s층 %s호)", name, floor, roomNumber);
+    }
+
+    @Getter
+    @Setter
+    public static class ReservationDTO {
+        private Long commonPlaceId;
+        private String commonPlaceFloor;
+        private String commonPlaceRoomNumber;
+        private String commonPlaceName;
+        private LocalDate reservationDate;
+        private LocalTime reservationStartTime;
+        private LocalTime reservationEndTime;
+
+        public ReservationDTO(
+                Long commonPlaceId,
+                String commonPlaceFloor,
+                String commonPlaceRoomNumber,
+                String commonPlaceName,
+                LocalDate reservationDate,
+                LocalTime reservationStartTime
+        ) {
+            this.commonPlaceId = commonPlaceId;
+            this.commonPlaceFloor = commonPlaceFloor;
+            this.commonPlaceRoomNumber = commonPlaceRoomNumber;
+            this.commonPlaceName = commonPlaceName;
+            this.reservationDate = reservationDate;
+            this.reservationStartTime = reservationStartTime;
+            this.reservationEndTime = reservationStartTime.plusMinutes(30);
+        }
     }
 
     @Getter
