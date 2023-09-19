@@ -1,7 +1,6 @@
 package com.livable.server.visitation.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
-import com.livable.server.entity.ParkingLog;
 import com.livable.server.entity.Visitor;
 import com.livable.server.invitation.service.InvitationService;
 import com.livable.server.visitation.domain.VisitationErrorCode;
@@ -9,8 +8,6 @@ import com.livable.server.visitation.dto.VisitationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -43,5 +40,9 @@ public class VisitationFacadeService {
         if (parkingLogService.findParkingLogByVisitorId(visitorId).isPresent()) {
             throw new GlobalRuntimeException(VisitationErrorCode.ALREADY_REGISTER_PARKING);
         }
+    }
+
+    public VisitationResponse.DetailInformationDto findVisitationDetailInformation(Long visitorId) {
+        return visitorService.findVisitationDetailInformation(visitorId);
     }
 }
