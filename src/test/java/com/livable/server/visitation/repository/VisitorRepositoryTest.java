@@ -102,7 +102,7 @@ class VisitorRepositoryTest {
         Building building = company.getBuilding();
 
         VisitationResponse.DetailInformationDto detailInformationDto =
-                visitorRepository.findVisitationDetailInformationById(visitor.getId());
+                visitorRepository.findVisitationDetailInformationById(visitor.getId()).get();
 
         assertAll(
                 () -> assertThat(detailInformationDto.getInvitationStartDate()).isEqualTo(visitor.getInvitation().getStartDate()),

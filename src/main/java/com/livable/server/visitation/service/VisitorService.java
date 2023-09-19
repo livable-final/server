@@ -27,6 +27,7 @@ public class VisitorService {
     }
 
     public VisitationResponse.DetailInformationDto findVisitationDetailInformation(final Long visitorId) {
-        return visitorRepository.findVisitationDetailInformationById(visitorId);
+        return visitorRepository.findVisitationDetailInformationById(visitorId)
+                .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
     }
 }

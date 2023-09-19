@@ -7,13 +7,15 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class VisitorCustomRepositoryImpl implements VisitorCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public VisitationResponse.DetailInformationDto findVisitationDetailInformationById(final Long visitorId) {
+    public Optional<VisitationResponse.DetailInformationDto> findVisitationDetailInformationById(final Long visitorId) {
         final QInvitation invitation = QInvitation.invitation;
         final QBuilding building = QBuilding.building;
         final QCompany company = QCompany.company;
@@ -46,6 +48,6 @@ public class VisitorCustomRepositoryImpl implements VisitorCustomRepository {
                 .innerJoin(building).on(company.building.id.eq(building.id))
                 .where(visitor.id.eq(visitorId));
 
-        return query.fetchJoin().fetchOne();
+        return Optional.ofNullable(query.fetchJoin().fetchOne());
     }
 }
