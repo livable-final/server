@@ -1,5 +1,6 @@
 package com.livable.server.visitation.service;
 
+import com.livable.server.entity.Visitor;
 import com.livable.server.invitation.service.InvitationService;
 import com.livable.server.visitation.dto.VisitationResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,10 +32,15 @@ class VisitationFacadeServiceTest {
 
     @Mock
     VisitationService visitationService;
+
     @Mock
     InvitationService invitationService;
+
     @Mock
     VisitorService visitorService;
+
+    @Mock
+    ParkingLogService parkingLogService;
 
     @DisplayName("VisitationFacadeService.createQrCode 성공 테스트")
     @Test
@@ -72,5 +79,25 @@ class VisitationFacadeServiceTest {
 
         // Then
         then(visitationService).should(times(1)).validateQrCode(anyString());
+    }
+
+    @DisplayName("VisitationFacadeService.registerParking 성공 테스트")
+    @Test
+    void registerParkingSuccessTest() {
+        // Given
+        Visitor visitor = Visitor.builder()
+                .id(1L)
+                .build();
+        given(visitorService.findById(anyLong())).willReturn(visitor);
+        given(parkingLogService.findParkingLogByVisitorId(any())).willReturn(Optional.empty());
+        willDoNothing().given(parkingLogService).registerParkingLog(any(), anyString());
+
+        // When
+        visitationFacadeService.registerParking(visitor.getId(), "12가1234");
+
+        // Then
+        then(visitorService).should(times(1)).findById(anyLong());
+        then(parkingLogService).should(times(1)).findParkingLogByVisitorId(any());
+        then(parkingLogService).should(times(1)).registerParkingLog(any(), anyString());
     }
 }
