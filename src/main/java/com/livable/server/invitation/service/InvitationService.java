@@ -5,6 +5,7 @@ import com.livable.server.core.response.ApiResponse;
 import com.livable.server.core.response.ApiResponse.Success;
 import com.livable.server.entity.*;
 import com.livable.server.invitation.domain.InvitationErrorCode;
+import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import com.livable.server.invitation.domain.InvitationPurpose;
 import com.livable.server.invitation.dto.InvitationProjection;
 import com.livable.server.invitation.dto.InvitationRequest;
@@ -44,11 +45,11 @@ public class InvitationService {
     private final VisitorRepository visitorRepository;
     private final InvitationReservationMapRepository invitationReservationMapRepository;
 
-    public VisitationResponse.InvitationTimeDto findInvitationTime(Long invitationId) {
-        Invitation invitation = invitationRepository.findById(invitationId)
+    public VisitationResponse.InvitationTimeDto findInvitationTime(Long visitorId) {
+        InvitationDetailTimeDto invitationDetailTimeDto = invitationRepository.findInvitationDetailTimeByVisitorId(visitorId)
                 .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
 
-        return VisitationResponse.InvitationTimeDto.from(invitation);
+        return VisitationResponse.InvitationTimeDto.from(invitationDetailTimeDto);
     }
 
     @Transactional(readOnly = true)
