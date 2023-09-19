@@ -262,6 +262,78 @@ class InvitationServiceTest {
         assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_RESERVATION_COUNT);
     }
 
+    @DisplayName("[실패] 초대장 생성 - 시작 시간 단위가 0분 또는 30분이 아닌 경우")
+    @Test
+    void createInvitationFail_07() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .commonPlaceId(null)
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 28, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_TIME_UNIT);
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 종료 시간 단위가 0분 또는 30분이 아닌 경우")
+    @Test
+    void createInvitationFail_08() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .commonPlaceId(null)
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 12, 14, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_TIME_UNIT);
+    }
+
+    @DisplayName("[실패] 초대장 생성 - 시작, 종료 시간 단위가 0분 또는 30분이 아닌 경우")
+    @Test
+    void createInvitationFail_09() {
+        // Given
+        Long memberId = 1L;
+        InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
+                .purpose("면접")
+                .commonPlaceId(null)
+                .startDate(LocalDateTime.of(2025, 10, 30, 10, 28, 0))
+                .endDate(LocalDateTime.of(2025, 10, 30, 12, 38, 0))
+                .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().build()));
+        given(invitationRepository.save(any(Invitation.class))).willReturn(Invitation.builder().build());
+        given(visitorRepository.save(any(Visitor.class))).willReturn(Visitor.builder().build());
+
+        // When & Then
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.createInvitation(dto, memberId));
+
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_TIME_UNIT);
+    }
+
     @DisplayName("[성공] 초대장 생성 - 예약 장소가 있는 경우")
     @Test
     void createInvitationSuccess_01() {
