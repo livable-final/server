@@ -3,14 +3,13 @@ package com.livable.server.invitation.repository;
 import com.livable.server.core.config.QueryDslConfig;
 import com.livable.server.entity.*;
 import com.livable.server.invitation.dto.InvitationDetailTimeDto;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.livable.server.visitation.repository.VisitorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -21,18 +20,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 @Import(QueryDslConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class InvitationRepositoryTest {
 
     public static final LocalDate START_DATE = LocalDate.now();
     public static final LocalTime START_TIME = LocalTime.of(1, 10);
     public static final LocalTime END_TIME = LocalTime.of(1, 20);
     public static final LocalDate END_DATE = LocalDate.now();
+
     @Autowired
     EntityManager entityManager;
 
     @Autowired
     InvitationRepository invitationRepository;
+
+    @Autowired
+    VisitorRepository visitorRepository;
 
     @BeforeEach
     void dataInit() {
@@ -97,7 +99,9 @@ class InvitationRepositoryTest {
     @DisplayName("InvitationRepository.findInvitationDetailTimeByVisitorId 쿼리 성공 테스트")
     @Test
     void findInvitationDetailTimeByVisitorIdSuccessTest() {
-        InvitationDetailTimeDto invitationDetailTimeDto = invitationRepository.findInvitationDetailTimeByVisitorId(1L)
+
+        Visitor visitor = visitorRepository.findAll().get(0);
+        InvitationDetailTimeDto invitationDetailTimeDto = invitationRepository.findInvitationDetailTimeByVisitorId(visitor.getId())
                 .get();
 
         assertAll(
