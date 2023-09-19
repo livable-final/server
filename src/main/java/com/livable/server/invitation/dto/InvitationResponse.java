@@ -102,4 +102,46 @@ public class InvitationResponse {
         private LocalTime endTime;
     }
 
+    @Getter
+    @Setter
+    public static class DetailDTO {
+        private Long commonPlaceId;
+        private String officeName;
+        private String purpose;
+        private String description;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private LocalTime startTime;
+        private LocalTime endTime;
+        private List<VisitorForDetailDTO> visitors;
+
+        public DetailDTO(
+                Long commonPlaceId,
+                String officeName,
+                String purpose,
+                String description,
+                LocalDate startDate,
+                LocalDate endDate,
+                LocalTime startTime,
+                LocalTime endTime
+        ) {
+            this.commonPlaceId = commonPlaceId;
+            this.officeName = officeName;
+            this.purpose = purpose;
+            this.description = description;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class VisitorForDetailDTO {
+        private Long visitorId;
+        private String name;
+        private String contact;
+    }
+
 }
