@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 @Import(QueryDslConfig.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class InvitationRepositoryTest {
 
     public static final LocalDate START_DATE = LocalDate.now();
