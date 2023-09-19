@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/visitation")
@@ -32,4 +34,15 @@ public class VisitationController {
 
         return ApiResponse.success(HttpStatus.OK);
     }
+
+    @PostMapping("/parking")
+    public ResponseEntity<ApiResponse.Success<Object>> registerParking(
+            @RequestBody @Valid VisitationRequest.RegisterParkingDto registerParkingDto
+    ) {
+        Long visitorId = 1L;
+        visitationFacadeService.registerParking(visitorId, registerParkingDto.getCarNumber());
+
+        return ApiResponse.success(HttpStatus.CREATED);
+    }
+
 }
