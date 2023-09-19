@@ -1,13 +1,14 @@
 package com.livable.server.invitation.controller;
 
 import com.livable.server.core.response.ApiResponse.Success;
+import com.livable.server.invitation.dto.InvitationRequest;
 import com.livable.server.invitation.dto.InvitationResponse;
 import com.livable.server.invitation.service.InvitationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/invitation")
@@ -22,6 +23,15 @@ public class InvitationController {
         Long memberId = 1L; // TODO: JWT 토큰에서 추출한 값으로 수정
 
         return invitationService.getAvailablePlaces(memberId);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> createInvitation(
+            @Valid @RequestBody InvitationRequest.CreateDTO dto) {
+
+        Long memberId = 1L; // TODO: JWT 토큰에서 추출한 값으로 수정
+
+        return invitationService.createInvitation(dto, memberId);
     }
 
 }

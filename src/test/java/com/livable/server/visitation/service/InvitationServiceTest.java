@@ -2,10 +2,12 @@ package com.livable.server.visitation.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.Invitation;
+import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import com.livable.server.invitation.service.InvitationService;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationResponse;
 import com.livable.server.invitation.repository.InvitationRepository;
+import com.livable.server.visitation.mock.MockInvitationDetailTimeDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,28 +40,23 @@ class InvitationServiceTest {
     void findInvitationTimeSuccessTest() {
 
         // Given
+        MockInvitationDetailTimeDto mockInvitationDetailTimeDto = new MockInvitationDetailTimeDto();
         Invitation invitation = Invitation.builder()
-                .startTime(LocalTime.of(1, 1))
-                .endTime(LocalTime.of(1, 1))
-                .startDate(LocalDate.of(2023, 9, 18))
-                .endDate(LocalDate.of(2023, 9, 18))
+                .startTime(mockInvitationDetailTimeDto.getStartTime())
+                .endTime(mockInvitationDetailTimeDto.getEndTime())
+                .startDate(mockInvitationDetailTimeDto.getStartDate())
+                .endDate(mockInvitationDetailTimeDto.getEndDate())
                 .build();
 
-        VisitationResponse.InvitationTimeDto invitationTimeDto = VisitationResponse.InvitationTimeDto.builder()
-                .startTime(LocalTime.of(1, 1))
-                .endTime(LocalTime.of(1, 1))
-                .startDate(LocalDate.of(2023, 9, 18))
-                .endDate(LocalDate.of(2023, 9, 18))
-                .build();
-
-        given(invitationRepository.findById(anyLong())).willReturn(Optional.of(invitation));
+        given(invitationRepository.findInvitationDetailTimeByVisitorId(anyLong()))
+                .willReturn(Optional.of(mockInvitationDetailTimeDto));
 
         // When
-        VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(anyLong());
+        VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(1L);
 
         // Then
-        then(invitationRepository).should(times(1)).findById(anyLong());
-        assertThat(invitationTime).usingRecursiveComparison().isEqualTo(invitationTimeDto);
+        then(invitationRepository).should(times(1)).findInvitationDetailTimeByVisitorId(anyLong());
+        assertThat(invitationTime).usingRecursiveComparison().isEqualTo(invitation);
     }
 
     @DisplayName("InvitationService.findInvitationTime 실패 테스트")
@@ -67,27 +64,15 @@ class InvitationServiceTest {
     void findInvitationTimeFailTest() {
 
         // Given
-        Invitation invitation = Invitation.builder()
-                .startTime(LocalTime.of(1, 1))
-                .endTime(LocalTime.of(1, 1))
-                .startDate(LocalDate.of(2023, 9, 18))
-                .endDate(LocalDate.of(2023, 9, 18))
-                .build();
-
-        VisitationResponse.InvitationTimeDto invitationTimeDto = VisitationResponse.InvitationTimeDto.builder()
-                .startTime(LocalTime.of(1, 1))
-                .endTime(LocalTime.of(1, 1))
-                .startDate(LocalDate.of(2023, 9, 18))
-                .endDate(LocalDate.of(2023, 9, 18))
-                .build();
-
-        given(invitationRepository.findById(anyLong())).willReturn(Optional.empty());
+        given(invitationRepository.findInvitationDetailTimeByVisitorId(anyLong())).willReturn(Optional.empty());
 
         // When
-        GlobalRuntimeException globalRuntimeException = assertThrows(GlobalRuntimeException.class, () -> invitationService.findInvitationTime(anyLong()));
+        GlobalRuntimeException globalRuntimeException = assertThrows(
+                GlobalRuntimeException.class, () -> invitationService.findInvitationTime(anyLong())
+        );
 
         // Then
         assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.NOT_FOUND);
-        then(invitationRepository).should(times(1)).findById(anyLong());
+        then(invitationRepository).should(times(1)).findInvitationDetailTimeByVisitorId(anyLong());
     }
 }

@@ -23,8 +23,7 @@ public class VisitationFacadeService {
     private final ParkingLogService parkingLogService;
 
     public String createQrCode(Long visitorId) {
-        Long invitationId = visitorService.findInvitationId(visitorId);
-        VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(invitationId);
+        VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(visitorId);
 
         return visitationService.createQrCode(invitationTime.getStartDateTime(), invitationTime.getEndDateTime());
     }
