@@ -13,6 +13,34 @@ import java.time.LocalTime;
 public class VisitationResponse {
 
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DetailInformationDto {
+
+        private LocalDate invitationStartDate;
+        private LocalTime invitationStartTime;
+        private LocalDate invitationEndDate;
+        private LocalTime invitationEndTime;
+        private String invitationBuildingName;
+        private String invitationOfficeName;
+
+        private String buildingRepresentativeImageUrl;
+        private String buildingName;
+        private String buildingAddress;
+        private String buildingParkingCostInformation;
+        private String buildingScale;
+
+//        private String placeImageUrl;
+        private String placeDescription;
+
+        private String hostName;
+        private String hostCompanyName;
+        private String hostContact;
+        private String hostBusinessCardImageUrl;
+    }
+
+
+    @Getter
     @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor(access = AccessLevel.PROTECTED)
