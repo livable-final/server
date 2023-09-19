@@ -17,7 +17,7 @@ public class ParkingLog extends BaseTimeEntity {
     private Long id;
 
     @JoinColumn(nullable = false, unique = true)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     private Visitor visitor;
 
     @Column(nullable = false)

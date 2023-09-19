@@ -5,6 +5,7 @@ import com.livable.server.core.exception.ErrorCode;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationRequest;
+import com.livable.server.visitation.mock.MockRegisterParkingDto;
 import com.livable.server.visitation.mock.ValidateQrCodeSuccessMockRequest;
 import com.livable.server.visitation.service.VisitationFacadeService;
 import org.junit.jupiter.api.DisplayName;
@@ -102,5 +103,31 @@ class VisitationControllerTest {
                 .andExpect(jsonPath("$.message").value(errorMessage));
 
         then(visitationFacadeService).should(times(1)).validateQrCode(anyString());
+    }
+
+    @DisplayName("[POST][/api/visitation/parking] - 차량 등록 성공")
+    @Test
+    void registerParking() throws Exception {
+        // given
+        String carNumber = "12가1234";
+        MockRegisterParkingDto mockRegisterParkingDto = new MockRegisterParkingDto(carNumber);
+        Long visitorId = 1L;
+
+
+        willDoNothing().given(visitationFacadeService).registerParking(visitorId, mockRegisterParkingDto.getCarNumber());
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                post("/api/visitation/parking")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockRegisterParkingDto))
+        );
+
+        // then
+        resultActions.andExpect(status().isCreated());
+
+        then(visitationFacadeService)
+                .should(times(1))
+                .registerParking(visitorId, mockRegisterParkingDto.getCarNumber());
     }
 }

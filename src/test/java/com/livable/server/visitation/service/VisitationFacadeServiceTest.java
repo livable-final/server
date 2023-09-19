@@ -1,6 +1,11 @@
 package com.livable.server.visitation.service;
 
+import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.entity.ParkingLog;
+import com.livable.server.entity.Visitor;
+import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.service.InvitationService;
+import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,10 +36,15 @@ class VisitationFacadeServiceTest {
 
     @Mock
     VisitationService visitationService;
+
     @Mock
     InvitationService invitationService;
+
     @Mock
     VisitorService visitorService;
+
+    @Mock
+    ParkingLogService parkingLogService;
 
     @DisplayName("VisitationFacadeService.createQrCode 성공 테스트")
     @Test
@@ -46,7 +57,6 @@ class VisitationFacadeServiceTest {
                 .endTime(LocalTime.now())
                 .build();
 
-        given(visitorService.findInvitationId(anyLong())).willReturn(1L);
         given(invitationService.findInvitationTime(anyLong())).willReturn(invitationTimeDto);
         given(visitationService.createQrCode(any(LocalDateTime.class), any(LocalDateTime.class))).willReturn(QR_CODE);
 
@@ -55,7 +65,6 @@ class VisitationFacadeServiceTest {
 
         // Then
         assertThat(qrCode).isEqualTo(QR_CODE);
-        then(visitorService).should(times(1)).findInvitationId(anyLong());
         then(invitationService).should(times(1)).findInvitationTime(anyLong());
         then(visitationService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
     }
@@ -72,5 +81,44 @@ class VisitationFacadeServiceTest {
 
         // Then
         then(visitationService).should(times(1)).validateQrCode(anyString());
+    }
+
+    @DisplayName("VisitationFacadeService.registerParking 성공 테스트")
+    @Test
+    void registerParkingSuccessTest() {
+        // Given
+        Visitor visitor = Visitor.builder()
+                .id(1L)
+                .build();
+        given(visitorService.findById(anyLong())).willReturn(visitor);
+        given(parkingLogService.findParkingLogByVisitorId(any())).willReturn(Optional.empty());
+        willDoNothing().given(parkingLogService).registerParkingLog(any(), anyString());
+
+        // When
+        visitationFacadeService.registerParking(visitor.getId(), "12가1234");
+
+        // Then
+        then(visitorService).should(times(1)).findById(anyLong());
+        then(parkingLogService).should(times(1)).findParkingLogByVisitorId(any());
+        then(parkingLogService).should(times(1)).registerParkingLog(any(), anyString());
+    }
+
+    @DisplayName("VisitationFacadeService.registerParking 실패 테스트")
+    @Test
+    void registerParkingFailTest() {
+        // Given
+        ParkingLog parkingLog = ParkingLog.builder()
+                .build();
+        given(parkingLogService.findParkingLogByVisitorId(any())).willReturn(Optional.of(parkingLog));
+
+        // When
+        GlobalRuntimeException globalRuntimeException = assertThrows(
+                GlobalRuntimeException.class,
+                () -> visitationFacadeService.registerParking(any(), "12가1234")
+        );
+
+        // Then
+        then(parkingLogService).should(times(1)).findParkingLogByVisitorId(any());
+        assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.ALREADY_REGISTER_PARKING);
     }
 }
