@@ -8,7 +8,7 @@ public class GlobalRuntimeException extends RuntimeException {
     private final ErrorCode errorCode;
 
     public GlobalRuntimeException(ErrorCode errorCode) {
-        super();
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 }
