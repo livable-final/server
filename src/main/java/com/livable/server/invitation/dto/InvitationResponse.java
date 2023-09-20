@@ -1,6 +1,5 @@
 package com.livable.server.invitation.dto;
 
-import com.livable.server.entity.Invitation;
 import com.livable.server.entity.Office;
 import lombok.*;
 
@@ -42,7 +41,7 @@ public class InvitationResponse {
         private LocalTime startTime;
         private LocalTime endTime;
 
-        public static CommonPlaceDTO from(InvitationProjection.ReservationDTO reservationDTO) {
+        public static CommonPlaceDTO from(ReservationDTO reservationDTO) {
             return new CommonPlaceDTO(
                     reservationDTO.getCommonPlaceId(),
                     getFormattedPlaceName(
@@ -62,6 +61,35 @@ public class InvitationResponse {
     }
 
     @Getter
+    @Setter
+    public static class ReservationDTO {
+        private Long commonPlaceId;
+        private String commonPlaceFloor;
+        private String commonPlaceRoomNumber;
+        private String commonPlaceName;
+        private LocalDate reservationDate;
+        private LocalTime reservationStartTime;
+        private LocalTime reservationEndTime;
+
+        public ReservationDTO(
+                Long commonPlaceId,
+                String commonPlaceFloor,
+                String commonPlaceRoomNumber,
+                String commonPlaceName,
+                LocalDate reservationDate,
+                LocalTime reservationStartTime
+        ) {
+            this.commonPlaceId = commonPlaceId;
+            this.commonPlaceFloor = commonPlaceFloor;
+            this.commonPlaceRoomNumber = commonPlaceRoomNumber;
+            this.commonPlaceName = commonPlaceName;
+            this.reservationDate = reservationDate;
+            this.reservationStartTime = reservationStartTime;
+            this.reservationEndTime = reservationStartTime.plusMinutes(30);
+        }
+    }
+
+    @Getter
     @AllArgsConstructor
     public static class ListDTO {
         private Long invitationId;
@@ -72,6 +100,53 @@ public class InvitationResponse {
         private LocalDate startDate;
         private LocalTime startTime;
         private LocalTime endTime;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class DetailDTO {
+        private Long commonPlaceId;
+        private String officeName;
+        private String purpose;
+        private String description;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private LocalTime startTime;
+        private LocalTime endTime;
+        private List<VisitorForDetailDTO> visitors;
+
+        public DetailDTO(
+                Long commonPlaceId,
+                String officeName,
+                String purpose,
+                String description,
+                LocalDate startDate,
+                LocalDate endDate,
+                LocalTime startTime,
+                LocalTime endTime
+        ) {
+            this.commonPlaceId = commonPlaceId;
+            this.officeName = officeName;
+            this.purpose = purpose;
+            this.description = description;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.startTime = startTime;
+            this.endTime = endTime;
+        }
+
+        public void setVisitors(List<VisitorForDetailDTO> visitors) {
+            this.visitors = visitors;
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class VisitorForDetailDTO {
+        private Long visitorId;
+        private String name;
+        private String contact;
     }
 
 }

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -175,5 +176,32 @@ class InvitationControllerTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(InvitationValidationMessage.REQUIRED_VISITOR_COUNT));
+    }
+
+    @DisplayName("[실패] 초대장 상세 조회 - 초대장 주인과 요청한 사람이 다른 경우")
+    @Test
+    void getInvitationFail_01() throws Exception {
+        // Given
+        Long invitationId = 1L;
+        given(invitationService.getInvitation(anyLong(), anyLong()))
+                .willThrow(new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_OWNER));
+
+        // When & Then
+        mockMvc.perform(get("/api/invitation/{invitationId}", invitationId))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value(InvitationErrorCode.INVALID_INVITATION_OWNER.getMessage()));
+    }
+
+    @DisplayName("[성공] 초대장 상세 조회")
+    @Test
+    void getInvitationSuccess_01() throws Exception {
+        // Given
+        Long invitationId = 1L;
+        given(invitationService.getInvitation(anyLong(), anyLong()))
+                .willReturn(ApiResponse.success(InvitationResponse.DetailDTO.builder().build(), HttpStatus.OK));
+
+        // When & Then
+        mockMvc.perform(get("/api/invitation/{invitationId}", invitationId))
+                .andExpect(status().isOk());
     }
 }

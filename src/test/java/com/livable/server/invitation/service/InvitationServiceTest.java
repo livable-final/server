@@ -5,6 +5,7 @@ import com.livable.server.core.response.ApiResponse.Success;
 import com.livable.server.entity.*;
 import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.dto.InvitationRequest;
+import com.livable.server.invitation.dto.InvitationResponse;
 import com.livable.server.invitation.dto.InvitationResponse.AvailablePlacesDTO;
 import com.livable.server.invitation.dto.InvitationResponse.CommonPlaceDTO;
 import com.livable.server.invitation.repository.InvitationRepository;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.livable.server.invitation.dto.InvitationProjection.ReservationDTO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -390,9 +390,45 @@ class InvitationServiceTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
-    private List<ReservationDTO> createReservations() {
+    @DisplayName("[실패] 초대장 상세 조회 - 초대장 주인이 아닌 사람이 요청한 경우")
+    @Test
+    void getInvitationFail_01() {
+        // Given
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(0L);
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.getInvitation(invitationId, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_INVITATION_OWNER);
+    }
+
+    @DisplayName("[성공] 초대장 상세 조회")
+    @Test
+    void getInvitationFail_02() {
+        // Given
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findInvitationAndVisitorsByInvitationId(anyLong()))
+                .willReturn(any(InvitationResponse.DetailDTO.class));
+
+        // When
+        ResponseEntity<Success<InvitationResponse.DetailDTO>> result
+                = invitationService.getInvitation(invitationId, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    private List<InvitationResponse.ReservationDTO> createReservations() {
         return new ArrayList<>(List.of(
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         1L,
                         "1",
                         "101",
@@ -400,7 +436,7 @@ class InvitationServiceTest {
                         LocalDate.of(2023, 10, 29),
                         LocalTime.of(10, 0, 0)
                 ),
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         1L,
                         "1",
                         "101",
@@ -408,7 +444,7 @@ class InvitationServiceTest {
                         LocalDate.of(2023, 10, 30),
                         LocalTime.of(10, 0, 0)
                 ),
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         2L,
                         "2",
                         "201",
@@ -416,7 +452,7 @@ class InvitationServiceTest {
                         LocalDate.of(2023, 10, 30),
                         LocalTime.of(10, 30, 0)
                 ),
-                new ReservationDTO(
+                new InvitationResponse.ReservationDTO(
                         2L,
                         "2",
                         "201",

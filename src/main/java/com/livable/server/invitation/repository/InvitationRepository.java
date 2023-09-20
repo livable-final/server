@@ -17,4 +17,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long>, I
             " where v.id = :visitorId")
     Optional<InvitationDetailTimeDto> findInvitationDetailTimeByVisitorId(@Param("visitorId") Long visitorId);
 
+    @Query("select count(i) from Invitation i where i.id = :invitationId and i.member.id = :memberId")
+    Long countByIdAndMemberId(@Param("invitationId") Long invitationId, @Param("memberId") Long memberId);
 }

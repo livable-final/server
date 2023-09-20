@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.livable.server.entity.QInvitation.invitation;
+import static com.livable.server.entity.QInvitationReservationMap.invitationReservationMap;
+import static com.livable.server.entity.QReservation.reservation;
 import static com.livable.server.entity.QVisitor.visitor;
 
 @RequiredArgsConstructor
@@ -52,5 +54,41 @@ public class InvitationQueryRepositoryImpl implements InvitationQueryRepository 
                 .groupBy(visitor.invitation.id)
                 .orderBy(invitation.startDate.asc(), invitation.startTime.asc())
                 .fetch();
+    }
+
+    @Override
+    public InvitationResponse.DetailDTO findInvitationAndVisitorsByInvitationId(Long invitationId) {
+        InvitationResponse.DetailDTO invitationDetail = queryFactory
+                .select(Projections.constructor(InvitationResponse.DetailDTO.class,
+                        reservation.commonPlace.id,
+                        invitation.officeName,
+                        invitation.purpose,
+                        invitation.description,
+                        invitation.startDate,
+                        invitation.endDate,
+                        invitation.startTime,
+                        invitation.endTime
+                ))
+                .from(invitation)
+                .leftJoin(invitationReservationMap)
+                .on(invitationReservationMap.invitation.id.eq(invitation.id))
+                .leftJoin(reservation)
+                .on(reservation.id.eq(invitationReservationMap.reservation.id))
+                .where(invitation.id.eq(invitationId))
+                .fetchFirst();
+
+        List<InvitationResponse.VisitorForDetailDTO> visitors = queryFactory
+                .select(Projections.constructor(InvitationResponse.VisitorForDetailDTO.class,
+                        visitor.id,
+                        visitor.name,
+                        visitor.contact
+                ))
+                .from(visitor)
+                .where(visitor.invitation.id.eq(invitationId))
+                .fetch();
+
+        invitationDetail.setVisitors(visitors);
+
+        return invitationDetail;
     }
 }
