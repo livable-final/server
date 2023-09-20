@@ -19,6 +19,10 @@ public class VisitationFacadeService {
     private final VisitorService visitorService;
     private final ParkingLogService parkingLogService;
 
+    public VisitationResponse.DetailInformationDto findVisitationDetailInformation(Long visitorId) {
+        return visitorService.findVisitationDetailInformation(visitorId);
+    }
+
     public String createQrCode(final Long visitorId) {
         VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(visitorId);
 
@@ -40,9 +44,5 @@ public class VisitationFacadeService {
         if (parkingLogService.findParkingLogByVisitorId(visitorId).isPresent()) {
             throw new GlobalRuntimeException(VisitationErrorCode.ALREADY_REGISTER_PARKING);
         }
-    }
-
-    public VisitationResponse.DetailInformationDto findVisitationDetailInformation(Long visitorId) {
-        return visitorService.findVisitationDetailInformation(visitorId);
     }
 }
