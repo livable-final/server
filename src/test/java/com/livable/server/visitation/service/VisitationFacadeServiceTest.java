@@ -3,10 +3,10 @@ package com.livable.server.visitation.service;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.ParkingLog;
 import com.livable.server.entity.Visitor;
-import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.service.InvitationService;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationResponse;
+import com.livable.server.visitation.mock.MockDetailInformationDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
@@ -45,6 +45,22 @@ class VisitationFacadeServiceTest {
 
     @Mock
     ParkingLogService parkingLogService;
+
+    @DisplayName("VisitationFacadeService.findVisitationDetailInformation 성공 테스트")
+    @Test
+    void findVisitationDetailInformationSuccessTest() {
+        // Given
+        MockDetailInformationDto mockDetailInformationDto = new MockDetailInformationDto();
+        given(visitorService.findVisitationDetailInformation(anyLong())).willReturn(mockDetailInformationDto);
+
+        // When
+        VisitationResponse.DetailInformationDto detailInformationDto =
+                visitationFacadeService.findVisitationDetailInformation(1L);
+
+        // Then
+        assertThat(detailInformationDto).isEqualTo(mockDetailInformationDto);
+        then(visitorService).should(times(1)).findVisitationDetailInformation(anyLong());
+    }
 
     @DisplayName("VisitationFacadeService.createQrCode 성공 테스트")
     @Test

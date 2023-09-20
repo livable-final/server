@@ -42,7 +42,7 @@ public class QrCodeManager {
 
     private final ObjectMapper objectMapper;
 
-    public String createQrCode(LocalDateTime startDate, LocalDateTime endDate) {
+    public String createQrCode(final LocalDateTime startDate, final LocalDateTime endDate) {
 
         validatePeriod(startDate, endDate);
 
@@ -51,7 +51,7 @@ public class QrCodeManager {
         return encodeQrcodeToBase64(qrCode);
     }
 
-    private void validatePeriod(LocalDateTime startDate, LocalDateTime endDate) {
+    private void validatePeriod(final LocalDateTime startDate, final LocalDateTime endDate) {
         if (startDate.isAfter(endDate) || endDate.isBefore(startDate)) {
             throw new GlobalRuntimeException(VisitationErrorCode.INVALID_PERIOD);
         }
@@ -61,7 +61,7 @@ public class QrCodeManager {
         }
     }
 
-    private BufferedImage createQrCodeImage(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    private BufferedImage createQrCodeImage(final LocalDateTime startDateTime, final LocalDateTime endDateTime) {
         try {
 
             HashMap<String, LocalDateTime> expirationPeriodMap = getExpirationPeriodMap(startDateTime, endDateTime);
@@ -79,7 +79,7 @@ public class QrCodeManager {
         }
     }
 
-    private HashMap<String, LocalDateTime> getExpirationPeriodMap(LocalDateTime startDate, LocalDateTime endDate) {
+    private HashMap<String, LocalDateTime> getExpirationPeriodMap(final LocalDateTime startDate, final LocalDateTime endDate) {
         return new HashMap<>() {{
             put(EXPIRATION_START_DATE_KEY, startDate);
             put(EXPIRATION_END_DATE_KEY, endDate);
@@ -92,7 +92,7 @@ public class QrCodeManager {
         }};
     }
 
-    private String encodeQrcodeToBase64(BufferedImage bufferedImage) {
+    private String encodeQrcodeToBase64(final BufferedImage bufferedImage) {
         try {
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -108,13 +108,13 @@ public class QrCodeManager {
         }
     }
 
-    public void validateQrCode(String base64QrCode) {
+    public void validateQrCode(final String base64QrCode) {
 
         QrPayload qrPayload = getQrPayload(base64QrCode);
         validatePeriod(qrPayload.getStartDate(), qrPayload.getEndDate());
     }
 
-    private QrPayload getQrPayload(String base64QrCode) {
+    private QrPayload getQrPayload(final String base64QrCode) {
 
         Map<DecodeHintType, Object> hints = getDecodeHints();
         String decodeQrContent = getDecodeQrContent(base64QrCode, hints);
@@ -133,7 +133,7 @@ public class QrCodeManager {
         }};
     }
 
-    private String getDecodeQrContent(String base64QrCode, Map<DecodeHintType, Object> hints) {
+    private String getDecodeQrContent(final String base64QrCode, final Map<DecodeHintType, Object> hints) {
 
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] imageBytes = decoder.decode(base64QrCode);

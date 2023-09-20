@@ -8,20 +8,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 
 import javax.persistence.EntityManager;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 @Import(QueryDslConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class ParkingLogRepositoryTest {
 
     public static final LocalDate START_DATE = LocalDate.now();
@@ -108,8 +104,8 @@ class ParkingLogRepositoryTest {
     @DisplayName("ParkingLogRepository.findParkingLogByVisitorId 쿼리 확인용 테스트")
     @Test
     void test() {
-        ParkingLog parkingLog = parkingLogRepository.findParkingLogByVisitorId(1L).get();
-        Visitor visitor = visitorRepository.findById(1L).get();
+        Visitor visitor = visitorRepository.findAll().get(0);
+        ParkingLog parkingLog = parkingLogRepository.findParkingLogByVisitorId(visitor.getId()).get();
 
         assertAll(
                 () -> assertThat(parkingLog.getId()).isEqualTo(1L),

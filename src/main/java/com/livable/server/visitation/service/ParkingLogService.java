@@ -14,11 +14,11 @@ public class ParkingLogService {
 
     private final ParkingLogRepository parkingLogRepository;
 
-    public Optional<ParkingLog> findParkingLogByVisitorId(Long visitorId) {
+    public Optional<ParkingLog> findParkingLogByVisitorId(final Long visitorId) {
         return parkingLogRepository.findParkingLogByVisitorId(visitorId);
     }
 
-    public void registerParkingLog(Visitor visitor, String carNumber) {
+    public void registerParkingLog(final Visitor visitor, final String carNumber) {
         ParkingLog parkingLog = ParkingLog.builder()
                 .carNumber(carNumber)
                 .visitor(visitor)

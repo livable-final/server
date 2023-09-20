@@ -1,7 +1,5 @@
 package com.livable.server.visitation.dto;
 
-import com.beust.ah.A;
-import com.livable.server.entity.Invitation;
 import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import lombok.*;
 
@@ -11,6 +9,34 @@ import java.time.LocalTime;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VisitationResponse {
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DetailInformationDto {
+
+        private LocalDate invitationStartDate;
+        private LocalTime invitationStartTime;
+        private LocalDate invitationEndDate;
+        private LocalTime invitationEndTime;
+        private String invitationBuildingName;
+        private String invitationOfficeName;
+
+        private String buildingRepresentativeImageUrl;
+        private String buildingName;
+        private String buildingAddress;
+        private String buildingParkingCostInformation;
+        private String buildingScale;
+
+//        private String placeImageUrl;
+        private String invitationTip;
+
+        private String hostName;
+        private String hostCompanyName;
+        private String hostContact;
+        private String hostBusinessCardImageUrl;
+    }
+
 
     @Getter
     @Builder
@@ -30,7 +56,7 @@ public class VisitationResponse {
             return LocalDateTime.of(endDate, endTime);
         }
 
-        public static InvitationTimeDto from(InvitationDetailTimeDto invitationDetailTimeDto) {
+        public static InvitationTimeDto from(final InvitationDetailTimeDto invitationDetailTimeDto) {
             return InvitationTimeDto.builder()
                     .startTime(invitationDetailTimeDto.getStartTime())
                     .endTime(invitationDetailTimeDto.getEndTime())

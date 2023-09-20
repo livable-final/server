@@ -12,11 +12,11 @@ public class VisitationService {
 
     private final QrCodeManager qrCodeManager;
 
-    public String createQrCode(LocalDateTime startDate, LocalDateTime endDate) {
+    public String createQrCode(final LocalDateTime startDate, final LocalDateTime endDate) {
         return qrCodeManager.createQrCode(startDate, endDate);
     }
 
-    public void validateQrCode(String qr) {
+    public void validateQrCode(final String qr) {
         qrCodeManager.validateQrCode(qr);
     }
 }

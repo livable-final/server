@@ -1,9 +1,8 @@
-package com.livable.server.invitation.repository;
+package com.livable.server.visitation.repository;
 
 import com.livable.server.core.config.QueryDslConfig;
 import com.livable.server.entity.*;
-import com.livable.server.invitation.dto.InvitationDetailTimeDto;
-import com.livable.server.visitation.repository.VisitorRepository;
+import com.livable.server.visitation.dto.VisitationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 @Import(QueryDslConfig.class)
-class InvitationRepositoryTest {
+class VisitorRepositoryTest {
 
     public static final LocalDate START_DATE = LocalDate.now();
     public static final LocalTime START_TIME = LocalTime.of(1, 10);
@@ -28,13 +27,10 @@ class InvitationRepositoryTest {
     public static final LocalDate END_DATE = LocalDate.now();
 
     @Autowired
-    EntityManager entityManager;
-
-    @Autowired
-    InvitationRepository invitationRepository;
-
-    @Autowired
     VisitorRepository visitorRepository;
+
+    @Autowired
+    EntityManager entityManager;
 
     @BeforeEach
     void dataInit() {
@@ -96,19 +92,29 @@ class InvitationRepositoryTest {
         entityManager.persist(visitor);
     }
 
-    @DisplayName("InvitationRepository.findInvitationDetailTimeByVisitorId 쿼리 성공 테스트")
+    @DisplayName("test")
     @Test
-    void findInvitationDetailTimeByVisitorIdSuccessTest() {
-
+    void test() {
         Visitor visitor = visitorRepository.findAll().get(0);
-        InvitationDetailTimeDto invitationDetailTimeDto = invitationRepository.findInvitationDetailTimeByVisitorId(visitor.getId())
-                .get();
+        Invitation invitation = visitor.getInvitation();
+        Member member = invitation.getMember();
+        Company company = member.getCompany();
+        Building building = company.getBuilding();
+
+        VisitationResponse.DetailInformationDto detailInformationDto =
+                visitorRepository.findVisitationDetailInformationById(visitor.getId()).get();
 
         assertAll(
-                () -> assertThat(START_TIME).isEqualTo(invitationDetailTimeDto.getStartTime()),
-                () -> assertThat(END_TIME).isEqualTo(invitationDetailTimeDto.getEndTime()),
-                () -> assertThat(START_DATE).isEqualTo(invitationDetailTimeDto.getStartDate()),
-                () -> assertThat(END_DATE).isEqualTo(invitationDetailTimeDto.getEndDate())
+                () -> assertThat(detailInformationDto.getInvitationStartDate()).isEqualTo(visitor.getInvitation().getStartDate()),
+                () -> assertThat(detailInformationDto.getInvitationEndDate()).isEqualTo(visitor.getInvitation().getEndDate()),
+                () -> assertThat(detailInformationDto.getInvitationStartTime()).isEqualTo(visitor.getInvitation().getStartTime()),
+                () -> assertThat(detailInformationDto.getInvitationEndTime()).isEqualTo(visitor.getInvitation().getEndTime()),
+                () -> assertThat(detailInformationDto.getHostName()).isEqualTo(member.getName()),
+                () -> assertThat(detailInformationDto.getHostContact()).isEqualTo(member.getContact()),
+                () -> assertThat(detailInformationDto.getBuildingAddress()).isEqualTo(building.getAddress()),
+                () -> assertThat(detailInformationDto.getBuildingName()).isEqualTo(building.getName()),
+                () -> assertThat(detailInformationDto.getBuildingParkingCostInformation()).isEqualTo(building.getParkingCostInformation()),
+                () -> assertThat(detailInformationDto.getBuildingRepresentativeImageUrl()).isEqualTo(building.getRepresentativeImageUrl())
         );
     }
 }
