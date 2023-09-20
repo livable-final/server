@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -92,9 +93,9 @@ class VisitorRepositoryTest {
         entityManager.persist(visitor);
     }
 
-    @DisplayName("test")
+    @DisplayName("VisitorRepository.findVisitationDetailInformationById 쿼리 성공 테스트")
     @Test
-    void test() {
+    void findVisitationDetailInformationByIdSuccessTest() {
         Visitor visitor = visitorRepository.findAll().get(0);
         Invitation invitation = visitor.getInvitation();
         Member member = invitation.getMember();
@@ -116,5 +117,33 @@ class VisitorRepositoryTest {
                 () -> assertThat(detailInformationDto.getBuildingParkingCostInformation()).isEqualTo(building.getParkingCostInformation()),
                 () -> assertThat(detailInformationDto.getBuildingRepresentativeImageUrl()).isEqualTo(building.getRepresentativeImageUrl())
         );
+    }
+
+    @DisplayName("VisitorRepository.findBuildingIdById 쿼리 테스트_1")
+    @Test
+    void findBuildingIdByIdSuccessTest_1() {
+        Visitor visitor = visitorRepository.findAll().get(0);
+        Invitation invitation = visitor.getInvitation();
+        Member member = invitation.getMember();
+        Company company = member.getCompany();
+        Building building = company.getBuilding();
+
+        Long buildingIdById = visitorRepository.findBuildingIdById(visitor.getId()).get();
+
+        assertThat(buildingIdById).isEqualTo(building.getId());
+    }
+
+    @DisplayName("VisitorRepository.findBuildingIdById 쿼리 테스트_2")
+    @Test
+    void findBuildingIdByIdSuccessTest_2() {
+        Visitor visitor = visitorRepository.findAll().get(0);
+        Invitation invitation = visitor.getInvitation();
+        Member member = invitation.getMember();
+        Company company = member.getCompany();
+        Building building = company.getBuilding();
+
+        Optional<Long> buildingIdById = visitorRepository.findBuildingIdById(visitor.getId() + 1);
+
+        assertThat(buildingIdById).isEqualTo(Optional.empty());
     }
 }
