@@ -2,13 +2,13 @@ package com.livable.server.visitation.mock;
 
 import com.livable.server.visitation.dto.VisitationRequest;
 
-public class ValidateQrCodeCodeSuccessMockRequest extends VisitationRequest.ValidateQrCodeDto {
+public class MockValidateQrCodeDto extends VisitationRequest.ValidateQrCodeDto {
     private String qr;
 
-    public ValidateQrCodeCodeSuccessMockRequest() {
+    public MockValidateQrCodeDto() {
     }
 
-    public ValidateQrCodeCodeSuccessMockRequest(String qr) {
+    public MockValidateQrCodeDto(String qr) {
         this.qr = qr;
     }
 

@@ -6,7 +6,7 @@ import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationRequest;
 import com.livable.server.visitation.mock.MockRegisterParkingDto;
-import com.livable.server.visitation.mock.ValidateQrCodeSuccessMockRequest;
+import com.livable.server.visitation.mock.MockValidateQrCodeDto;
 import com.livable.server.visitation.service.VisitationFacadeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class VisitationControllerTest {
     void validateQrCodeSuccess() throws Exception {
         // given
         String qr = "qr";
-        VisitationRequest.ValidateQrDto validateQrCodeSuccessMockRequest = new ValidateQrCodeSuccessMockRequest(qr);
+        VisitationRequest.ValidateQrCodeDto validateQrCodeSuccessMockRequest = new MockValidateQrCodeDto(qr);
 
         willDoNothing().given(visitationFacadeService).validateQrCode(anyString());
 
@@ -85,7 +85,7 @@ class VisitationControllerTest {
         String qr = "qr";
         ErrorCode errorCode = VisitationErrorCode.INVALID_QR_PERIOD;
         String errorMessage = errorCode.getMessage();
-        VisitationRequest.ValidateQrDto validateQrCodeSuccessMockRequest = new ValidateQrCodeSuccessMockRequest(qr);
+        VisitationRequest.ValidateQrCodeDto validateQrCodeSuccessMockRequest = new MockValidateQrCodeDto(qr);
 
 
         willThrow(new GlobalRuntimeException(errorCode)).given(visitationFacadeService).validateQrCode(anyString());
