@@ -14,6 +14,7 @@ import com.livable.server.invitation.repository.OfficeRepository;
 import com.livable.server.invitation.service.data.InvitationBasicData;
 import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.reservation.repository.ReservationRepository;
+import com.livable.server.visitation.repository.ParkingLogRepository;
 import com.livable.server.visitation.repository.VisitorRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,9 @@ class InvitationServiceTest {
 
     @Mock
     private InvitationReservationMapRepository invitationReservationMapRepository;
+
+    @Mock
+    private ParkingLogRepository parkingLogRepository;
 
     @InjectMocks
     private InvitationService invitationService;
@@ -421,6 +425,73 @@ class InvitationServiceTest {
         // When
         ResponseEntity<Success<InvitationResponse.DetailDTO>> result
                 = invitationService.getInvitation(invitationId, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @DisplayName("[실패] 초대장 삭제 - 존재하지 않는 초대장인 경우")
+    @Test
+    void deleteInvitationFail_01() {
+        // Given
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.deleteInvitation(invitationId, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVITATION_NOT_EXIST);
+    }
+
+    @DisplayName("[실패] 초대장 삭제 - 삭제 요청 날짜가 방문 날짜 이후인 경우")
+    @Test
+    void deleteInvitationFail_02() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .startDate(requestDate.minusDays(1L))
+                        .build()
+                ));
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.deleteInvitation(invitationId, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_DELETE_DATE);
+    }
+
+    @DisplayName("[성공] 초대장 삭제")
+    @Test
+    void deleteInvitationFail_03() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .startDate(requestDate.plusDays(1L))
+                        .build()
+                ));
+        given(visitorRepository.findVisitorsByInvitation(any(Invitation.class)))
+                .willReturn(List.of(Visitor.builder().build()));
+
+        // When
+        ResponseEntity<?> result = invitationService.deleteInvitation(invitationId, memberId);
 
         // Then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
