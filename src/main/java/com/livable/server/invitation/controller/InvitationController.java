@@ -51,4 +51,12 @@ public class InvitationController {
         return invitationService.getInvitation(invitationId, memberId);
     }
 
+    @DeleteMapping("/{invitationId}")
+    public ResponseEntity<?> deleteInvitation(@PathVariable Long invitationId) {
+
+        Long memberId = 1L; // TODO: JWT 토큰에서 추출한 값으로 수정
+
+        return invitationService.deleteInvitation(invitationId, memberId);
+    }
+
 }
