@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 @Service
 public class InvitationService {
     private static final int INTERVIEW_MAXIMUM_COUNT = 1;
+    private static final int INVITATION_MAXIMUM_COUNT = 30;
 
     private final MemberRepository memberRepository;
     private final OfficeRepository officeRepository;
@@ -289,5 +290,95 @@ public class InvitationService {
 
         parkingLogRepository.deleteByVisitorIdsIn(visitorsIds);
         visitorRepository.deleteByIdsIn(visitorsIds);
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateInvitation(Long invitationId, InvitationRequest.UpdateDTO dto, Long memberId) {
+        checkExistMemberById(memberId);
+        checkInvitationOwner(invitationId, memberId);
+
+        Optional<Invitation> invitationOptional = invitationRepository.findById(invitationId);
+        Invitation invitation = invitationOptional
+                .orElseThrow(() -> new GlobalRuntimeException(InvitationErrorCode.INVITATION_NOT_EXIST));
+
+        checkInvitationStartDate(invitation);
+        checkModifiedCommonPlaceId(invitation, dto);
+
+        boolean shouldSendToAlreadyVisitor = false;
+        boolean shouldSendToAddedVisitor = checkAddedVisitor(dto);
+
+        if (shouldSendToAddedVisitor) {
+            checkTotalVisitorCount(invitation, dto);
+        }
+
+        if (isModifiedInvitationDateTime(invitation, dto)) {
+            shouldSendToAlreadyVisitor = true;
+            if (isReservedCommonPlace(dto.getCommonPlaceId())) {
+
+                invitationReservationMapRepository.deleteAllByInvitationId(invitation.getId());
+                reserveNewCommonPlaces(dto, invitation);
+            }
+        }
+
+        invitation.updateDateTime(dto.getStartDate(), dto.getEndDate());
+        invitation.updateDescription(dto.getDescription());
+
+        if (shouldSendToAlreadyVisitor) {
+            // TODO: 기존 등록되어 있던 방문자들에게 알림톡을 다시 보내는 로직 추가
+        }
+
+        if (shouldSendToAddedVisitor) {
+            // TODO: 새로 등록된 방문자들에게 알림톡을 다시 보내는 로직 추가
+
+            List<Visitor> visitors = dto.getVisitors().stream()
+                    .map(visitor -> visitor.toEntity(invitation)).collect(Collectors.toList());
+
+            visitorRepository.saveAll(visitors);
+        }
+
+        return ApiResponse.success(HttpStatus.OK);
+    }
+
+    private boolean checkAddedVisitor(InvitationRequest.UpdateDTO dto) {
+        return dto.getVisitors().size() != 0;
+    }
+
+    private void checkTotalVisitorCount(Invitation invitation, InvitationRequest.UpdateDTO dto) {
+        if (invitation.getPurpose().equals(InvitationPurpose.INTERVIEW.getValue())) {
+            throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INTERVIEW_MAXIMUM_NUMBER);
+        }
+
+        long alreadyCount = visitorRepository.countByInvitation(invitation);
+        long addedCount = dto.getVisitors().size();
+
+        if (alreadyCount + addedCount > INVITATION_MAXIMUM_COUNT) {
+            throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_MAXIMUM_NUMBER);
+        }
+    }
+
+    private boolean isModifiedInvitationDateTime(Invitation invitation, InvitationRequest.UpdateDTO dto) {
+        return !LocalDateTime.of(invitation.getStartDate(), invitation.getStartTime()).isEqual(dto.getStartDate())
+                || !LocalDateTime.of(invitation.getEndDate(), invitation.getEndTime()).isEqual(dto.getEndDate());
+    }
+
+    private void checkModifiedCommonPlaceId(Invitation invitation, InvitationRequest.UpdateDTO dto) {
+        Long currentCommonPlaceId = invitationRepository.getCommonPlaceIdByInvitationId(invitation.getId());
+
+        if (!currentCommonPlaceId.equals(dto.getCommonPlaceId())) {
+            throw new GlobalRuntimeException(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
+        }
+    }
+
+    private void reserveNewCommonPlaces(InvitationRequest.UpdateDTO dto, Invitation invitation) {
+        LocalDateTime startDateTime = dto.getStartDate();
+        LocalDateTime endDateTime = dto.getEndDate();
+        checkDateTimeValidate(startDateTime, endDateTime);
+
+        int expectedReservationCount = getExpectedReservationCount(startDateTime, endDateTime);
+        List<Reservation> reservations = reservationRepository
+                .findReservationsByCommonPlaceIdAndStartDateAndEndDate(dto.getCommonPlaceId(), startDateTime, endDateTime);
+
+        checkReservationCount(reservations, expectedReservationCount);
+        createInvitationReservationMap(reservations, invitation);
     }
 }
