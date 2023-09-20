@@ -390,6 +390,42 @@ class InvitationServiceTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
+    @DisplayName("[실패] 초대장 상세 조회 - 초대장 주인이 아닌 사람이 요청한 경우")
+    @Test
+    void getInvitationFail_01() {
+        // Given
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(0L);
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.getInvitation(invitationId, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_INVITATION_OWNER);
+    }
+
+    @DisplayName("[성공] 초대장 상세 조회")
+    @Test
+    void getInvitationFail_02() {
+        // Given
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findInvitationAndVisitorsByInvitationId(anyLong()))
+                .willReturn(any(InvitationResponse.DetailDTO.class));
+
+        // When
+        ResponseEntity<Success<InvitationResponse.DetailDTO>> result
+                = invitationService.getInvitation(invitationId, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
     private List<InvitationResponse.ReservationDTO> createReservations() {
         return new ArrayList<>(List.of(
                 new InvitationResponse.ReservationDTO(
