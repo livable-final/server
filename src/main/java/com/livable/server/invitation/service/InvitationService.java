@@ -305,11 +305,7 @@ public class InvitationService {
         checkModifiedCommonPlaceId(invitation, dto);
 
         boolean shouldSendToAlreadyVisitor = false;
-        boolean shouldSendToAddedVisitor = checkAddedVisitor(dto);
-
-        if (shouldSendToAddedVisitor) {
-            checkTotalVisitorCount(invitation, dto);
-        }
+        boolean shouldSendToAddedVisitor = checkAddedVisitorsCount(invitation, dto);
 
         if (isModifiedInvitationDateTime(invitation, dto)) {
             shouldSendToAlreadyVisitor = true;
@@ -324,26 +320,24 @@ public class InvitationService {
         invitation.updateDescription(dto.getDescription());
 
         if (shouldSendToAlreadyVisitor) {
+            List<Visitor> currentVisitors = visitorRepository.findVisitorsByInvitation(invitation);
+
             // TODO: 기존 등록되어 있던 방문자들에게 알림톡을 다시 보내는 로직 추가
         }
 
         if (shouldSendToAddedVisitor) {
-            // TODO: 새로 등록된 방문자들에게 알림톡을 다시 보내는 로직 추가
-
             List<Visitor> visitors = dto.getVisitors().stream()
                     .map(visitor -> visitor.toEntity(invitation)).collect(Collectors.toList());
 
             visitorRepository.saveAll(visitors);
+
+            // TODO: 새로 등록된 방문자들에게 알림톡을 다시 보내는 로직 추가
         }
 
         return ApiResponse.success(HttpStatus.OK);
     }
 
-    private boolean checkAddedVisitor(InvitationRequest.UpdateDTO dto) {
-        return dto.getVisitors().size() != 0;
-    }
-
-    private void checkTotalVisitorCount(Invitation invitation, InvitationRequest.UpdateDTO dto) {
+    private boolean checkAddedVisitorsCount(Invitation invitation, InvitationRequest.UpdateDTO dto) {
         if (invitation.getPurpose().equals(InvitationPurpose.INTERVIEW.getValue())) {
             throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INTERVIEW_MAXIMUM_NUMBER);
         }
@@ -354,6 +348,8 @@ public class InvitationService {
         if (alreadyCount + addedCount > INVITATION_MAXIMUM_COUNT) {
             throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_MAXIMUM_NUMBER);
         }
+
+        return dto.getVisitors().size() != 0;
     }
 
     private boolean isModifiedInvitationDateTime(Invitation invitation, InvitationRequest.UpdateDTO dto) {
