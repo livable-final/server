@@ -5,6 +5,7 @@ import com.livable.server.core.exception.ErrorCode;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationRequest;
+import com.livable.server.visitation.mock.MockDetailInformationDto;
 import com.livable.server.visitation.mock.MockRegisterParkingDto;
 import com.livable.server.visitation.mock.MockValidateQrCodeDto;
 import com.livable.server.visitation.service.VisitationFacadeService;
@@ -33,6 +34,28 @@ class VisitationControllerTest {
 
     @MockBean
     private VisitationFacadeService visitationFacadeService;
+
+    @DisplayName("[GET][/api/visitation] - 방문증 상세 정보 정상 응답")
+    @Test
+    void findVisitationDetailInformationSuccessTest() throws Exception {
+
+        // Given
+        MockDetailInformationDto mockDetailInformationDto = new MockDetailInformationDto();
+        given(visitationFacadeService.findVisitationDetailInformation(anyLong())).willReturn(mockDetailInformationDto);
+
+        // When
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/visitation")
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // Then
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data").exists());
+
+        then(visitationFacadeService).should(times(1)).findVisitationDetailInformation(anyLong());
+    }
 
     @DisplayName("[GET][/api/visitation/qr] - QR을 생성 정상 응답")
     @Test
