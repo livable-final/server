@@ -1,6 +1,9 @@
 package com.livable.server.restaurant.repository;
 
-import com.livable.server.entity.*;
+import com.livable.server.entity.QBuilding;
+import com.livable.server.entity.QBuildingRestaurantMap;
+import com.livable.server.entity.QRestaurant;
+import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.dto.RestaurantResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -31,13 +34,13 @@ public class RestaurantCustomRepositoryImpl implements RestaurantCustomRepositor
 
         final QRestaurant restaurant = QRestaurant.restaurant;
         final QBuildingRestaurantMap buildingRestaurantMap = QBuildingRestaurantMap.buildingRestaurantMap;
-        final QVisitor visitor = QVisitor.visitor;
         final QBuilding building = QBuilding.building;
 
         StringExpression extractFloorFromAddressTemplate = Expressions.stringTemplate(
-                "REPLACE(REPLACE({0}, '지하', '-'), '층', '')",
-                building.address.substring(building.address.indexOf(" ", -1))
+                "REPLACE(REPLACE(SUBSTRING_INDEX({0}, ' ', -1), '지하', '-'), '층', '')",
+                restaurant.address
         );
+
 
         JPAQuery<RestaurantResponse.NearRestaurantDto> query = queryFactory
                 .selectDistinct(Projections.constructor(RestaurantResponse.NearRestaurantDto.class,
@@ -62,7 +65,6 @@ public class RestaurantCustomRepositoryImpl implements RestaurantCustomRepositor
                                 ),
                         restaurant.restaurantUrl
                 ))
-                .from(visitor)
                 .from(building)
                 .innerJoin(buildingRestaurantMap).on(buildingRestaurantMap.building.id.eq(building.id))
                 .innerJoin(restaurant).on(buildingRestaurantMap.restaurant.id.eq(restaurant.id))

@@ -9,7 +9,7 @@ import java.util.List;
 public interface RestaurantCustomRepository {
 
     List<RestaurantResponse.NearRestaurantDto> findRestaurantByBuildingIdAndRestaurantCategory(
-            Long visitorId,
+            Long buildingId,
             RestaurantCategory category,
             Pageable pageable
     );
