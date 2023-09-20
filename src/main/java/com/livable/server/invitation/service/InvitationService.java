@@ -108,7 +108,7 @@ public class InvitationService {
     }
 
     private Long getCompanyIdByMemberId(Long memberId) {
-        Member member = findMemberById(memberId);
+        Member member = checkExistMemberById(memberId);
 
         return member.getCompany().getId();
     }
@@ -117,7 +117,7 @@ public class InvitationService {
     public ResponseEntity<?> createInvitation(InvitationRequest.CreateDTO dto, Long memberId) {
         checkInterviewVisitorCount(dto);
 
-        Member member = findMemberById(memberId);
+        Member member = checkExistMemberById(memberId);
         Invitation invitation = createInvitation(dto, member);
         createVisitors(dto.getVisitors(), invitation);
         reserveCommonPlaces(dto, invitation);
@@ -133,7 +133,7 @@ public class InvitationService {
         }
     }
 
-    private Member findMemberById(Long memberId) {
+    private Member checkExistMemberById(Long memberId) {
         Optional<Member> memberOptional = memberRepository.findById(memberId);
 
         return memberOptional.orElseThrow(() -> new GlobalRuntimeException(InvitationErrorCode.MEMBER_NOT_EXIST));
@@ -223,16 +223,16 @@ public class InvitationService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Success<List<InvitationResponse.ListDTO>>> getInvitations(Long memberId) {
-        Member member = findMemberById(memberId);
-        List<InvitationResponse.ListDTO> invitationDTOs = invitationRepository.findInvitationsByMemberId(member.getId());
+        checkExistMemberById(memberId);
+        List<InvitationResponse.ListDTO> invitationDTOs = invitationRepository.findInvitationsByMemberId(memberId);
 
         return ApiResponse.success(invitationDTOs, HttpStatus.OK);
     }
 
     @Transactional(readOnly = true)
     public ResponseEntity<Success<InvitationResponse.DetailDTO>> getInvitation(Long invitationId, Long memberId) {
-        Member member = findMemberById(memberId);
-        checkInvitationOwner(invitationId, member.getId());
+        checkExistMemberById(memberId);
+        checkInvitationOwner(invitationId, memberId);
 
         InvitationResponse.DetailDTO invitationDTO
                 = invitationRepository.findInvitationAndVisitorsByInvitationId(invitationId);
