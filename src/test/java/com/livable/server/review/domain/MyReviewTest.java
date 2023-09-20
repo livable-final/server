@@ -39,7 +39,7 @@ class MyReviewTest {
 
             // When
             // Then
-            MyReview actual = MyReview.from(myReviewProjections);
+            MyReview.from(myReviewProjections);
         }
 
         @DisplayName("실패 - 비어있는 쿼리 결과로 생성")

@@ -32,8 +32,6 @@ class MyReviewControllerTest {
         @Test
         void success_Test() throws Exception {
             // Given
-            Long reviewId = 1L;
-            Long memberId = 1L;
             String uri = "/api/reviews/restaurant/1/members";
 
             MyReviewResponse.DetailDTO mockResponse
@@ -61,8 +59,6 @@ class MyReviewControllerTest {
         @Test
         void success_Test() throws Exception {
             // Given
-            Long reviewId = 1L;
-            Long memberId = 1L;
             String uri = "/api/reviews/cafeteria/1/members";
 
             MyReviewResponse.DetailDTO mockResponse
@@ -90,8 +86,6 @@ class MyReviewControllerTest {
         @Test
         void success_Test() throws Exception {
             // Given
-            Long reviewId = 1L;
-            Long memberId = 1L;
             String uri = "/api/reviews/lunchbox/1/members";
 
             MyReviewResponse.DetailDTO mockResponse
