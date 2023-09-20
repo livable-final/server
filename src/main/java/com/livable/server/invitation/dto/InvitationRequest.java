@@ -77,4 +77,38 @@ public class InvitationRequest {
         }
     }
 
+    @Getter
+    @Builder
+    public static class UpdateDTO {
+        private Long commonPlaceId;
+        private String description;
+
+        @NotNull(message = NOT_NULL)
+        @FutureOrPresent(message = REQUIRED_FUTURE_DATE)
+        private LocalDateTime startDate;
+
+        @NotNull(message = NOT_NULL)
+        @FutureOrPresent(message = REQUIRED_FUTURE_DATE)
+        private LocalDateTime endDate;
+
+        @NotNull(message = NOT_NULL)
+        private List<VisitorForUpdateDTO> visitors;
+    }
+
+    @Getter
+    @Builder
+    public static class VisitorForUpdateDTO {
+        private String name;
+        private String contact;
+
+        public Visitor toEntity(Invitation invitation) {
+            return Visitor.builder()
+                    .invitation(invitation)
+                    .name(name)
+                    .contact(contact)
+                    .firstVisitedTime(null)
+                    .build();
+        }
+    }
+
 }
