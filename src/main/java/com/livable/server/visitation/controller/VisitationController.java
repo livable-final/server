@@ -1,6 +1,7 @@
 package com.livable.server.visitation.controller;
 
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.visitation.dto.VisitationResponse;
 import com.livable.server.visitation.service.VisitationFacadeService;
 import com.livable.server.visitation.dto.VisitationRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,10 @@ public class VisitationController {
     @GetMapping
     public ResponseEntity<ApiResponse.Success<Object>> findVisitationDetailInformation() {
         Long visitorId = 1L;
-//        VisitationResponse.DetailInformationDto = visitationFacadeService.findVisitationDetailInformation(1L);
+        VisitationResponse.DetailInformationDto detailInformationDto =
+                visitationFacadeService.findVisitationDetailInformation(visitorId);
 
-//        return ApiResponse.success()
-        return null;
+        return ApiResponse.success(detailInformationDto, HttpStatus.OK);
     }
 
     @GetMapping("/qr")
