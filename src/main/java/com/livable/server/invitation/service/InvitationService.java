@@ -5,17 +5,18 @@ import com.livable.server.core.response.ApiResponse;
 import com.livable.server.core.response.ApiResponse.Success;
 import com.livable.server.entity.*;
 import com.livable.server.invitation.domain.InvitationErrorCode;
-import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import com.livable.server.invitation.domain.InvitationPurpose;
+import com.livable.server.invitation.dto.InvitationDetailTimeDto;
 import com.livable.server.invitation.dto.InvitationRequest;
 import com.livable.server.invitation.dto.InvitationResponse;
 import com.livable.server.invitation.repository.InvitationRepository;
 import com.livable.server.invitation.repository.InvitationReservationMapRepository;
-import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.invitation.repository.OfficeRepository;
+import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.reservation.repository.ReservationRepository;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationResponse;
+import com.livable.server.visitation.repository.ParkingLogRepository;
 import com.livable.server.visitation.repository.VisitorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,10 +40,11 @@ public class InvitationService {
 
     private final MemberRepository memberRepository;
     private final OfficeRepository officeRepository;
-    private final ReservationRepository reservationRepository;
     private final InvitationRepository invitationRepository;
-    private final VisitorRepository visitorRepository;
+    private final ReservationRepository reservationRepository;
     private final InvitationReservationMapRepository invitationReservationMapRepository;
+    private final VisitorRepository visitorRepository;
+    private final ParkingLogRepository parkingLogRepository;
 
     public VisitationResponse.InvitationTimeDto findInvitationTime(Long visitorId) {
         InvitationDetailTimeDto invitationDetailTimeDto = invitationRepository.findInvitationDetailTimeByVisitorId(visitorId)
@@ -244,5 +246,48 @@ public class InvitationService {
         if (invitationRepository.countByIdAndMemberId(invitationId, memberId).equals(0L)) {
             throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_OWNER);
         }
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteInvitation(Long invitationId, Long memberId) {
+        checkExistMemberById(memberId);
+        checkInvitationOwner(invitationId, memberId);
+
+        // Step 1. 초대장 가져옴
+        Optional<Invitation> invitationOptional = invitationRepository.findById(invitationId);
+        Invitation invitation = invitationOptional
+                .orElseThrow(() -> new GlobalRuntimeException(InvitationErrorCode.INVITATION_NOT_EXIST));
+
+        // Step 2. 초대장 방문날짜 확인
+        checkInvitationStartDate(invitation);
+
+        // Step 3. 예약된 장소에 대한 예약 정보 제거
+        deleteReservationsByInvitation(invitation);
+
+        // Step 4. 초대장에 등록된 방문자 데이터 + 주차 등록 데이터 삭제
+        deleteVisitorsAndParkingLogByInvitation(invitation);
+
+        // Step 5. 초대장 삭제
+        invitationRepository.delete(invitation);
+
+        return ApiResponse.success(HttpStatus.OK);
+    }
+
+    private void checkInvitationStartDate(Invitation invitation) {
+        if (invitation.getStartDate().isBefore(LocalDate.now())) {
+            throw new GlobalRuntimeException(InvitationErrorCode.INVALID_DELETE_DATE);
+        }
+    }
+
+    private void deleteReservationsByInvitation(Invitation invitation) {
+        invitationReservationMapRepository.deleteAllByInvitationId(invitation.getId());
+    }
+
+    private void deleteVisitorsAndParkingLogByInvitation(Invitation invitation) {
+        List<Visitor> visitors = visitorRepository.findVisitorsByInvitation(invitation);
+        List<Long> visitorsIds = visitors.stream().map(Visitor::getId).collect(Collectors.toList());
+
+        parkingLogRepository.deleteByVisitorIdsIn(visitorsIds);
+        visitorRepository.deleteByIdsIn(visitorsIds);
     }
 }
