@@ -103,7 +103,8 @@ public class InvitationResponse {
     }
 
     @Getter
-    @Setter
+    @Builder
+    @AllArgsConstructor
     public static class DetailDTO {
         private Long commonPlaceId;
         private String officeName;
@@ -133,6 +134,10 @@ public class InvitationResponse {
             this.endDate = endDate;
             this.startTime = startTime;
             this.endTime = endTime;
+        }
+
+        public void setVisitors(List<VisitorForDetailDTO> visitors) {
+            this.visitors = visitors;
         }
     }
 
