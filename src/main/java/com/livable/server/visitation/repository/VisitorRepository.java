@@ -15,4 +15,6 @@ public interface VisitorRepository extends JpaRepository<Visitor, Long>, Visitor
     @Modifying
     @Query("delete from Visitor v where v.id in :ids")
     void deleteByIdsIn(@Param("ids") List<Long> ids);
+
+    long countByInvitation(Invitation invitation);
 }
