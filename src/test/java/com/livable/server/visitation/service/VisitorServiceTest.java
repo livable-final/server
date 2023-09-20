@@ -4,6 +4,8 @@ import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.Invitation;
 import com.livable.server.entity.Visitor;
 import com.livable.server.visitation.domain.VisitationErrorCode;
+import com.livable.server.visitation.dto.VisitationResponse;
+import com.livable.server.visitation.mock.MockDetailInformationDto;
 import com.livable.server.visitation.repository.VisitorRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,5 +76,20 @@ class VisitorServiceTest {
         // Then
         assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.NOT_FOUND);
         then(visitorRepository).should(times(1)).findById(anyLong());
+    }
+
+    @DisplayName("VisitorService.findVisitationDetailInformation 성공 테스트")
+    @Test
+    void findVisitationDetailInformationByIdSuccessTest() {
+        // Given
+        MockDetailInformationDto mockDetailInformationDto = new MockDetailInformationDto();
+        given(visitorRepository.findVisitationDetailInformationById(anyLong())).willReturn(Optional.of(mockDetailInformationDto));
+
+        // When
+        VisitationResponse.DetailInformationDto detailInformationDto = visitorService.findVisitationDetailInformation(1L);
+
+        // Then
+        assertThat(detailInformationDto).isEqualTo(mockDetailInformationDto);
+        then(visitorRepository).should(times(1)).findVisitationDetailInformationById(anyLong());
     }
 }
