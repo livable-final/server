@@ -92,4 +92,21 @@ class VisitorServiceTest {
         assertThat(detailInformationDto).isEqualTo(mockDetailInformationDto);
         then(visitorRepository).should(times(1)).findVisitationDetailInformationById(anyLong());
     }
+
+    @DisplayName("VisitorService.findVisitationDetailInformation 실패 테스트")
+    @Test
+    void findVisitationDetailInformationByIdFailTest() {
+        // Given
+        given(visitorRepository.findVisitationDetailInformationById(anyLong())).willReturn(Optional.empty());
+
+        // When
+        GlobalRuntimeException globalRuntimeException =
+                assertThrows(
+                        GlobalRuntimeException.class, () -> visitorService.findVisitationDetailInformation(1L)
+                );
+
+        // Then
+        assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.NOT_FOUND);
+        then(visitorRepository).should(times(1)).findVisitationDetailInformationById(anyLong());
+    }
 }
