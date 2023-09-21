@@ -1,8 +1,8 @@
 package com.livable.server.review.repository;
 
 import com.livable.server.entity.*;
+import com.livable.server.review.dto.Projection;
 import com.livable.server.review.dto.RestaurantReviewResponse;
-import com.querydsl.core.QueryFactory;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -18,6 +18,7 @@ import static com.livable.server.entity.QMember.member;
 import static com.livable.server.entity.QRestaurant.restaurant;
 import static com.livable.server.entity.QRestaurantReview.restaurantReview;
 import static com.livable.server.entity.QReview.review;
+import static com.livable.server.entity.QReviewImage.reviewImage;
 import static com.livable.server.entity.QReviewMenuMap.reviewMenuMap;
 
 @RequiredArgsConstructor
@@ -107,5 +108,29 @@ public class RestaurantReviewCustomRepositoryImpl implements RestaurantReviewCus
         long total = query.fetchCount();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public List<Projection.RestaurantReview> findRestaurantReviewById(Long reviewId) {
+        return queryFactory
+                .select(Projections.constructor(Projection.RestaurantReview.class,
+                        member.name,
+                        restaurant.id,
+                        restaurant.name,
+                        review.createdAt,
+                        review.description,
+                        restaurantReview.taste,
+                        restaurantReview.amount,
+                        restaurantReview.service,
+                        restaurantReview.speed,
+                        reviewImage.url
+                ))
+                .from(review)
+                .innerJoin(restaurantReview).on(restaurantReview.id.eq(review.id))
+                .innerJoin(member).on(member.id.eq(review.member.id))
+                .innerJoin(restaurant).on(restaurant.id.eq(restaurantReview.restaurant.id))
+                .leftJoin(reviewImage).on(reviewImage.review.id.eq(review.id))
+                .where(review.id.eq(reviewId))
+                .fetch();
     }
 }
