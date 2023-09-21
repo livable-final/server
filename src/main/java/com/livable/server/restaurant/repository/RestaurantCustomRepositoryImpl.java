@@ -23,7 +23,6 @@ public class RestaurantCustomRepositoryImpl implements RestaurantCustomRepositor
 
     private final JPAQueryFactory queryFactory;
     private static final int DISTANCE_PER_TIME = 80;
-    private static final int DEFAULT_SIZE = 5;
 
     @Override
     public List<RestaurantResponse.NearRestaurantDto> findRestaurantByBuildingIdAndRestaurantCategory(
