@@ -91,4 +91,17 @@ public class InvitationQueryRepositoryImpl implements InvitationQueryRepository 
 
         return invitationDetail;
     }
+
+    @Override
+    public Long getCommonPlaceIdByInvitationId(Long invitationId) {
+        return queryFactory
+                .select(reservation.commonPlace.id)
+                .from(invitation)
+                .leftJoin(invitationReservationMap)
+                .on(invitationReservationMap.invitation.id.eq(invitation.id))
+                .leftJoin(reservation)
+                .on(reservation.id.eq(invitationReservationMap.reservation.id))
+                .where(invitation.id.eq(invitationId))
+                .fetchFirst();
+    }
 }
