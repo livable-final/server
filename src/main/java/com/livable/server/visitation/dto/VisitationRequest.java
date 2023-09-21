@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -14,16 +13,18 @@ import javax.validation.constraints.Pattern;
 public class VisitationRequest {
 
     @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class ValidateQrCodeDto {
 
-        @NotBlank(message = VisitationValidationMessage.INVALID_QR)
+        @NotBlank(message = VisitationValidationMessage.NOT_BLANK)
         private String qr;
     }
 
     @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class RegisterParkingDto {
 
-        @NotBlank(message = VisitationValidationMessage.INVALID_CAR_NUMBER)
+        @NotBlank(message = VisitationValidationMessage.NOT_BLANK)
         @Pattern(regexp = "^\\d{2,3}[가-힣]{1}\\d{4}$", message = VisitationValidationMessage.INVALID_CAR_NUMBER)
         private String carNumber;
     }
