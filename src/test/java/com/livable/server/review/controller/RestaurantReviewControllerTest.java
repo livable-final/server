@@ -1,5 +1,6 @@
 package com.livable.server.review.controller;
 
+import com.livable.server.review.dto.MyReviewResponse;
 import com.livable.server.review.dto.RestaurantReviewResponse;
 import com.livable.server.review.service.RestaurantReviewService;
 import org.junit.jupiter.api.DisplayName;
@@ -107,6 +108,31 @@ class RestaurantReviewControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data.content").isArray())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data.content.length()").value(10));
+        }
+    }
+
+    @Nested
+    @DisplayName("레스토랑 리뷰 상세 정보 컨트롤러 단위 테스트")
+    class Detail {
+
+        @DisplayName("성공")
+        @Test
+        void success_Test() throws Exception {
+            // Given
+            String uri = "/api/reviews/1";
+
+            RestaurantReviewResponse.DetailDTO detailDTO
+                    = RestaurantReviewResponse.DetailDTO.builder().build();
+
+            Mockito.when(restaurantReviewService.getDetail(ArgumentMatchers.anyLong()))
+                    .thenReturn(detailDTO);
+
+            // When
+            // Then
+            mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists());
         }
     }
 }
