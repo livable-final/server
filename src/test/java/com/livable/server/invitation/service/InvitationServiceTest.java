@@ -400,6 +400,7 @@ class InvitationServiceTest {
         // Given
         Long invitationId = 1L;
         Long memberId = 1L;
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
         given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(0L);
 
@@ -417,6 +418,7 @@ class InvitationServiceTest {
         // Given
         Long invitationId = 1L;
         Long memberId = 1L;
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
         given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
         given(invitationRepository.findInvitationAndVisitorsByInvitationId(anyLong()))
@@ -436,6 +438,7 @@ class InvitationServiceTest {
         // Given
         Long invitationId = 1L;
         Long memberId = 1L;
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
         given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
         given(invitationRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -453,14 +456,16 @@ class InvitationServiceTest {
     void deleteInvitationFail_02() {
         // Given
         LocalDate requestDate = LocalDate.now();
+        LocalDate dateBeforeRequestDate = requestDate.minusDays(1L);
         Long invitationId = 1L;
         Long memberId = 1L;
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
         given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
-                        .startDate(requestDate.minusDays(1L))
+                        .startDate(dateBeforeRequestDate)
                         .build()
                 ));
 
@@ -477,14 +482,16 @@ class InvitationServiceTest {
     void deleteInvitationFail_03() {
         // Given
         LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
         Long invitationId = 1L;
         Long memberId = 1L;
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
         given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
-                        .startDate(requestDate.plusDays(1L))
+                        .startDate(dateAfterRequestDate)
                         .build()
                 ));
         given(visitorRepository.findVisitorsByInvitation(any(Invitation.class)))
