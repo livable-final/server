@@ -338,18 +338,19 @@ public class InvitationService {
     }
 
     private boolean checkAddedVisitorsCount(Invitation invitation, InvitationRequest.UpdateDTO dto) {
-        if (invitation.getPurpose().equals(InvitationPurpose.INTERVIEW.getValue())) {
+        long addedCount = dto.getVisitors().size();
+
+        if (addedCount != 0L && invitation.getPurpose().equals(InvitationPurpose.INTERVIEW.getValue())) {
             throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INTERVIEW_MAXIMUM_NUMBER);
         }
 
         long alreadyCount = visitorRepository.countByInvitation(invitation);
-        long addedCount = dto.getVisitors().size();
 
         if (alreadyCount + addedCount > INVITATION_MAXIMUM_COUNT) {
             throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_MAXIMUM_NUMBER);
         }
 
-        return dto.getVisitors().size() != 0;
+        return addedCount != 0;
     }
 
     private boolean isModifiedInvitationDateTime(Invitation invitation, InvitationRequest.UpdateDTO dto) {
