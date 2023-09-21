@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -91,6 +92,7 @@ public class InvitationRequest {
         @FutureOrPresent(message = REQUIRED_FUTURE_DATE)
         private LocalDateTime endDate;
 
+        @Valid
         @NotNull(message = NOT_NULL)
         private List<VisitorForUpdateDTO> visitors;
     }
@@ -98,7 +100,10 @@ public class InvitationRequest {
     @Getter
     @Builder
     public static class VisitorForUpdateDTO {
+        @NotNull(message = NOT_NULL)
         private String name;
+
+        @NotNull(message = NOT_NULL)
         private String contact;
 
         public Visitor toEntity(Invitation invitation) {
