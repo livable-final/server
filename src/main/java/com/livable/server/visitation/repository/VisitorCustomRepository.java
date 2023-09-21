@@ -7,4 +7,6 @@ import java.util.Optional;
 public interface VisitorCustomRepository {
 
     Optional<VisitationResponse.DetailInformationDto> findVisitationDetailInformationById(final Long visitorId);
+
+    Optional<Long> findBuildingIdById(final Long visitorId);
 }

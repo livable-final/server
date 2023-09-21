@@ -101,7 +101,7 @@ class ParkingLogRepositoryTest {
         entityManager.persist(parkingLog);
     }
 
-    @DisplayName("ParkingLogRepository.findParkingLogByVisitorId 쿼리 확인용 테스트")
+    @DisplayName("ParkingLogRepository.findParkingLogByVisitorId 쿼리 테스트")
     @Test
     void test() {
         Visitor visitor = visitorRepository.findAll().get(0);
