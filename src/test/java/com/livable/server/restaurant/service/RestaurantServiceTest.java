@@ -1,10 +1,12 @@
 package com.livable.server.restaurant.service;
 
+import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.domain.RandomGenerator;
 import com.livable.server.restaurant.dto.RestaurantResponse;
 import com.livable.server.restaurant.repository.BuildingRestaurantMapRepository;
 import com.livable.server.restaurant.repository.RestaurantRepository;
+import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.repository.VisitorRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -82,5 +85,28 @@ class RestaurantServiceTest {
                         any(Pageable.class)
                 );
         assertThat(dtos).usingRecursiveComparison().isEqualTo(result);
+    }
+
+    @DisplayName("RestaurantService.findNearRestaurantByVisitorIdAndRestaurantCategory 실패 테스트")
+    @Test
+    void findNearRestaurantByVisitorIdAndRestaurantCategoryFailTest() {
+        // given
+        Long visitorId = 1L;
+        RestaurantCategory category = RestaurantCategory.RESTAURANT;
+        List<RestaurantResponse.NearRestaurantDto> dtos = IntStream.range(0, 5)
+                .mapToObj(idx -> new RestaurantResponse.NearRestaurantDto())
+                .collect(Collectors.toList());
+
+        given(visitorRepository.findBuildingIdById(anyLong())).willReturn(Optional.empty());
+
+        // when
+        GlobalRuntimeException globalRuntimeException = assertThrows(
+                GlobalRuntimeException.class,
+                () -> restaurantService.findNearRestaurantByVisitorIdAndRestaurantCategory(visitorId, category)
+        );
+
+        // then
+        assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.NOT_FOUND);
+        then(visitorRepository).should(times(1)).findBuildingIdById(anyLong());
     }
 }
