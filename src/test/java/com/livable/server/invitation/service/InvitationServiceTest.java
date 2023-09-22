@@ -14,6 +14,7 @@ import com.livable.server.invitation.repository.OfficeRepository;
 import com.livable.server.invitation.service.data.InvitationBasicData;
 import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.reservation.repository.ReservationRepository;
+import com.livable.server.visitation.repository.ParkingLogRepository;
 import com.livable.server.visitation.repository.VisitorRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,9 @@ class InvitationServiceTest {
 
     @Mock
     private InvitationReservationMapRepository invitationReservationMapRepository;
+
+    @Mock
+    private ParkingLogRepository parkingLogRepository;
 
     @InjectMocks
     private InvitationService invitationService;
@@ -396,6 +400,7 @@ class InvitationServiceTest {
         // Given
         Long invitationId = 1L;
         Long memberId = 1L;
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
         given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(0L);
 
@@ -413,6 +418,7 @@ class InvitationServiceTest {
         // Given
         Long invitationId = 1L;
         Long memberId = 1L;
+
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
         given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
         given(invitationRepository.findInvitationAndVisitorsByInvitationId(anyLong()))
@@ -421,6 +427,391 @@ class InvitationServiceTest {
         // When
         ResponseEntity<Success<InvitationResponse.DetailDTO>> result
                 = invitationService.getInvitation(invitationId, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @DisplayName("[실패] 초대장 삭제 - 존재하지 않는 초대장인 경우")
+    @Test
+    void deleteInvitationFail_01() {
+        // Given
+        Long invitationId = 1L;
+        Long memberId = 1L;
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.deleteInvitation(invitationId, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVITATION_NOT_EXIST);
+    }
+
+    @DisplayName("[실패] 초대장 삭제 - 삭제 요청 날짜가 방문 날짜 이후인 경우")
+    @Test
+    void deleteInvitationFail_02() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateBeforeRequestDate = requestDate.minusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .startDate(dateBeforeRequestDate)
+                        .build()
+                ));
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.deleteInvitation(invitationId, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_DELETE_DATE);
+    }
+
+    @DisplayName("[성공] 초대장 삭제")
+    @Test
+    void deleteInvitationFail_03() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .startDate(dateAfterRequestDate)
+                        .build()
+                ));
+        given(visitorRepository.findVisitorsByInvitation(any(Invitation.class)))
+                .willReturn(List.of(Visitor.builder().build()));
+
+        // When
+        ResponseEntity<?> result = invitationService.deleteInvitation(invitationId, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 초대장 방문 날짜가 요청 날짜보다 과거인 경우")
+    @Test
+    void updateInvitationFail_01() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateBeforeRequestDate = requestDate.minusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder().build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .startDate(dateBeforeRequestDate)
+                        .build()
+                ));
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.updateInvitation(invitationId, dto, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_DELETE_DATE);
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 기존에 예약된 장소가 변경된 경우")
+    @Test
+    void updateInvitationFail_02() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .startDate(dateAfterRequestDate)
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong()))
+                .willReturn(dto.getCommonPlaceId() + 1L);
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.updateInvitation(invitationId, dto, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 목적인 면접인데 추가 방문자가 있는 경우")
+    @Test
+    void updateInvitationFail_03() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(List.of(InvitationRequest.VisitorForUpdateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("면접")
+                        .startDate(dateAfterRequestDate)
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.updateInvitation(invitationId, dto, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_INTERVIEW_MAXIMUM_NUMBER);
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 최대 방문자 수를 넘어간 경우")
+    @Test
+    void updateInvitationFail_04() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(List.of(InvitationRequest.VisitorForUpdateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
+        given(visitorRepository.countByInvitation(any(Invitation.class))).willReturn(30L);
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.updateInvitation(invitationId, dto, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_INVITATION_MAXIMUM_NUMBER);
+    }
+
+    @DisplayName("[성공] 초대장 수정 - 시간 변경 X, 인원 추가 X")
+    @Test
+    void updateInvitationSuccess_01() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(List.of())
+                .startDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(10, 0, 0)))
+                .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(10, 30, 0)))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .endDate(dateAfterRequestDate)
+                        .startTime(LocalTime.of(10, 0, 0))
+                        .endTime(LocalTime.of(10, 30, 0))
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
+        given(visitorRepository.countByInvitation(any(Invitation.class))).willReturn(29L);
+
+        // When
+        ResponseEntity<?> result = invitationService.updateInvitation(invitationId, dto, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @DisplayName("[성공] 초대장 수정 - 시간 변경 X, 인원 추가 O")
+    @Test
+    void updateInvitationSuccess_02() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(
+                        List.of(
+                                InvitationRequest.VisitorForUpdateDTO.builder().build(),
+                                InvitationRequest.VisitorForUpdateDTO.builder().build(),
+                                InvitationRequest.VisitorForUpdateDTO.builder().build()
+                        )
+                )
+                .startDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(10, 0, 0)))
+                .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(10, 30, 0)))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .endDate(dateAfterRequestDate)
+                        .startTime(LocalTime.of(10, 0, 0))
+                        .endTime(LocalTime.of(10, 30, 0))
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
+        given(visitorRepository.countByInvitation(any(Invitation.class))).willReturn(1L);
+        given(visitorRepository.saveAll(any())).willReturn(List.of(Visitor.builder().build()));
+
+        // When
+        ResponseEntity<?> result = invitationService.updateInvitation(invitationId, dto, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @DisplayName("[성공] 초대장 수정 - 시간 변경 O, 인원 추가 X")
+    @Test
+    void updateInvitationSuccess_03() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(List.of())
+                .startDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(11, 0, 0)))
+                .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(11, 30, 0)))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong())).willReturn(
+                Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .endDate(dateAfterRequestDate)
+                        .startTime(LocalTime.of(10, 0, 0))
+                        .endTime(LocalTime.of(10, 30, 0))
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
+        given(visitorRepository.countByInvitation(any(Invitation.class))).willReturn(3L);
+        given(visitorRepository.findVisitorsByInvitation(any(Invitation.class))).willReturn(
+                List.of(
+                        Visitor.builder().build(),
+                        Visitor.builder().build(),
+                        Visitor.builder().build()
+                ));
+        given(reservationRepository.findReservationsByCommonPlaceIdAndStartDateAndEndDate(
+                anyLong(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).willReturn(List.of(Reservation.builder().build()));
+
+        // When
+        ResponseEntity<?> result = invitationService.updateInvitation(invitationId, dto, memberId);
+
+        // Then
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @DisplayName("[성공] 초대장 수정 - 시간 변경 O, 인원 추가 O")
+    @Test
+    void updateInvitationSuccess_04() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(
+                        List.of(
+                                InvitationRequest.VisitorForUpdateDTO.builder().build(),
+                                InvitationRequest.VisitorForUpdateDTO.builder().build(),
+                                InvitationRequest.VisitorForUpdateDTO.builder().build()
+                        )
+                )
+                .startDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(11, 0, 0)))
+                .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(11, 30, 0)))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
+        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(invitationRepository.findById(anyLong())).willReturn(
+                Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .endDate(dateAfterRequestDate)
+                        .startTime(LocalTime.of(10, 0, 0))
+                        .endTime(LocalTime.of(10, 30, 0))
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
+        given(visitorRepository.countByInvitation(any(Invitation.class))).willReturn(3L);
+        given(visitorRepository.findVisitorsByInvitation(any(Invitation.class))).willReturn(
+                List.of(
+                        Visitor.builder().build(),
+                        Visitor.builder().build(),
+                        Visitor.builder().build()
+                ));
+        given(reservationRepository.findReservationsByCommonPlaceIdAndStartDateAndEndDate(
+                anyLong(),
+                any(LocalDateTime.class),
+                any(LocalDateTime.class)
+        )).willReturn(List.of(Reservation.builder().build()));
+
+        // When
+        ResponseEntity<?> result = invitationService.updateInvitation(invitationId, dto, memberId);
 
         // Then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

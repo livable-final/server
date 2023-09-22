@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,8 +26,9 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -117,12 +119,12 @@ class InvitationControllerTest {
 
         // When & Then
         mockMvc.perform(
-                post("/api/invitation")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(dto))
-        )
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.message").value(InvitationValidationMessage.REQUIRED_FUTURE_DATE));
+                        post("/api/invitation")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(dto))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(InvitationValidationMessage.REQUIRED_FUTURE_DATE));
     }
 
     @DisplayName("[실패] 초대장 저장 - 유효성 검사 실패 (방문자가 한 명도 없는 경우)")
@@ -203,5 +205,126 @@ class InvitationControllerTest {
         // When & Then
         mockMvc.perform(get("/api/invitation/{invitationId}", invitationId))
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 시작 날짜, 종료 날짜가 요청 날짜보다 과거인 경우")
+    @Test
+    void updateInvitationFail_01() throws Exception {
+        // Given
+        LocalDateTime requestDate = LocalDateTime.now();
+        Long invitationId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .description("엘리베이터 타고 오른쪽으로 오면 바로 있습니다.")
+                .startDate(requestDate.minusDays(1L))
+                .endDate(requestDate.minusDays(1L))
+                .visitors(List.of())
+                .build();
+
+        // When
+        ResultActions resultActions = mockMvc.perform(
+                patch("/api/invitation/{invitationId}", invitationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(dto)));
+
+        // Then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(InvitationValidationMessage.REQUIRED_FUTURE_DATE));
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 방문자 리스트가 널인 경우")
+    @Test
+    void updateInvitationFail_02() throws Exception {
+        // Given
+        LocalDateTime requestDate = LocalDateTime.now();
+        Long invitationId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .description("엘리베이터 타고 오른쪽으로 오면 바로 있습니다.")
+                .startDate(requestDate.plusDays(1L))
+                .endDate(requestDate.plusDays(1L))
+                .visitors(null)
+                .build();
+
+        // When
+        ResultActions resultActions = mockMvc.perform(
+                patch("/api/invitation/{invitationId}", invitationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(dto)));
+
+        // Then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(InvitationValidationMessage.NOT_NULL));
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 방문자 데이터가 널인 경우")
+    @Test
+    void updateInvitationFail_03() throws Exception {
+        // Given
+        LocalDateTime requestDate = LocalDateTime.now();
+        Long invitationId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .description("엘리베이터 타고 오른쪽으로 오면 바로 있습니다.")
+                .startDate(requestDate.plusDays(1L))
+                .endDate(requestDate.plusDays(1L))
+                .visitors(List.of(
+                        InvitationRequest.VisitorForUpdateDTO.builder()
+                                .name(null)
+                                .contact(null)
+                                .build()
+                ))
+                .build();
+
+        // When
+        ResultActions resultActions = mockMvc.perform(
+                patch("/api/invitation/{invitationId}", invitationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(dto)));
+
+        // Then
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(InvitationValidationMessage.NOT_NULL));
+    }
+
+    @DisplayName("[성공] 초대장 수정")
+    @Test
+    void updateInvitationSuccess_01() throws Exception {
+        // Given
+        LocalDateTime requestDate = LocalDateTime.now();
+        Long invitationId = 1L;
+        Long commonPlaceId = 1L;
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .description("엘리베이터 타고 오른쪽으로 오면 바로 있습니다.")
+                .startDate(requestDate.plusDays(1L))
+                .endDate(requestDate.plusDays(1L))
+                .visitors(List.of(
+                        InvitationRequest.VisitorForUpdateDTO.builder()
+                                .name("홍프링")
+                                .contact("01012341234")
+                                .build()
+                ))
+                .build();
+
+        // When
+        ResultActions resultActions = mockMvc.perform(
+                patch("/api/invitation/{invitationId}", invitationId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(dto)));
+
+        // TODO: ApiResponse.success() WildCard 리펙토링 후 Mocking 코드 추가 -> 현재는 Stubbing 안돼서 기본값 반환됨.
+
+        // Then
+        resultActions.andExpect(status().isOk());
+
+        verify(invitationService, times(1))
+                .updateInvitation(anyLong(), any(InvitationRequest.UpdateDTO.class), anyLong());
     }
 }

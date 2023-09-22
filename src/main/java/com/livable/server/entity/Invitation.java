@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -41,4 +42,15 @@ public class Invitation extends BaseTimeEntity {
 
     @Column(nullable = false)
     private LocalTime endTime;
+
+    public void updateDateTime(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        this.startDate = startDateTime.toLocalDate();
+        this.startTime = startDateTime.toLocalTime();
+        this.endDate = endDateTime.toLocalDate();
+        this.endTime = endDateTime.toLocalTime();
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 }

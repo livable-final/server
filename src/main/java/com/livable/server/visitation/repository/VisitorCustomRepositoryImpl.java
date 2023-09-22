@@ -50,4 +50,25 @@ public class VisitorCustomRepositoryImpl implements VisitorCustomRepository {
 
         return Optional.ofNullable(query.fetchJoin().fetchOne());
     }
+
+    @Override
+    public Optional<Long> findBuildingIdById(Long visitorId) {
+
+        final QBuilding building = QBuilding.building;
+        final QVisitor visitor = QVisitor.visitor;
+        final QInvitation invitation = QInvitation.invitation;
+        final QMember member = QMember.member;
+        final QCompany company = QCompany.company;
+
+        JPAQuery<Long> query = queryFactory
+                .select(building.id)
+                .from(visitor)
+                .innerJoin(invitation).on(visitor.invitation.id.eq(invitation.id))
+                .innerJoin(member).on(invitation.member.id.eq(member.id))
+                .innerJoin(company).on(member.company.id.eq(company.id))
+                .innerJoin(building).on(company.building.id.eq(building.id))
+                .where(visitor.id.eq(visitorId));
+
+        return Optional.ofNullable(query.fetchJoin().fetchOne());
+    }
 }
