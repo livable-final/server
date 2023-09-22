@@ -12,8 +12,10 @@ public enum MemberErrorCode implements ErrorCode {
 
     MEMBER_NOT_EXIST(HttpStatus.BAD_REQUEST, "존재하지 않는 회원 정보입니다."),
 
+    RETRIEVE_ACCESSCARD_FAILED(HttpStatus.BAD_REQUEST, "출입 카드 정보를 조회 할 수 없습니다."),
+
     BUILDING_INFO_NOT_EXIST(HttpStatus.BAD_REQUEST, "해당 회원의 빌딩 정보가 존재하지 않습니다.");
-  
+
     private final HttpStatus httpStatus;
     private final String message;
 
