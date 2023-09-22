@@ -7,7 +7,6 @@ import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.dto.InvitationRequest;
 import com.livable.server.invitation.dto.InvitationResponse;
 import com.livable.server.invitation.dto.InvitationResponse.AvailablePlacesDTO;
-import com.livable.server.invitation.dto.InvitationResponse.CommonPlaceDTO;
 import com.livable.server.invitation.repository.InvitationRepository;
 import com.livable.server.invitation.repository.InvitationReservationMapRepository;
 import com.livable.server.invitation.repository.OfficeRepository;
@@ -122,11 +121,7 @@ class InvitationServiceTest {
         // Then
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(data.getOffices().size()).isEqualTo(3);
-        assertThat(data.getCommonPlaces().size()).isEqualTo(3);
-
-        CommonPlaceDTO combinedItem = data.getCommonPlaces().get(2);
-        assertThat(combinedItem.getStartTime()).isEqualTo(LocalTime.of(10, 30, 0));
-        assertThat(combinedItem.getEndTime()).isEqualTo(LocalTime.of(11, 30, 0));
+        assertThat(data.getCommonPlaces().size()).isEqualTo(2);
     }
 
     @DisplayName("[실패] 초대장 생성 - 면접 초대 인원 2명")
@@ -823,33 +818,13 @@ class InvitationServiceTest {
                         1L,
                         "1",
                         "101",
-                        "공용 A",
-                        LocalDate.of(2023, 10, 29),
-                        LocalTime.of(10, 0, 0)
-                ),
-                new InvitationResponse.ReservationDTO(
-                        1L,
-                        "1",
-                        "101",
-                        "공용 A",
-                        LocalDate.of(2023, 10, 30),
-                        LocalTime.of(10, 0, 0)
+                        "공용 A"
                 ),
                 new InvitationResponse.ReservationDTO(
                         2L,
                         "2",
                         "201",
-                        "공용 B",
-                        LocalDate.of(2023, 10, 30),
-                        LocalTime.of(10, 30, 0)
-                ),
-                new InvitationResponse.ReservationDTO(
-                        2L,
-                        "2",
-                        "201",
-                        "공용 B",
-                        LocalDate.of(2023, 10, 30),
-                        LocalTime.of(11, 0, 0)
+                        "공용 B"
                 )
         ));
     }
