@@ -24,13 +24,11 @@ public class ReservationQueryRepositoryImpl implements ReservationQueryRepositor
     @Override
     public List<InvitationResponse.ReservationDTO> findReservationsByCompanyId(Long companyId) {
         return queryFactory
-                .select(Projections.constructor(InvitationResponse.ReservationDTO.class,
+                .selectDistinct(Projections.constructor(InvitationResponse.ReservationDTO.class,
                         commonPlace.id,
                         commonPlace.floor,
                         commonPlace.roomNumber,
-                        commonPlace.name,
-                        reservation.date,
-                        reservation.time
+                        commonPlace.name
                 ))
                 .from(reservation)
                 .innerJoin(reservation.commonPlace, commonPlace)
@@ -43,7 +41,7 @@ public class ReservationQueryRepositoryImpl implements ReservationQueryRepositor
                                         .where(invitationReservationMap.reservation.id.eq(reservation.id))
                         )
                 )
-                .orderBy(reservation.commonPlace.id.asc(), reservation.date.asc(), reservation.time.asc())
+                .orderBy(reservation.commonPlace.id.asc())
                 .fetch();
     }
 
