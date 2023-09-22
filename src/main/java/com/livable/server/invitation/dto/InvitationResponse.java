@@ -37,9 +37,6 @@ public class InvitationResponse {
     public static class CommonPlaceDTO {
         private Long commonPlaceId;
         private String commonPlaceName;
-        private LocalDate date;
-        private LocalTime startTime;
-        private LocalTime endTime;
 
         public static CommonPlaceDTO from(ReservationDTO reservationDTO) {
             return new CommonPlaceDTO(
@@ -48,10 +45,7 @@ public class InvitationResponse {
                             reservationDTO.getCommonPlaceName(),
                             reservationDTO.getCommonPlaceFloor(),
                             reservationDTO.getCommonPlaceRoomNumber()
-                    ),
-                    reservationDTO.getReservationDate(),
-                    reservationDTO.getReservationStartTime(),
-                    reservationDTO.getReservationEndTime()
+                    )
             );
         }
     }
@@ -67,25 +61,17 @@ public class InvitationResponse {
         private String commonPlaceFloor;
         private String commonPlaceRoomNumber;
         private String commonPlaceName;
-        private LocalDate reservationDate;
-        private LocalTime reservationStartTime;
-        private LocalTime reservationEndTime;
 
         public ReservationDTO(
                 Long commonPlaceId,
                 String commonPlaceFloor,
                 String commonPlaceRoomNumber,
-                String commonPlaceName,
-                LocalDate reservationDate,
-                LocalTime reservationStartTime
+                String commonPlaceName
         ) {
             this.commonPlaceId = commonPlaceId;
             this.commonPlaceFloor = commonPlaceFloor;
             this.commonPlaceRoomNumber = commonPlaceRoomNumber;
             this.commonPlaceName = commonPlaceName;
-            this.reservationDate = reservationDate;
-            this.reservationStartTime = reservationStartTime;
-            this.reservationEndTime = reservationStartTime.plusMinutes(30);
         }
     }
 
