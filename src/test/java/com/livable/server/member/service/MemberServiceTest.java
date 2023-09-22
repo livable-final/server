@@ -2,12 +2,13 @@ package com.livable.server.member.service;
 
 import static com.livable.server.home.dto.HomeResponse.BuildingInfoDto;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.home.dto.HomeResponse.AccessCardDto;
+import com.livable.server.member.dto.AccessCardProjection;
 import com.livable.server.member.dto.MemberResponse;
 import com.livable.server.member.dto.MyPageProjection;
 import com.livable.server.member.repository.MemberRepository;
@@ -76,46 +77,91 @@ class MemberServiceTest {
             Assertions.assertThrows(GlobalRuntimeException.class, () ->
                     memberService.getMyPageData(memberId));
         }
-      
-        @DisplayName("Success - 홈 화면에 필요한 정보 응답")
-        @Test
-        void getHomeInfoSuccess() {
-          // given
-          Long memberId = 1L;
-          Long buildingId = 1L;
-          String buildingName = "테라 타워";
-          Boolean hasCafeteria = true;
-
-          given(memberRepository.findBuildingInfoByMemberId(memberId))
-              .willReturn(Optional.of(new BuildingInfoDto(buildingId, buildingName, hasCafeteria))
-              );
-
-          // when
-          BuildingInfoDto actual = memberService.getBuildingInfo(memberId);
-
-          // then
-          assertAll(
-            () -> assertEquals(buildingId, actual.getBuildingId()),
-            () -> assertEquals(buildingName, actual.getBuildingName()),
-            () -> assertEquals(hasCafeteria, actual.getHasCafeteria())
-          );
-
-        }
-
-        @DisplayName("FAILED : 홈 화면에 필요한 정보 응답 - 유효하지 않은 정보")
-        @Test
-        void getHomeInfoFailed() {
-          // given
-          Long memberId = 1L;
-
-          // when
-          Mockito.when(memberRepository.findBuildingInfoByMemberId(anyLong()))
-              .thenReturn(Optional.empty());
-
-          // then
-          assertThrows(GlobalRuntimeException.class, () ->
-              memberService.getBuildingInfo(memberId));
-        }
     }
-  
+
+    @DisplayName("Success - 홈 화면에 필요한 정보 응답")
+    @Test
+    void getHomeInfoSuccess() {
+        // given
+        Long memberId = 1L;
+        Long buildingId = 1L;
+        String buildingName = "테라 타워";
+        Boolean hasCafeteria = true;
+
+        given(memberRepository.findBuildingInfoByMemberId(memberId))
+            .willReturn(Optional.of(new BuildingInfoDto(buildingId, buildingName, hasCafeteria))
+            );
+
+        // when
+        BuildingInfoDto actual = memberService.getBuildingInfo(memberId);
+
+        // then
+        assertAll(
+            () -> Assertions.assertEquals(buildingId, actual.getBuildingId()),
+            () -> Assertions.assertEquals(buildingName, actual.getBuildingName()),
+            () -> Assertions.assertEquals(hasCafeteria, actual.getHasCafeteria())
+        );
+
+    }
+
+    @DisplayName("FAILED : 홈 화면에 필요한 정보 응답 - 유효하지 않은 정보")
+    @Test
+    void getHomeInfoFailed() {
+        // given
+        Long memberId = 1L;
+
+        // when
+        Mockito.when(memberRepository.findBuildingInfoByMemberId(anyLong()))
+            .thenReturn(Optional.empty());
+
+        // then
+        assertThrows(GlobalRuntimeException.class, () ->
+            memberService.getBuildingInfo(memberId));
+    }
+
+    @DisplayName("SUCCESS - 출입 카드 정보 응답 서비스 테스트")
+    @Test
+    void getAccessCardSuccess() {
+        // given
+        String buildingName = "테라 타워";
+        String employeeNumber = "123456";
+        String companyName = "OFFICE 01";
+        String floor = "1층";
+        String roomNumber = "101호" ;
+        String employeeName = "TestUser";
+
+        AccessCardProjection accessCardProjection = new AccessCardProjection(buildingName, employeeNumber, companyName, floor, roomNumber, employeeName);
+
+        given(memberRepository.findAccessCardData(anyLong()))
+            .willReturn(Optional.of(accessCardProjection));
+
+        // when
+        AccessCardDto actual = memberService.getAccessCardData(anyLong());
+
+        // then
+        assertAll(
+            () -> Assertions.assertEquals(buildingName, actual.getBuildingName()),
+            () -> Assertions.assertEquals(employeeNumber, actual.getEmployeeNumber()),
+            () -> Assertions.assertEquals(companyName, actual.getCompanyName()),
+            () -> Assertions.assertEquals(floor, actual.getFloor()),
+            () -> Assertions.assertEquals(roomNumber, actual.getRoomNumber()),
+            () -> Assertions.assertEquals(employeeName, actual.getEmployeeName())
+        );
+    }
+
+    @DisplayName("FAILED - 출입 카드 정보 응답 서비스 테스트 - 조회 실패")
+    @Test
+    void getAccessCardFail() {
+        // given
+        Long memberId = 1L;
+
+        // when
+        Mockito.when(memberRepository.findAccessCardData(anyLong()))
+            .thenReturn(Optional.empty());
+
+        // then
+        Assertions.assertThrows(GlobalRuntimeException.class, () ->
+            memberService.getAccessCardData(memberId));
+    }
+
 }
