@@ -104,7 +104,7 @@ class MemberServiceTest {
 
     }
 
-    @DisplayName("FAILED : 홈 화면에 필요한 정보 응답 - 유효하지 않은 정보")
+    @DisplayName("FAILED : 홈 화면에 필요한 정보 응답 - 유효 하지 않은 정보")
     @Test
     void getHomeInfoFailed() {
         // given
