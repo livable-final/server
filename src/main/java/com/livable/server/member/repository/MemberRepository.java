@@ -3,6 +3,8 @@ package com.livable.server.member.repository;
 import com.livable.server.entity.Member;
 import com.livable.server.home.dto.HomeResponse.BuildingInfoDto;
 import java.util.Optional;
+
+import com.livable.server.member.dto.MyPageProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
