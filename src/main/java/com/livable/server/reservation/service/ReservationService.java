@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
-    private final ReservationRepository reservationRepository;
 
+    private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
 
     public List<ReservationResponse.AvailableReservationTimePerDateDto> findAvailableReservationTimes(
