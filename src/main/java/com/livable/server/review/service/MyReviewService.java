@@ -6,6 +6,7 @@ import com.livable.server.review.dto.MyReviewResponse;
 import com.livable.server.review.repository.MyReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class MyReviewService {
 
     private final MyReviewRepository myReviewRepository;
 
+    @Transactional(readOnly = true)
     public MyReviewResponse.DetailDTO getMyRestaurantReview(Long reviewId, Long memberId) {
 
         List<MyReviewProjection> myReviewProjections
@@ -23,6 +25,7 @@ public class MyReviewService {
         return this.convertToDTO(myReviewProjections);
     }
 
+    @Transactional(readOnly = true)
     public MyReviewResponse.DetailDTO getMyCafeteriaReview(Long reviewId, Long memberId) {
 
         List<MyReviewProjection> myReviewProjections
@@ -31,6 +34,7 @@ public class MyReviewService {
         return this.convertToDTO(myReviewProjections);
     }
 
+    @Transactional(readOnly = true)
     public MyReviewResponse.DetailDTO getMyLunchBoxReview(Long reviewId, Long memberId) {
 
         List<MyReviewProjection> myReviewProjections

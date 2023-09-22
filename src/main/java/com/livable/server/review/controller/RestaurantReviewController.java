@@ -42,4 +42,12 @@ public class RestaurantReviewController {
 
         return ApiResponse.success(allListForMenu, HttpStatus.OK);
     }
+
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse.Success<RestaurantReviewResponse.DetailDTO>> detail(@PathVariable Long reviewId) {
+
+        RestaurantReviewResponse.DetailDTO detail = restaurantReviewService.getDetail(reviewId);
+
+        return ApiResponse.success(detail, HttpStatus.OK);
+    }
 }

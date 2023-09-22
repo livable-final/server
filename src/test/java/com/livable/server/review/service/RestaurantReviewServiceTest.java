@@ -1,5 +1,7 @@
 package com.livable.server.review.service;
 
+import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.review.dto.Projection;
 import com.livable.server.review.dto.RestaurantReviewResponse;
 import com.livable.server.review.repository.RestaurantReviewRepository;
 import org.junit.jupiter.api.Assertions;
@@ -17,9 +19,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.livable.server.review.dto.RestaurantReviewResponse.*;
+import static com.livable.server.review.dto.RestaurantReviewResponse.ListDTO;
+import static com.livable.server.review.dto.RestaurantReviewResponse.ListForMenuDTO;
 
 @ExtendWith(MockitoExtension.class)
 class RestaurantReviewServiceTest {
@@ -67,7 +71,7 @@ class RestaurantReviewServiceTest {
             // Then
             Assertions.assertAll(
                     () -> Assertions.assertEquals(10, actual.getSize()),
-                    () -> Assertions.assertEquals(1,actual.getTotalPages())
+                    () -> Assertions.assertEquals(1, actual.getTotalPages())
             );
         }
     }
@@ -109,8 +113,82 @@ class RestaurantReviewServiceTest {
             // Then
             Assertions.assertAll(
                     () -> Assertions.assertEquals(10, actual.getSize()),
-                    () -> Assertions.assertEquals(1,actual.getTotalPages())
+                    () -> Assertions.assertEquals(1, actual.getTotalPages())
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("레스토랑 리뷰 상세 정보 서비스 단위 테스트")
+    class Detail {
+
+        @DisplayName("성공 - 싱글 이미지")
+        @Test
+        void success_Test_SingleImage() {
+            // Given
+            Long reviewId = 1L;
+
+            List<Projection.RestaurantReview> mockResult = List.of(
+                    Projection.RestaurantReview.builder()
+                            .reviewImg("TestImages")
+                            .reviewDescription("TestDescription")
+                            .build()
+            );
+
+            Mockito.when(restaurantReviewRepository.findRestaurantReviewById(ArgumentMatchers.anyLong()))
+                    .thenReturn(mockResult);
+            // When
+            RestaurantReviewResponse.DetailDTO actual = restaurantReviewService.getDetail(reviewId);
+
+            // Then
+            Assertions.assertAll(
+                    () -> Assertions.assertEquals("TestDescription", actual.getReviewDescription()),
+                    () -> Assertions.assertEquals(1, actual.getReviewImages().size())
+            );
+        }
+
+        @DisplayName("성공 - 여러 이미지")
+        @Test
+        void success_Test_MultipleImage() {
+            // Given
+            Long reviewId = 1L;
+
+            List<Projection.RestaurantReview> mockResult = List.of(
+                    Projection.RestaurantReview.builder()
+                            .reviewImg("TestImage1")
+                            .reviewDescription("TestDescription")
+                            .build(),
+                    Projection.RestaurantReview.builder()
+                            .reviewImg("TestImage2")
+                            .reviewDescription("TestDescription")
+                            .build()
+            );
+
+            Mockito.when(restaurantReviewRepository.findRestaurantReviewById(ArgumentMatchers.anyLong()))
+                    .thenReturn(mockResult);
+            // When
+            RestaurantReviewResponse.DetailDTO actual = restaurantReviewService.getDetail(reviewId);
+
+            // Then
+            Assertions.assertAll(
+                    () -> Assertions.assertEquals("TestDescription", actual.getReviewDescription()),
+                    () -> Assertions.assertEquals(2, actual.getReviewImages().size())
+            );
+        }
+
+        @DisplayName("실패 - DTO변환 오류")
+        @Test
+        void failure_Test_FailedConvertToDTO() {
+            // Given
+            Long reviewId = 1L;
+
+            Mockito.when(restaurantReviewRepository.findRestaurantReviewById(ArgumentMatchers.anyLong()))
+                    .thenReturn(new ArrayList<>());
+
+            // When
+            // Then
+            Assertions.assertThrows(GlobalRuntimeException.class, () ->
+                    restaurantReviewService.getDetail(reviewId));
         }
     }
 }
