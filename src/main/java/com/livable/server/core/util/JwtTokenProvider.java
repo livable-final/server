@@ -12,8 +12,11 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final String secretKey;
+
+    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     /**
      * Actor 정보를 입력하여 JWT 토큰을 생성하는 메서드
