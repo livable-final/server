@@ -9,7 +9,6 @@ import java.time.LocalTime;
 
 @Getter
 @AllArgsConstructor
-@ToString
 public class AvailableReservationTimeProjection {
 
     private LocalDate date;
