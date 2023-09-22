@@ -395,9 +395,11 @@ class InvitationServiceTest {
         // Given
         Long invitationId = 1L;
         Long memberId = 1L;
+        Member member = Member.builder().id(memberId + 1L).build();
+        Invitation invitation = Invitation.builder().id(invitationId).member(member).build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(0L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        given(invitationRepository.findById(invitationId)).willReturn(Optional.of(invitation));
 
         // When
         GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
@@ -413,9 +415,11 @@ class InvitationServiceTest {
         // Given
         Long invitationId = 1L;
         Long memberId = 1L;
+        Member member = Member.builder().id(memberId).build();
+        Invitation invitation = Invitation.builder().id(invitationId).member(member).build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        given(invitationRepository.findById(invitationId)).willReturn(Optional.of(invitation));
         given(invitationRepository.findInvitationAndVisitorsByInvitationId(anyLong()))
                 .willReturn(any(InvitationResponse.DetailDTO.class));
 
@@ -435,7 +439,6 @@ class InvitationServiceTest {
         Long memberId = 1L;
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
         given(invitationRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // When
@@ -454,13 +457,14 @@ class InvitationServiceTest {
         LocalDate dateBeforeRequestDate = requestDate.minusDays(1L);
         Long invitationId = 1L;
         Long memberId = 1L;
+        Member member = Member.builder().id(memberId).build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
                         .startDate(dateBeforeRequestDate)
+                        .member(member)
                         .build()
                 ));
 
@@ -480,13 +484,14 @@ class InvitationServiceTest {
         LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
         Long invitationId = 1L;
         Long memberId = 1L;
+        Member member = Member.builder().id(memberId).build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
                         .startDate(dateAfterRequestDate)
+                        .member(member)
                         .build()
                 ));
         given(visitorRepository.findVisitorsByInvitation(any(Invitation.class)))
@@ -507,14 +512,15 @@ class InvitationServiceTest {
         LocalDate dateBeforeRequestDate = requestDate.minusDays(1L);
         Long invitationId = 1L;
         Long memberId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder().build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
                         .startDate(dateBeforeRequestDate)
+                        .member(member)
                         .build()
                 ));
 
@@ -535,16 +541,17 @@ class InvitationServiceTest {
         Long invitationId = 1L;
         Long memberId = 1L;
         Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
                 .commonPlaceId(commonPlaceId)
                 .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
                         .startDate(dateAfterRequestDate)
+                        .member(member)
                         .build()
                 ));
         given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong()))
@@ -567,18 +574,19 @@ class InvitationServiceTest {
         Long invitationId = 1L;
         Long memberId = 1L;
         Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
                 .commonPlaceId(commonPlaceId)
                 .visitors(List.of(InvitationRequest.VisitorForUpdateDTO.builder().build()))
                 .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
                         .purpose("면접")
                         .startDate(dateAfterRequestDate)
+                        .member(member)
                         .build()
                 ));
         given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
@@ -600,18 +608,19 @@ class InvitationServiceTest {
         Long invitationId = 1L;
         Long memberId = 1L;
         Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
                 .commonPlaceId(commonPlaceId)
                 .visitors(List.of(InvitationRequest.VisitorForUpdateDTO.builder().build()))
                 .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
                         .purpose("회의")
                         .startDate(dateAfterRequestDate)
+                        .member(member)
                         .build()
                 ));
         given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
@@ -634,6 +643,7 @@ class InvitationServiceTest {
         Long invitationId = 1L;
         Long memberId = 1L;
         Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
                 .commonPlaceId(commonPlaceId)
                 .visitors(List.of())
@@ -641,8 +651,7 @@ class InvitationServiceTest {
                 .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(10, 30, 0)))
                 .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
@@ -651,6 +660,7 @@ class InvitationServiceTest {
                         .endDate(dateAfterRequestDate)
                         .startTime(LocalTime.of(10, 0, 0))
                         .endTime(LocalTime.of(10, 30, 0))
+                        .member(member)
                         .build()
                 ));
         given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
@@ -672,6 +682,7 @@ class InvitationServiceTest {
         Long invitationId = 1L;
         Long memberId = 1L;
         Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
                 .commonPlaceId(commonPlaceId)
                 .visitors(
@@ -685,8 +696,7 @@ class InvitationServiceTest {
                 .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(10, 30, 0)))
                 .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
@@ -695,6 +705,7 @@ class InvitationServiceTest {
                         .endDate(dateAfterRequestDate)
                         .startTime(LocalTime.of(10, 0, 0))
                         .endTime(LocalTime.of(10, 30, 0))
+                        .member(member)
                         .build()
                 ));
         given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
@@ -717,6 +728,7 @@ class InvitationServiceTest {
         Long invitationId = 1L;
         Long memberId = 1L;
         Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
                 .commonPlaceId(commonPlaceId)
                 .visitors(List.of())
@@ -724,8 +736,7 @@ class InvitationServiceTest {
                 .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(11, 30, 0)))
                 .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong())).willReturn(
                 Optional.of(Invitation.builder()
                         .id(invitationId)
@@ -734,6 +745,7 @@ class InvitationServiceTest {
                         .endDate(dateAfterRequestDate)
                         .startTime(LocalTime.of(10, 0, 0))
                         .endTime(LocalTime.of(10, 30, 0))
+                        .member(member)
                         .build()
                 ));
         given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
@@ -766,6 +778,7 @@ class InvitationServiceTest {
         Long invitationId = 1L;
         Long memberId = 1L;
         Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
         InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
                 .commonPlaceId(commonPlaceId)
                 .visitors(
@@ -779,8 +792,7 @@ class InvitationServiceTest {
                 .endDate(LocalDateTime.of(dateAfterRequestDate, LocalTime.of(11, 30, 0)))
                 .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(Member.builder().id(memberId).build()));
-        given(invitationRepository.countByIdAndMemberId(anyLong(), anyLong())).willReturn(1L);
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(invitationRepository.findById(anyLong())).willReturn(
                 Optional.of(Invitation.builder()
                         .id(invitationId)
@@ -789,6 +801,7 @@ class InvitationServiceTest {
                         .endDate(dateAfterRequestDate)
                         .startTime(LocalTime.of(10, 0, 0))
                         .endTime(LocalTime.of(10, 30, 0))
+                        .member(member)
                         .build()
                 ));
         given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(dto.getCommonPlaceId());
