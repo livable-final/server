@@ -28,7 +28,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,20 +55,13 @@ public class InvitationService {
 
     @Transactional(readOnly = true)
     public ResponseEntity<Success<InvitationResponse.AvailablePlacesDTO>> getAvailablePlaces(Long memberId) {
-        // 1. memberId가 속한 companyId를 가져옴
         Long companyId = getCompanyIdByMemberId(memberId);
 
-        // 2. company 에 속해있는 사무실 리스트를 가져옴
         List<Office> officeEntities = officeRepository.findAllByCompanyId(companyId);
 
-        // 3. company 가 예약한 공용 공간 리스트를 가져옴
         List<InvitationResponse.ReservationDTO> reservations = reservationRepository
                 .findReservationsByCompanyId(companyId);
 
-        // 4. ReservationDTO 를 연속된 시간은 하나로 합치는 작업을 진행
-        combineConsecutiveReservation(reservations);
-
-        // 5. DTO 변환 작업
         List<InvitationResponse.OfficeDTO> offices = officeEntities.stream()
                 .map(InvitationResponse.OfficeDTO::from).collect(Collectors.toList());
 
@@ -82,32 +74,6 @@ public class InvitationService {
                 .build();
 
         return ApiResponse.success(responseBody, HttpStatus.OK);
-    }
-
-    private void combineConsecutiveReservation(List<InvitationResponse.ReservationDTO> reservations) {
-        Iterator<InvitationResponse.ReservationDTO> reservationsIterator = reservations.iterator();
-        InvitationResponse.ReservationDTO beforeReservation = null;
-        while (reservationsIterator.hasNext()) {
-            InvitationResponse.ReservationDTO currentReservation = reservationsIterator.next();
-
-            if (isNotCombineTarget(beforeReservation, currentReservation)) {
-                beforeReservation = currentReservation;
-                continue;
-            }
-            beforeReservation.setReservationEndTime(currentReservation.getReservationEndTime());
-            reservationsIterator.remove();
-        }
-    }
-
-    private boolean isNotCombineTarget(
-            InvitationResponse.ReservationDTO before,
-            InvitationResponse.ReservationDTO current
-    ) {
-        // null 이거나 commonPlaceId가 다르거나, 날짜가 다르거나, 연속된 시간이 아닌 경우에는 시간을 합치는 목표가 아님
-        return before == null
-                || !before.getCommonPlaceId().equals(current.getCommonPlaceId())
-                || !before.getReservationDate().equals(current.getReservationDate())
-                || !before.getReservationEndTime().equals(current.getReservationStartTime());
     }
 
     private Long getCompanyIdByMemberId(Long memberId) {
@@ -128,7 +94,6 @@ public class InvitationService {
         return ApiResponse.success(HttpStatus.CREATED);
     }
 
-    /* 면접의 경우에는 1명만 초대 가능 */
     private void checkInterviewVisitorCount(InvitationRequest.CreateDTO dto) {
         if (dto.getPurpose().equals(InvitationPurpose.INTERVIEW.getValue())
                 && dto.getVisitors().size() > INTERVIEW_MAXIMUM_COUNT) {
