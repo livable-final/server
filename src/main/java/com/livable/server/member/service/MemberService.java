@@ -7,7 +7,6 @@ import com.livable.server.member.dto.MyPageProjection;
 import com.livable.server.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -24,4 +23,10 @@ public class MemberService {
 
         return MemberResponse.MyPageDTO.from(myPageProjection);
     }
+    
+    public BuildingInfoDto getBuildingInfo(Long memberId) {
+		  return memberRepository.findBuildingInfoByMemberId(memberId)
+			  	.orElseThrow(() -> new GlobalRuntimeException(MemberErrorCode.BUILDING_INFO_NOT_EXIST));
+    }
+  
 }
