@@ -12,6 +12,6 @@ import java.time.LocalTime;
 @ToString
 public class AvailableReservationTimeProjection {
 
-    LocalDate date;
-    LocalTime time;
+    private LocalDate date;
+    private LocalTime time;
 }

@@ -2,6 +2,7 @@ package com.livable.server.reservation.repository;
 
 import com.livable.server.core.config.QueryDslConfig;
 import com.livable.server.entity.*;
+import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.reservation.dto.AvailableReservationTimeProjection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,9 @@ class ReservationRepositoryTest {
 
     @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @BeforeEach
     void dateInit() {
@@ -135,8 +139,18 @@ class ReservationRepositoryTest {
                 )
                 .collect(Collectors.toList());
 
+
+        Member member = entityManager.createQuery("select m from Member m", Member.class)
+                .getResultList()
+                .get(0);
+
+        CommonPlace commonPlace = entityManager.createQuery("select cp from CommonPlace cp", CommonPlace.class)
+                .getResultList()
+                .get(0);
         List<AvailableReservationTimeProjection> notUsedReservationTime =
-                reservationRepository.findNotUsedReservationTime(1L, 1L, LocalDate.now());
+                reservationRepository.findNotUsedReservationTime(
+                        member.getCompany().getId(), commonPlace.getId(), LocalDate.now()
+                );
 
         assertThat(expectedResult).usingRecursiveComparison().isEqualTo(notUsedReservationTime);
     }
