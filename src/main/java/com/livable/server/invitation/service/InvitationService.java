@@ -209,7 +209,12 @@ public class InvitationService {
     }
 
     private void checkInvitationOwner(Long invitationId, Long memberId) {
-        if (invitationRepository.countByIdAndMemberId(invitationId, memberId).equals(0L)) {
+
+        Optional<Invitation> invitationOptional = invitationRepository.findById(invitationId);
+        Invitation invitation = invitationOptional
+                .orElseThrow(() -> new GlobalRuntimeException(InvitationErrorCode.INVITATION_NOT_EXIST));
+
+        if (!invitation.getMember().getId().equals(memberId)) {
             throw new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_OWNER);
         }
     }
