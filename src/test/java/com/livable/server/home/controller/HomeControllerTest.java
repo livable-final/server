@@ -7,8 +7,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.home.dto.HomeResponse.AccessCardDto;
 import com.livable.server.home.dto.HomeResponse.BuildingInfoDto;
 import com.livable.server.member.domain.MemberErrorCode;
+import com.livable.server.member.dto.AccessCardProjection;
 import com.livable.server.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +55,46 @@ class HomeControllerTest {
 		mockMvc.perform(get("/api/home"))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message").value(MemberErrorCode.BUILDING_INFO_NOT_EXIST.getMessage()));
+	}
+
+	@DisplayName("SUCCESS - 출입 카드 정보 응답 컨트롤러 테스트")
+	@Test
+	void getAccessCardSuccess() throws Exception {
+		// given
+		String buildingName = "테라 타워";
+		String employeeNumber = "123456";
+		String companyName = "OFFICE 01";
+		String floor = "1층";
+		String roomNumber = "101호" ;
+		String employeeName = "TestUser";
+
+		AccessCardProjection accessCardProjection = new AccessCardProjection(buildingName, employeeNumber, companyName, floor, roomNumber, employeeName);
+
+		given(memberService.getAccessCardData(anyLong()))
+				.willReturn(AccessCardDto.from(accessCardProjection));
+
+		// when & then
+		mockMvc.perform(get("/api/access-card"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data['buildingName']").value(buildingName))
+				.andExpect(jsonPath("$.data['employeeNumber']").value(employeeNumber))
+				.andExpect(jsonPath("$.data['companyName']").value(companyName))
+				.andExpect(jsonPath("$.data['floor']").value(floor))
+				.andExpect(jsonPath("$.data['roomNumber']").value(roomNumber))
+				.andExpect(jsonPath("$.data['employeeName']").value(employeeName));
+	}
+
+	@DisplayName("FAILED - 출입 카드 정보 응답 컨트롤러 테스트 - 조회 실패")
+	@Test
+	void getAccessCardFail() throws Exception {
+		// given
+		given(memberService.getAccessCardData(anyLong()))
+				.willThrow(new GlobalRuntimeException(MemberErrorCode.RETRIEVE_ACCESSCARD_FAILED));
+
+		// when & then
+		mockMvc.perform(get("/api/access-card"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value(MemberErrorCode.RETRIEVE_ACCESSCARD_FAILED.getMessage()));
 	}
 
 }
