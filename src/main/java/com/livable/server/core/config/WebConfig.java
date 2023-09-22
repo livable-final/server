@@ -1,5 +1,6 @@
 package com.livable.server.core.config;
 
+import com.livable.server.core.util.StringToLocalDateConverter;
 import com.livable.server.core.util.StringToRestaurantCategoryConverter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -12,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new StringToRestaurantCategoryConverter());
+        registry.addConverter(new StringToLocalDateConverter());
     }
 
     @Override

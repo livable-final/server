@@ -2,12 +2,14 @@ package com.livable.server.reservation.repository;
 
 import com.livable.server.entity.Reservation;
 import com.livable.server.invitation.dto.InvitationResponse;
+import com.livable.server.reservation.dto.AvailableReservationTimeProjection;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,6 +72,28 @@ public class ReservationQueryRepositoryImpl implements ReservationQueryRepositor
                         )
                 )
                 .orderBy(reservation.date.asc(), reservation.time.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<AvailableReservationTimeProjection> findNotUsedReservationTime(
+            Long companyId, Long commonPlaceId, LocalDate date
+    ) {
+        return queryFactory
+                .select(Projections.constructor(AvailableReservationTimeProjection.class,
+                                reservation.date,
+                                reservation.time
+                        )
+                )
+                .from(reservation)
+                .where(reservation.id.notIn(
+                                JPAExpressions.select(invitationReservationMap.reservation.id)
+                                        .from(invitationReservationMap)
+                        ),
+                        reservation.company.id.eq(companyId),
+                        reservation.date.eq(date),
+                        reservation.commonPlace.id.eq(commonPlaceId)
+                )
                 .fetch();
     }
 }

@@ -16,7 +16,7 @@ class StringToRestaurantCategoryConverterTest {
 
     @DisplayName("StringToRestaurantConverter 성공 테스트_1")
     @CsvSource({"RESTAURANT", "restaurant", "Restaurant"})
-    @ParameterizedTest(name = "[{index} 입력문자: {0}")
+    @ParameterizedTest(name = "[{index}] 입력문자: {0}")
     void convertSuccessTest_RESTAURANT(String symbol) {
 
         // Given
@@ -29,7 +29,7 @@ class StringToRestaurantCategoryConverterTest {
 
     @DisplayName("StringToRestaurantConverter 성공 테스트_2")
     @CsvSource({"CAFE", "cafe", "Cafe"})
-    @ParameterizedTest(name = "[{index} 입력문자: {0}")
+    @ParameterizedTest(name = "[{index}] 입력문자: {0}")
     void convertSuccessTest_CAFE(String symbol) {
 
         // Given
@@ -42,7 +42,7 @@ class StringToRestaurantCategoryConverterTest {
 
     @DisplayName("StringToRestaurantConverter 실패 테스트")
     @CsvSource({"CAFe", "caFe", "CAfe", "123", "zz", "restAuRant"})
-    @ParameterizedTest(name = "[{index} 입력문자: {0}")
+    @ParameterizedTest(name = "[{index}] 입력문자: {0}")
     void convertFailTest(String symbol) {
 
         // Given
