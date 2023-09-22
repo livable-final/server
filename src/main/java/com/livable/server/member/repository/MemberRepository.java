@@ -26,13 +26,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "WHERE m.id = :memberId")
     Optional<AccessCardProjection> findAccessCardData(@Param("memberId") Long memberId);
 
-    @Query("select b.id as buildingId, b.name as buildingName, b.hasCafeteria as hasCafeteria" +
-            " from Member m " +
-            " join Company c" +
-            " on m.company = c" +
-            " join fetch Building b " +
-            " on c.building = b" +
-            " where m.id = :memberId")
+    @Query("SELECT b.id AS buildingId, b.name AS buildingName, b.hasCafeteria AS hasCafeteria " +
+            "FROM Member m " +
+            "JOIN Company c " +
+            "ON m.company = c " +
+            "JOIN FETCH Building b " +
+            "ON c.building = b " +
+            "WHERE m.id = :memberId")
 	  Optional<BuildingInfoDto> findBuildingInfoByMemberId(@Param("memberId") Long memberId);
 
 }
