@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/invitation")
@@ -36,7 +38,7 @@ public class InvitationController {
     }
 
     @GetMapping
-    public ResponseEntity<Success<List<InvitationResponse.ListDTO>>> getInvitations() {
+    public ResponseEntity<Success<Map<LocalDate, List<InvitationResponse.ListDTO>>>> getInvitations() {
 
         Long memberId = 1L; // TODO: JWT 토큰에서 추출한 값으로 수정
 
