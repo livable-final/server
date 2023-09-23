@@ -28,8 +28,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -190,11 +189,30 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public ResponseEntity<Success<List<InvitationResponse.ListDTO>>> getInvitations(Long memberId) {
+    public ResponseEntity<Success<Map<LocalDate, List<InvitationResponse.ListDTO>>>> getInvitations(Long memberId) {
         checkExistMemberById(memberId);
         List<InvitationResponse.ListDTO> invitationDTOs = invitationRepository.findInvitationsByMemberId(memberId);
+        Map<LocalDate, List<InvitationResponse.ListDTO>> responseBody = getInvitationsGroupByLocalDate(invitationDTOs);
 
-        return ApiResponse.success(invitationDTOs, HttpStatus.OK);
+        return ApiResponse.success(responseBody, HttpStatus.OK);
+    }
+
+    private Map<LocalDate, List<InvitationResponse.ListDTO>> getInvitationsGroupByLocalDate(
+            List<InvitationResponse.ListDTO> invitationDTOS) {
+
+        Map<LocalDate, List<InvitationResponse.ListDTO>> invitationsGroupByLocalDate
+                = new TreeMap<>(LocalDate::compareTo);
+
+        for (InvitationResponse.ListDTO invitation : invitationDTOS) {
+            LocalDate date = invitation.getStartDate();
+
+            if (!invitationsGroupByLocalDate.containsKey(date)) {
+                invitationsGroupByLocalDate.put(date, new ArrayList<>());
+            }
+            invitationsGroupByLocalDate.get(date).add(invitation);
+        }
+
+        return invitationsGroupByLocalDate;
     }
 
     @Transactional(readOnly = true)
