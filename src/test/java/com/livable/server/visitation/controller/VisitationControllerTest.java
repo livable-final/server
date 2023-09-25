@@ -3,6 +3,9 @@ package com.livable.server.visitation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.livable.server.core.exception.ErrorCode;
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.core.util.ActorType;
+import com.livable.server.core.util.JwtTokenProvider;
+import com.livable.server.core.util.TestConfig;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationRequest;
 import com.livable.server.visitation.mock.MockDetailInformationDto;
@@ -14,15 +17,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.Date;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Import(TestConfig.class)
 @WebMvcTest(VisitationController.class)
 class VisitationControllerTest {
 
@@ -32,6 +39,9 @@ class VisitationControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    JwtTokenProvider tokenProvider;
+
     @MockBean
     private VisitationFacadeService visitationFacadeService;
 
@@ -40,12 +50,15 @@ class VisitationControllerTest {
     void findVisitationDetailInformationSuccessTest() throws Exception {
 
         // Given
+        String token = tokenProvider.createActorToken(ActorType.VISITOR, 1L, new Date(new Date().getTime() + 10000000));
         MockDetailInformationDto mockDetailInformationDto = new MockDetailInformationDto();
         given(visitationFacadeService.findVisitationDetailInformation(anyLong())).willReturn(mockDetailInformationDto);
+
 
         // When
         ResultActions resultActions = mockMvc.perform(
                 get("/api/visitation")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -60,6 +73,7 @@ class VisitationControllerTest {
     @DisplayName("[GET][/api/visitation/qr] - QR을 생성 정상 응답")
     @Test
     void createQrCodeSuccessTest() throws Exception {
+        String token = tokenProvider.createActorToken(ActorType.VISITOR, 1L, new Date(new Date().getTime() + 10000000));
         String base64QrCode = "base64QrCode임 ㅋㅋ";
 
         // given
@@ -68,6 +82,7 @@ class VisitationControllerTest {
         // when
         ResultActions resultActions = mockMvc.perform(
                 get("/api/visitation/qr")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
         );
 
@@ -83,6 +98,7 @@ class VisitationControllerTest {
     @Test
     void validateQrCodeSuccess() throws Exception {
         // given
+        String token = tokenProvider.createActorToken(ActorType.VISITOR, 1L, new Date(new Date().getTime() + 10000000));
         String qr = "qr";
         VisitationRequest.ValidateQrCodeDto validateQrCodeSuccessMockRequest = new MockValidateQrCodeDto(qr);
 
@@ -91,6 +107,7 @@ class VisitationControllerTest {
         // when
         ResultActions resultActions = mockMvc.perform(
                 post("/api/visitation/qr")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validateQrCodeSuccessMockRequest))
         );
@@ -105,6 +122,7 @@ class VisitationControllerTest {
     @Test
     void validateQrCodeFail() throws Exception {
         // given
+        String token = tokenProvider.createActorToken(ActorType.VISITOR, 1L, new Date(new Date().getTime() + 10000000));
         String qr = "qr";
         ErrorCode errorCode = VisitationErrorCode.INVALID_QR_PERIOD;
         String errorMessage = errorCode.getMessage();
@@ -116,6 +134,7 @@ class VisitationControllerTest {
         // when
         ResultActions resultActions = mockMvc.perform(
                 post("/api/visitation/qr")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validateQrCodeSuccessMockRequest))
         );
@@ -132,6 +151,7 @@ class VisitationControllerTest {
     @Test
     void registerParking() throws Exception {
         // given
+        String token = tokenProvider.createActorToken(ActorType.VISITOR, 1L, new Date(new Date().getTime() + 10000000));
         String carNumber = "12가1234";
         MockRegisterParkingDto mockRegisterParkingDto = new MockRegisterParkingDto(carNumber);
         Long visitorId = 1L;
@@ -142,6 +162,7 @@ class VisitationControllerTest {
         // when
         ResultActions resultActions = mockMvc.perform(
                 post("/api/visitation/parking")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockRegisterParkingDto))
         );

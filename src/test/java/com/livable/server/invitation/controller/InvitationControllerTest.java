@@ -3,6 +3,9 @@ package com.livable.server.invitation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.core.util.ActorType;
+import com.livable.server.core.util.JwtTokenProvider;
+import com.livable.server.core.util.TestConfig;
 import com.livable.server.invitation.domain.InvitationErrorCode;
 import com.livable.server.invitation.domain.InvitationValidationMessage;
 import com.livable.server.invitation.dto.InvitationRequest;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +25,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,11 +36,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Import(TestConfig.class)
 @WebMvcTest(InvitationController.class)
 class InvitationControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @Autowired
     ObjectMapper mapper;
@@ -60,8 +68,13 @@ class InvitationControllerTest {
                         HttpStatus.OK
                 ));
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When & Then
-        mockMvc.perform(get("/api/invitation/places/available"))
+        mockMvc.perform(
+                get("/api/invitation/places/available")
+                        .header("Authorization", "Bearer " + token)
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data['offices']").isArray())
                 .andExpect(jsonPath("$.data['offices'][0]['officeName']").value("사무실 A"))
@@ -92,8 +105,12 @@ class InvitationControllerTest {
         given(invitationService.getAvailablePlaces(anyLong()))
                 .willThrow(new GlobalRuntimeException(InvitationErrorCode.MEMBER_NOT_EXIST));
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When & Then
-        mockMvc.perform(get("/api/invitation/places/available"))
+        mockMvc.perform(get("/api/invitation/places/available")
+                        .header("Authorization", "Bearer " + token)
+                )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(InvitationErrorCode.MEMBER_NOT_EXIST.getMessage()));
     }
@@ -117,9 +134,12 @@ class InvitationControllerTest {
                 ))
                 .build();
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When & Then
         mockMvc.perform(
                         post("/api/invitation")
+                                .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
                 )
@@ -141,9 +161,12 @@ class InvitationControllerTest {
                 .visitors(List.of())
                 .build();
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When & Then
         mockMvc.perform(
                 post("/api/invitation")
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto))
         )
@@ -170,9 +193,12 @@ class InvitationControllerTest {
                 .visitors(visitors)
                 .build();
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When & Then
         mockMvc.perform(
                         post("/api/invitation")
+                                .header("Authorization", "Bearer " + token)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(dto))
                 )
@@ -188,8 +214,13 @@ class InvitationControllerTest {
         given(invitationService.getInvitation(anyLong(), anyLong()))
                 .willThrow(new GlobalRuntimeException(InvitationErrorCode.INVALID_INVITATION_OWNER));
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When & Then
-        mockMvc.perform(get("/api/invitation/{invitationId}", invitationId))
+        mockMvc.perform(
+                get("/api/invitation/{invitationId}", invitationId)
+                        .header("Authorization", "Bearer " + token)
+                )
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(InvitationErrorCode.INVALID_INVITATION_OWNER.getMessage()));
     }
@@ -202,8 +233,13 @@ class InvitationControllerTest {
         given(invitationService.getInvitation(anyLong(), anyLong()))
                 .willReturn(ApiResponse.success(InvitationResponse.DetailDTO.builder().build(), HttpStatus.OK));
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When & Then
-        mockMvc.perform(get("/api/invitation/{invitationId}", invitationId))
+        mockMvc.perform(
+                get("/api/invitation/{invitationId}", invitationId)
+                        .header("Authorization", "Bearer " + token)
+                )
                 .andExpect(status().isOk());
     }
 
@@ -222,9 +258,12 @@ class InvitationControllerTest {
                 .visitors(List.of())
                 .build();
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When
         ResultActions resultActions = mockMvc.perform(
                 patch("/api/invitation/{invitationId}", invitationId)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)));
 
@@ -249,9 +288,12 @@ class InvitationControllerTest {
                 .visitors(null)
                 .build();
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When
         ResultActions resultActions = mockMvc.perform(
                 patch("/api/invitation/{invitationId}", invitationId)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)));
 
@@ -281,9 +323,12 @@ class InvitationControllerTest {
                 ))
                 .build();
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When
         ResultActions resultActions = mockMvc.perform(
                 patch("/api/invitation/{invitationId}", invitationId)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)));
 
@@ -313,9 +358,12 @@ class InvitationControllerTest {
                 ))
                 .build();
 
+        String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 1000000));
+
         // When
         ResultActions resultActions = mockMvc.perform(
                 patch("/api/invitation/{invitationId}", invitationId)
+                        .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(dto)));
 

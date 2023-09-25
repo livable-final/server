@@ -1,5 +1,6 @@
 package com.livable.server.review.controller;
 
+import com.livable.server.core.util.TestConfig;
 import com.livable.server.review.dto.MyReviewResponse;
 import com.livable.server.review.dto.RestaurantReviewResponse;
 import com.livable.server.review.service.RestaurantReviewService;
@@ -11,6 +12,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
+@Import(TestConfig.class)
 @WebMvcTest(controllers = RestaurantReviewController.class)
 class RestaurantReviewControllerTest {
 

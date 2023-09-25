@@ -1,6 +1,9 @@
 package com.livable.server.visitation.controller;
 
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.core.util.Actor;
+import com.livable.server.core.util.JwtTokenProvider;
+import com.livable.server.core.util.LoginActor;
 import com.livable.server.visitation.dto.VisitationResponse;
 import com.livable.server.visitation.service.VisitationFacadeService;
 import com.livable.server.visitation.dto.VisitationRequest;
@@ -19,8 +22,11 @@ public class VisitationController {
     private final VisitationFacadeService visitationFacadeService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse.Success<Object>> findVisitationDetailInformation() {
-        Long visitorId = 1L;
+    public ResponseEntity<ApiResponse.Success<Object>> findVisitationDetailInformation(@LoginActor Actor actor) {
+
+        JwtTokenProvider.checkVisitorToken(actor);
+
+        Long visitorId = actor.getId();
         VisitationResponse.DetailInformationDto detailInformationDto =
                 visitationFacadeService.findVisitationDetailInformation(visitorId);
 
@@ -28,9 +34,11 @@ public class VisitationController {
     }
 
     @GetMapping("/qr")
-    public ResponseEntity<ApiResponse.Success<Object>> createQrCode() {
+    public ResponseEntity<ApiResponse.Success<Object>> createQrCode(@LoginActor Actor actor) {
 
-        Long visitorId = 1L;
+        JwtTokenProvider.checkVisitorToken(actor);
+
+        Long visitorId = actor.getId();
         String base64QrCode = visitationFacadeService.createQrCode(visitorId);
 
         return ApiResponse.success(base64QrCode, HttpStatus.OK);
@@ -48,9 +56,12 @@ public class VisitationController {
 
     @PostMapping("/parking")
     public ResponseEntity<ApiResponse.Success<Object>> registerParking(
-            @RequestBody @Valid VisitationRequest.RegisterParkingDto registerParkingDto
+            @RequestBody @Valid VisitationRequest.RegisterParkingDto registerParkingDto, @LoginActor Actor actor
     ) {
-        Long visitorId = 1L;
+
+        JwtTokenProvider.checkVisitorToken(actor);
+
+        Long visitorId = actor.getId();
         visitationFacadeService.registerParking(visitorId, registerParkingDto.getCarNumber());
 
         return ApiResponse.success(HttpStatus.CREATED);

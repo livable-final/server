@@ -14,7 +14,7 @@ class JwtTokenProviderTest {
 
     @BeforeEach
     void init() {
-        String testSecretKey = "secretKey";
+        String testSecretKey = "di0xNUNaQDR1MWksaXM4MH5rdSZYLEM2I3dbR0ZQcWJUOVl5UFhmOV52cEROLmE0bCZheHdWLztCZHJoVjwz";
         tokenProvider = new JwtTokenProvider(testSecretKey);
     }
 
