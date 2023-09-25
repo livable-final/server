@@ -2,11 +2,13 @@ package com.livable.server.member.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.home.dto.HomeResponse;
+import com.livable.server.home.dto.HomeResponse.AccessCardDto;
 import com.livable.server.member.domain.MemberErrorCode;
 import com.livable.server.member.dto.AccessCardProjection;
 import com.livable.server.member.dto.MemberResponse;
 import com.livable.server.member.dto.MyPageProjection;
 import com.livable.server.member.repository.MemberRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,13 @@ public class MemberService {
 
     public HomeResponse.AccessCardDto getAccessCardData(Long memberId) {
 
-        Optional<AccessCardProjection> accessCardProjectionOptional = memberRepository.findAccessCardData(memberId);
-        AccessCardProjection accessCardProjection = accessCardProjectionOptional.orElseThrow(()
-            -> new GlobalRuntimeException(MemberErrorCode.RETRIEVE_ACCESSCARD_FAILED));
+        List<AccessCardProjection> accessCardProjectionOptional = memberRepository.findAccessCardData(memberId);
 
-        return HomeResponse.AccessCardDto.from(accessCardProjection);
+        if (accessCardProjectionOptional.isEmpty()) {
+            throw new GlobalRuntimeException(MemberErrorCode.RETRIEVE_ACCESSCARD_FAILED);
+        }
+
+        return AccessCardDto.from(accessCardProjectionOptional.get(0));
     }
 
     public HomeResponse.BuildingInfoDto getBuildingInfo(Long memberId) {
