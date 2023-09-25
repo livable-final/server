@@ -20,39 +20,49 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(HomeController.class)
 class HomeControllerTest {
 
-	@Autowired
-	MockMvc mockMvc;
+		@Autowired
+		MockMvc mockMvc;
 
-	@MockBean
-	private MemberService memberService;
+		@MockBean
+		private MemberService memberService;
 
-	@DisplayName("SUCCESS : 홈 화면에 필요한 정보 응답 컨트롤러 테스트")
-	@Test
-	void getHomeInfoSuccess() throws Exception {
-		// given
-		Long memberId = 1L;
-		given(memberService.getBuildingInfo(memberId))
-				.willReturn(new BuildingInfoDto(1L, "테라 타워", true));
+		@DisplayName("SUCCESS : 홈 화면에 필요한 정보 응답 컨트롤러 테스트")
+		@Test
+		void getHomeInfoSuccess() throws Exception {
+			// given
+			Long memberId = 1L;
 
-		// when & then
-		mockMvc.perform(get("/api/home"))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.data['buildingId']").value(1))
-				.andExpect(jsonPath("$.data['buildingName']").value("테라 타워"))
-				.andExpect(jsonPath("$.data['hasCafeteria']").value(true));
-	}
+			Long buildingId = 1L;
+			String buildingName = "테라 타워";
+			Boolean hasCafeteria = true;
 
-	@DisplayName("FAILED : 홈 화면에 필요한 정보 응답 컨트롤러 테스트 - 조회 실패")
-	@Test
-	void getHomeInfoFailed() throws Exception {
-		// given
-		given(memberService.getBuildingInfo(anyLong()))
-				.willThrow(new GlobalRuntimeException(MemberErrorCode.BUILDING_INFO_NOT_EXIST));
+			BuildingInfoDto buildingInfoDto = BuildingInfoDto.builder()
+					.buildingId(buildingId)
+					.buildingName(buildingName)
+					.hasCafeteria(hasCafeteria).build();
 
-		// when & then
-		mockMvc.perform(get("/api/home"))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message").value(MemberErrorCode.BUILDING_INFO_NOT_EXIST.getMessage()));
-	}
+			given(memberService.getBuildingInfo(memberId))
+					.willReturn(buildingInfoDto);
+
+			// when & then
+			mockMvc.perform(get("/api/home"))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.data['buildingId']").value(1))
+					.andExpect(jsonPath("$.data['buildingName']").value("테라 타워"))
+					.andExpect(jsonPath("$.data['hasCafeteria']").value(true));
+		}
+
+		@DisplayName("FAILED : 홈 화면에 필요한 정보 응답 컨트롤러 테스트 - 조회 실패")
+		@Test
+		void getHomeInfoFailed() throws Exception {
+			// given
+			given(memberService.getBuildingInfo(anyLong()))
+					.willThrow(new GlobalRuntimeException(MemberErrorCode.BUILDING_INFO_NOT_EXIST));
+
+			// when & then
+			mockMvc.perform(get("/api/home"))
+					.andExpect(status().isBadRequest())
+					.andExpect(jsonPath("$.message").value(MemberErrorCode.BUILDING_INFO_NOT_EXIST.getMessage()));
+		}
 
 }

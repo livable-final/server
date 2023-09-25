@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.member.dto.BuildingInfoProjection;
 import com.livable.server.member.dto.MemberResponse;
 import com.livable.server.member.dto.MyPageProjection;
 import com.livable.server.member.repository.MemberRepository;
@@ -86,8 +87,10 @@ class MemberServiceTest {
           String buildingName = "테라 타워";
           Boolean hasCafeteria = true;
 
+          BuildingInfoProjection buildingInfoProjection = new BuildingInfoProjection(buildingId, buildingName, hasCafeteria);
+
           given(memberRepository.findBuildingInfoByMemberId(memberId))
-              .willReturn(Optional.of(new BuildingInfoDto(buildingId, buildingName, hasCafeteria))
+              .willReturn(Optional.of(buildingInfoProjection)
               );
 
           // when
