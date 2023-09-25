@@ -37,7 +37,9 @@ public class VisitationController {
     }
 
     @PostMapping("/qr")
-    public ResponseEntity<ApiResponse.Success<Object>> validateQrCode(@RequestBody VisitationRequest.ValidateQrCodeDto validateQrCodeDto) {
+    public ResponseEntity<ApiResponse.Success<Object>> validateQrCode(
+            @RequestBody @Valid VisitationRequest.ValidateQrCodeDto validateQrCodeDto
+    ) {
 
         visitationFacadeService.validateQrCode(validateQrCodeDto.getQr());
 
