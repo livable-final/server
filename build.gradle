@@ -19,11 +19,6 @@ java {
     sourceCompatibility = '11'
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 
 repositories {
     mavenCentral()
@@ -31,6 +26,29 @@ repositories {
 
 ext {
     set('snippetsDir', file("build/generated-snippets"))
+}
+
+configurations {
+    asciidoctorExt
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+// asccidoctor 작업 이후 생성된 HTML 파일을 static/docs 로 copy
+tasks.register('copyDocument', Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+// build 의 의존작업 명시
+build {
+    dependsOn copyDocument
 }
 
 dependencies {
@@ -45,6 +63,7 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     implementation 'com.google.zxing:core:3.5.2'
     implementation 'com.google.zxing:javase:3.5.2'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
@@ -61,7 +80,16 @@ tasks.named('test') {
 
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
     dependsOn test
+
+    sources {
+        include("**/index.adoc", "**/common/*.adoc")
+    }
+
+    // 특정 .adoc에 다른 adoc 파일을 가져와서(include) 사용하고 싶을 경우 경로를 baseDir로 맞춰주는 설정입니다.
+    // 개별 adoc으로 운영한다면 필요 없는 옵션입니다.
+    baseDirFollowsSourceFile()
 }
 
 /* QueryDSL setting start */
