@@ -3,6 +3,7 @@ package com.livable.server.member.service;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.home.dto.HomeResponse;
 import com.livable.server.member.domain.MemberErrorCode;
+import com.livable.server.member.dto.BuildingInfoProjection;
 import com.livable.server.member.dto.MemberResponse;
 import com.livable.server.member.dto.MyPageProjection;
 import com.livable.server.member.repository.MemberRepository;
@@ -26,8 +27,12 @@ public class MemberService {
     }
     
     public HomeResponse.BuildingInfoDto getBuildingInfo(Long memberId) {
-		  return memberRepository.findBuildingInfoByMemberId(memberId)
-			  	.orElseThrow(() -> new GlobalRuntimeException(MemberErrorCode.BUILDING_INFO_NOT_EXIST));
+
+				Optional<BuildingInfoProjection> buildingInfoProjectionOptional = memberRepository.findBuildingInfoByMemberId(memberId);
+				BuildingInfoProjection buildingInfoProjection = buildingInfoProjectionOptional.orElseThrow(()
+						-> new GlobalRuntimeException(MemberErrorCode.BUILDING_INFO_NOT_EXIST));
+
+		  return HomeResponse.BuildingInfoDto.from(buildingInfoProjection);
     }
   
 }
