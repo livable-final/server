@@ -4,6 +4,7 @@ import com.livable.server.entity.Member;
 import com.livable.server.home.dto.HomeResponse.BuildingInfoDto;
 import com.livable.server.member.dto.AccessCardProjection;
 import com.livable.server.member.dto.MyPageProjection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,7 +25,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "INNER JOIN Office o ON c.id = o.company.id " +
             "INNER JOIN Building b ON b.id = c.building.id " +
             "WHERE m.id = :memberId")
-    Optional<AccessCardProjection> findAccessCardData(@Param("memberId") Long memberId);
+    List<AccessCardProjection> findAccessCardData(@Param("memberId") Long memberId);
 
     @Query("SELECT b.id AS buildingId, b.name AS buildingName, b.hasCafeteria AS hasCafeteria " +
             "FROM Member m " +
