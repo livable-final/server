@@ -12,6 +12,8 @@ import com.livable.server.member.dto.AccessCardProjection;
 import com.livable.server.member.dto.MemberResponse;
 import com.livable.server.member.dto.MyPageProjection;
 import com.livable.server.member.repository.MemberRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -131,9 +133,11 @@ class MemberServiceTest {
         String employeeName = "TestUser";
 
         AccessCardProjection accessCardProjection = new AccessCardProjection(buildingName, employeeNumber, companyName, floor, roomNumber, employeeName);
+        List<AccessCardProjection> accessCardProjectionList = new ArrayList<>();
+        accessCardProjectionList.add(accessCardProjection);
 
         given(memberRepository.findAccessCardData(anyLong()))
-            .willReturn(Optional.of(accessCardProjection));
+            .willReturn(accessCardProjectionList);
 
         // when
         AccessCardDto actual = memberService.getAccessCardData(anyLong());
@@ -157,7 +161,7 @@ class MemberServiceTest {
 
         // when
         Mockito.when(memberRepository.findAccessCardData(anyLong()))
-            .thenReturn(Optional.empty());
+            .thenReturn(new ArrayList<>());
 
         // then
         Assertions.assertThrows(GlobalRuntimeException.class, () ->
