@@ -1,0 +1,6 @@
+[[Restaurant-API]]
+== Restaurant API
+
+[[빌딩-주변-가게-조회-API]]
+=== 빌딩 주변 가게 조회
+operation::restaurant-controller-test/find-restaurant-by-category-success-test_restaurant[snippets='http-request,request-parameters,http-response,response-fields']

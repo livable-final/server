@@ -1,0 +1,6 @@
+[[Reservation-API]]
+== Reservation API
+
+[[사용-가능한-예약시간-조회-API]]
+=== 사용 가능한 예약시간 조회 API
+operation::reservation-controller-test/find-available-times-success-test[snippets='http-request,path-parameters,request-parameters,http-response,response-fields']
