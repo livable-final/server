@@ -1,6 +1,9 @@
 package com.livable.server.point.controller;
 
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.core.util.Actor;
+import com.livable.server.core.util.JwtTokenProvider;
+import com.livable.server.core.util.LoginActor;
 import com.livable.server.point.dto.PointResponse;
 import com.livable.server.point.service.PointService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +21,11 @@ public class PointController {
     private final PointService pointService;
 
     @GetMapping("/api/points/logs/members")
-    public ResponseEntity<ApiResponse.Success<PointResponse.ReviewCountDTO>> getMyReviewCount() {
+    public ResponseEntity<ApiResponse.Success<PointResponse.ReviewCountDTO>> getMyReviewCount(@LoginActor Actor actor) {
 
-        Long memberId = 1L; // TODO: 토큰에서 값을 추출할 것
+        JwtTokenProvider.checkMemberToken(actor);
+
+        Long memberId = actor.getId(); // TODO: 토큰에서 값을 추출할 것
         LocalDateTime currentDate = LocalDateTime.now();
 
         PointResponse.ReviewCountDTO myReviewCount = pointService.getMyReviewCount(memberId, currentDate);
