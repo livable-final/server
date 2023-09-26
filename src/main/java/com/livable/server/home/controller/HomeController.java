@@ -1,6 +1,9 @@
 package com.livable.server.home.controller;
 
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.core.util.Actor;
+import com.livable.server.core.util.JwtTokenProvider;
+import com.livable.server.core.util.LoginActor;
 import com.livable.server.home.dto.HomeResponse.BuildingInfoDto;
 import com.livable.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +21,11 @@ public class HomeController {
 	private final MemberService memberService;
 
 	@GetMapping
-	public ResponseEntity<ApiResponse.Success<BuildingInfoDto>> getHomeInfo() {
+	public ResponseEntity<ApiResponse.Success<BuildingInfoDto>> getHomeInfo(@LoginActor Actor actor) {
 
-		Long memberId = 1L; // TODO: 2023-09-22 JWT Token으로 대체
+		JwtTokenProvider.checkMemberToken(actor);
+
+		Long memberId = actor.getId();
 		BuildingInfoDto buildingInfoDto = memberService.getBuildingInfo(memberId);
 
 		return ApiResponse.success(buildingInfoDto, HttpStatus.OK);
