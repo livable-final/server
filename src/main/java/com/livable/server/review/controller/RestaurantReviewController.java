@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/reviews")
@@ -22,14 +24,14 @@ public class RestaurantReviewController {
     private final RestaurantReviewService restaurantReviewService;
 
     @GetMapping("/buildings/{buildingId}")
-    public ResponseEntity<ApiResponse.Success<Page<RestaurantReviewResponse.ListDTO>>> list(
+    public ResponseEntity<ApiResponse.Success<List<RestaurantReviewResponse.ListForBuildingDTO>>> list(
             @PathVariable Long buildingId,
             @PageableDefault Pageable pageable) {
 
-        Page<RestaurantReviewResponse.ListDTO> list =
-                restaurantReviewService.getAllList(buildingId, pageable);
+        List<RestaurantReviewResponse.ListForBuildingDTO> allListForBuilding =
+                restaurantReviewService.getAllListForBuilding(buildingId, pageable);
 
-        return ApiResponse.success(list, HttpStatus.OK);
+        return ApiResponse.success(allListForBuilding, HttpStatus.OK);
     }
 
     @GetMapping("/menus/{menuId}")

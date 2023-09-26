@@ -37,8 +37,9 @@ public class S3Uploader {
 
     public String saveFile(MultipartFile file) throws IOException {
 
-        final String originalFileName = file.getOriginalFilename();
-        assert originalFileName != null;
+        String filename = file.getOriginalFilename();
+        final String originalFileName = filename.replaceAll(ImageSeparator.IMAGE_SEPARATOR, "");
+
         final String fileExtension = getFileExtension(originalFileName);
 
         validationAllowedFileExtension(fileExtension);

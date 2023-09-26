@@ -1,5 +1,6 @@
 package com.livable.server.review.dto;
 
+import com.livable.server.core.util.ImageSeparator;
 import com.livable.server.entity.Evaluation;
 import lombok.*;
 
@@ -11,24 +12,38 @@ public class RestaurantReviewResponse {
 
     @Getter
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ListDTO {
+    public static class ListForBuildingDTO {
 
-        private Long reviewId;
-        private LocalDateTime reviewCreatedAt;
-        private String reviewDescription;
+        private final String memberName;
 
-        private Evaluation reviewTaste;
-        private Evaluation reviewAmount;
-        private Evaluation reviewService;
-        private Evaluation reviewSpeed;
+        private final Long restaurantId;
+        private final String restaurantName;
 
-        private Long restaurantId;
-        private String restaurantName;
+        private final Long reviewId;
+        private final LocalDateTime reviewCreatedAt;
+        private final String reviewDescription;
+        private final Evaluation reviewTaste;
+        private final Evaluation reviewAmount;
+        private final Evaluation reviewService;
+        private final Evaluation reviewSpeed;
 
-        private Long memberId;
-        private String memberName;
+        private List<String> reviewImages;
+
+        public static ListForBuildingDTO valueOf(RestaurantReviewProjection restaurantReviewList, ImageSeparator imageSeparator) {
+            return ListForBuildingDTO.builder()
+                    .memberName(restaurantReviewList.getMemberName())
+                    .restaurantId(restaurantReviewList.getRestaurantId())
+                    .restaurantName(restaurantReviewList.getRestaurantName())
+                    .reviewId(restaurantReviewList.getReviewId())
+                    .reviewCreatedAt(restaurantReviewList.getReviewCreatedAt())
+                    .reviewDescription(restaurantReviewList.getReviewDescription())
+                    .reviewTaste(restaurantReviewList.getReviewTaste())
+                    .reviewAmount(restaurantReviewList.getReviewAmount())
+                    .reviewService(restaurantReviewList.getReviewService())
+                    .reviewSpeed(restaurantReviewList.getReviewSpeed())
+                    .reviewImages(imageSeparator.separateConcatenatedImages(restaurantReviewList.getImages()))
+                    .build();
+        }
     }
 
     @Getter

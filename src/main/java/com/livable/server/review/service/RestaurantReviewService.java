@@ -1,10 +1,12 @@
 package com.livable.server.review.service;
 
-import com.livable.server.core.exception.ErrorCode;
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.core.util.ImageSeparator;
 import com.livable.server.review.domain.MyReviewErrorCode;
 import com.livable.server.review.dto.Projection;
+import com.livable.server.review.dto.RestaurantReviewProjection;
 import com.livable.server.review.dto.RestaurantReviewResponse;
+import com.livable.server.review.repository.RestaurantReviewProjectionRepository;
 import com.livable.server.review.repository.RestaurantReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,10 +22,19 @@ import java.util.stream.Collectors;
 public class RestaurantReviewService {
 
     private final RestaurantReviewRepository restaurantReviewRepository;
+    private final RestaurantReviewProjectionRepository restaurantProjectionRepository;
+    private final ImageSeparator imageSeparator;
 
     @Transactional(readOnly = true)
-    public Page<RestaurantReviewResponse.ListDTO> getAllList(Long buildingId, Pageable pageable) {
-        return restaurantReviewRepository.findRestaurantReviewByBuildingId(buildingId, pageable);
+    public List<RestaurantReviewResponse.ListForBuildingDTO> getAllListForBuilding(Long buildingId, Pageable pageable) {
+
+        List<RestaurantReviewProjection> restaurantReviewLists =
+                restaurantProjectionRepository.findRestaurantReviewProjectionByBuildingId(buildingId, pageable);
+
+        return restaurantReviewLists.stream()
+                .map(restaurantReviewList ->
+                        RestaurantReviewResponse.ListForBuildingDTO.valueOf(restaurantReviewList, imageSeparator))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +54,7 @@ public class RestaurantReviewService {
 
         Projection.RestaurantReview restaurantReview = restaurantReviews.get(0);
         List<String> reviewImages = restaurantReviews.stream()
-                .map(Projection.RestaurantReview::getReviewImg)
+                .map(Projection.RestaurantReview::getImages)
                 .collect(Collectors.toList());
 
         return RestaurantReviewResponse.DetailDTO.from(restaurantReview, reviewImages);
