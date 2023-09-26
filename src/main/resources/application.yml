@@ -5,3 +5,7 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 100
+
+logging:
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSSz,Asia/Seoul
