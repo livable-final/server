@@ -41,24 +41,24 @@ class RestaurantReviewControllerTest {
             // Given
             String uri = "/api/reviews/buildings/1";
 
-            List<RestaurantReviewResponse.ListDTO> mockList = List.of(
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(1L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(2L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(3L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(4L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(5L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(6L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(7L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(8L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(9L).build(),
-                    RestaurantReviewResponse.ListDTO.builder().reviewId(10L).build()
+            List<RestaurantReviewResponse.ListForBuildingDTO> mockList = List.of(
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(1L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(2L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(3L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(4L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(5L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(6L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(7L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(8L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(9L).build(),
+                    RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(10L).build()
             );
             Pageable pageable = PageRequest.of(0, 10);
-            Page<RestaurantReviewResponse.ListDTO> mockPage = new PageImpl<>(mockList, pageable, 1);
 
-            Mockito.when(restaurantReviewService
-                    .getAllList(ArgumentMatchers.anyLong(), ArgumentMatchers.any(Pageable.class)))
-                    .thenReturn(mockPage);
+            Mockito.when(restaurantReviewService.getAllListForBuilding(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(Pageable.class))
+            ).thenReturn(mockList);
 
             // When
             // Then
@@ -66,8 +66,8 @@ class RestaurantReviewControllerTest {
                     .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.content").isArray())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.content.length()").value(10));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.length()").value(10));
         }
     }
 

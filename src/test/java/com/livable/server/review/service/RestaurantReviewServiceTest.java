@@ -1,8 +1,11 @@
 package com.livable.server.review.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.core.util.ImageSeparator;
 import com.livable.server.review.dto.Projection;
+import com.livable.server.review.dto.RestaurantReviewProjection;
 import com.livable.server.review.dto.RestaurantReviewResponse;
+import com.livable.server.review.repository.RestaurantReviewProjectionRepository;
 import com.livable.server.review.repository.RestaurantReviewRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +25,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.livable.server.review.dto.RestaurantReviewResponse.ListDTO;
+import static com.livable.server.review.dto.RestaurantReviewResponse.*;
 import static com.livable.server.review.dto.RestaurantReviewResponse.ListForMenuDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,12 +34,18 @@ class RestaurantReviewServiceTest {
     @Mock
     private RestaurantReviewRepository restaurantReviewRepository;
 
+    @Mock
+    private RestaurantReviewProjectionRepository restaurantReviewProjectionRepository;
+
+    @Mock
+    private ImageSeparator imageSeparator;
+
     @InjectMocks
     private RestaurantReviewService restaurantReviewService;
 
     @Nested
     @DisplayName("레스토랑 리뷰 리스트 서비스 단위 테스트")
-    class list {
+    class listForBuilding {
 
         @DisplayName("성공")
         @Test
@@ -44,34 +53,35 @@ class RestaurantReviewServiceTest {
             // Given
             Long buildingId = 1L;
 
-            List<ListDTO> mockList = List.of(
-                    ListDTO.builder().reviewId(1L).build(),
-                    ListDTO.builder().reviewId(2L).build(),
-                    ListDTO.builder().reviewId(3L).build(),
-                    ListDTO.builder().reviewId(4L).build(),
-                    ListDTO.builder().reviewId(5L).build(),
-                    ListDTO.builder().reviewId(6L).build(),
-                    ListDTO.builder().reviewId(7L).build(),
-                    ListDTO.builder().reviewId(8L).build(),
-                    ListDTO.builder().reviewId(9L).build(),
-                    ListDTO.builder().reviewId(10L).build()
+            List<RestaurantReviewProjection> mockList = List.of(
+                    RestaurantReviewProjection.builder().reviewId(1L).build(),
+                    RestaurantReviewProjection.builder().reviewId(2L).build(),
+                    RestaurantReviewProjection.builder().reviewId(3L).build(),
+                    RestaurantReviewProjection.builder().reviewId(4L).build(),
+                    RestaurantReviewProjection.builder().reviewId(5L).build(),
+                    RestaurantReviewProjection.builder().reviewId(6L).build(),
+                    RestaurantReviewProjection.builder().reviewId(7L).build(),
+                    RestaurantReviewProjection.builder().reviewId(8L).build(),
+                    RestaurantReviewProjection.builder().reviewId(9L).build(),
+                    RestaurantReviewProjection.builder().reviewId(10L).build()
             );
             Pageable pageable = PageRequest.of(0, 10);
-            Page<ListDTO> mockPage = new PageImpl<>(mockList, pageable, 1);
 
-            Mockito.when(restaurantReviewRepository.findRestaurantReviewByBuildingId(
+            Mockito.when(imageSeparator.separateConcatenatedImages(null))
+                    .thenReturn(new ArrayList<>());
+
+            Mockito.when(restaurantReviewProjectionRepository.findRestaurantReviewProjectionByBuildingId(
                     ArgumentMatchers.anyLong(),
                     ArgumentMatchers.any(Pageable.class)
-            )).thenReturn(mockPage);
+            )).thenReturn(mockList);
 
             // When
-            Page<ListDTO> actual =
-                    restaurantReviewService.getAllList(buildingId, pageable);
+            List<RestaurantReviewResponse.ListForBuildingDTO> actual =
+                    restaurantReviewService.getAllListForBuilding(buildingId, pageable);
 
             // Then
             Assertions.assertAll(
-                    () -> Assertions.assertEquals(10, actual.getSize()),
-                    () -> Assertions.assertEquals(1, actual.getTotalPages())
+                    () -> Assertions.assertEquals(10, actual.size())
             );
         }
     }
@@ -130,7 +140,7 @@ class RestaurantReviewServiceTest {
 
             List<Projection.RestaurantReview> mockResult = List.of(
                     Projection.RestaurantReview.builder()
-                            .reviewImg("TestImages")
+                            .images("TestImages")
                             .reviewDescription("TestDescription")
                             .build()
             );
@@ -138,7 +148,7 @@ class RestaurantReviewServiceTest {
             Mockito.when(restaurantReviewRepository.findRestaurantReviewById(ArgumentMatchers.anyLong()))
                     .thenReturn(mockResult);
             // When
-            RestaurantReviewResponse.DetailDTO actual = restaurantReviewService.getDetail(reviewId);
+            DetailDTO actual = restaurantReviewService.getDetail(reviewId);
 
             // Then
             Assertions.assertAll(
@@ -155,11 +165,11 @@ class RestaurantReviewServiceTest {
 
             List<Projection.RestaurantReview> mockResult = List.of(
                     Projection.RestaurantReview.builder()
-                            .reviewImg("TestImage1")
+                            .images("TestImage1")
                             .reviewDescription("TestDescription")
                             .build(),
                     Projection.RestaurantReview.builder()
-                            .reviewImg("TestImage2")
+                            .images("TestImage2")
                             .reviewDescription("TestDescription")
                             .build()
             );
@@ -167,7 +177,7 @@ class RestaurantReviewServiceTest {
             Mockito.when(restaurantReviewRepository.findRestaurantReviewById(ArgumentMatchers.anyLong()))
                     .thenReturn(mockResult);
             // When
-            RestaurantReviewResponse.DetailDTO actual = restaurantReviewService.getDetail(reviewId);
+            DetailDTO actual = restaurantReviewService.getDetail(reviewId);
 
             // Then
             Assertions.assertAll(
