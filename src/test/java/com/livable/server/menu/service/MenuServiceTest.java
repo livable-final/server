@@ -1,6 +1,5 @@
 package com.livable.server.menu.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,28 +7,20 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
-import com.livable.server.core.util.ActorType;
-import com.livable.server.menu.domain.MenuErrorCode;
 import com.livable.server.menu.dto.MenuResponse.RouletteMenuDTO;
 import com.livable.server.menu.dto.RouletteMenu;
 import com.livable.server.menu.dto.RouletteMenuProjection;
 import com.livable.server.menu.repository.MenuRepository;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
 
 @ExtendWith(MockitoExtension.class)
 class MenuServiceTest {
