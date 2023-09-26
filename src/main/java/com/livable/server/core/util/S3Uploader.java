@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -25,13 +26,16 @@ public class S3Uploader {
     private String bucket;
 
     public List<String> saveFile(List<MultipartFile> files) throws IOException {
+        if (Objects.isNull(files) || files.isEmpty()) {
+            return new ArrayList<>();
+        }
 
         List<String> accessUrls = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            String accessUrl = saveFile(file);
-            accessUrls.add(accessUrl);
-        }
+            for (MultipartFile file : files) {
+                String accessUrl = saveFile(file);
+                accessUrls.add(accessUrl);
+            }
         return accessUrls;
     }
 
