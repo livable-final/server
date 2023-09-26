@@ -25,9 +25,7 @@ public class MenuController {
 
         JwtTokenProvider.checkMemberToken(actor);
 
-        Long memberId = actor.getId();
-
-        List<RouletteMenuDTO> rouletteMenuDTOs = menuService.getRouletteMenus(memberId);
+        List<RouletteMenuDTO> rouletteMenuDTOs = menuService.getRouletteMenus();
 
         return ApiResponse.success(rouletteMenuDTOs, HttpStatus.OK);
     }

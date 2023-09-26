@@ -51,15 +51,15 @@ class MenuServiceTest {
 
 		RouletteMenuDTO expected = new RouletteMenuDTO(categoryName, result);
 
-		given(menuRepository.findRouletteMenus(anyLong()))
+		given(menuRepository.findRouletteMenus())
 				.willReturn(rouletteMenuProjections);
 
 		//when
 		List<RouletteMenuDTO> actual =
-				menuService.getRouletteMenus(1L);
+				menuService.getRouletteMenus();
 
 		//then
-		then(menuRepository).should(times(1)).findRouletteMenus(anyLong());
+		then(menuRepository).should(times(1)).findRouletteMenus();
 		assertAll(
 				() -> assertEquals(expected.getCategoryName(), actual.get(0).getCategoryName()),
 				() -> assertEquals(expected.getMenus().size(), actual.get(0).getMenus().size())
@@ -71,11 +71,11 @@ class MenuServiceTest {
 	void getRouletteMenusFailed() {
 
 		//given
-		given(menuRepository.findRouletteMenus(anyLong()))
+		given(menuRepository.findRouletteMenus())
 				.willReturn(new ArrayList<>());
 
 		//when
 		assertThrows(GlobalRuntimeException.class, () ->
-				menuService.getRouletteMenus(1l));
+				menuService.getRouletteMenus());
 	}
 }
