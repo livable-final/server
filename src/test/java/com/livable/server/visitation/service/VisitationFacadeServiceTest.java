@@ -93,7 +93,7 @@ class VisitationFacadeServiceTest {
         willDoNothing().given(visitationService).validateQrCode(anyString());
 
         // When
-        visitationFacadeService.validateQrCode(QR_CODE);
+        visitationFacadeService.validateQrCode(QR_CODE, 1L);
 
         // Then
         then(visitationService).should(times(1)).validateQrCode(anyString());

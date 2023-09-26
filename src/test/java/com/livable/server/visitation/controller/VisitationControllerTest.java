@@ -102,7 +102,7 @@ class VisitationControllerTest {
         String qr = "qr";
         VisitationRequest.ValidateQrCodeDto validateQrCodeSuccessMockRequest = new MockValidateQrCodeDto(qr);
 
-        willDoNothing().given(visitationFacadeService).validateQrCode(anyString());
+        willDoNothing().given(visitationFacadeService).validateQrCode(anyString(), anyLong());
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -115,7 +115,7 @@ class VisitationControllerTest {
         // then
         resultActions.andExpect(status().isOk());
 
-        then(visitationFacadeService).should(times(1)).validateQrCode(anyString());
+        then(visitationFacadeService).should(times(1)).validateQrCode(anyString(), anyLong());
     }
 
     @DisplayName("[POST][/api/visitation/qr] - QR인증 성공")
@@ -129,7 +129,9 @@ class VisitationControllerTest {
         VisitationRequest.ValidateQrCodeDto validateQrCodeSuccessMockRequest = new MockValidateQrCodeDto(qr);
 
 
-        willThrow(new GlobalRuntimeException(errorCode)).given(visitationFacadeService).validateQrCode(anyString());
+        willThrow(new GlobalRuntimeException(errorCode))
+                .given(visitationFacadeService)
+                .validateQrCode(anyString(), anyLong());
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -144,7 +146,7 @@ class VisitationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value(errorMessage));
 
-        then(visitationFacadeService).should(times(1)).validateQrCode(anyString());
+        then(visitationFacadeService).should(times(1)).validateQrCode(anyString(), anyLong());
     }
 
     @DisplayName("[POST][/api/visitation/parking] - 차량 등록 성공")
