@@ -1,4 +1,4 @@
-package com.livable.server.review.repository;
+package com.livable.server.review.repository.querydsl;
 
 import com.livable.server.review.dto.Projection;
 import com.livable.server.review.dto.RestaurantReviewResponse;
@@ -7,9 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-public interface RestaurantReviewCustomRepository {
-
-    Page<RestaurantReviewResponse.ListDTO> findRestaurantReviewByBuildingId(Long buildingId, Pageable pageable);
+public interface RestaurantReviewQueryDslRepository {
 
     Page<RestaurantReviewResponse.ListForMenuDTO> findRestaurantReviewByMenuId(Long menuId, Pageable pageable);
 

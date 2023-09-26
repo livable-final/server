@@ -1,4 +1,4 @@
-package com.livable.server.review.repository;
+package com.livable.server.review.repository.querydsl;
 
 import com.livable.server.review.dto.MyReviewProjection;
 import com.querydsl.core.types.Projections;
@@ -17,7 +17,7 @@ import static com.livable.server.entity.QReviewImage.reviewImage;
 
 @Component
 @RequiredArgsConstructor
-public class MyReviewRepositoryImpl implements MyReviewRepository {
+public class MyReviewQueryDslRepositoryImpl implements MyReviewQueryDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 

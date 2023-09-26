@@ -1,6 +1,5 @@
-package com.livable.server.review.repository;
+package com.livable.server.review.repository.querydsl;
 
-import com.livable.server.entity.*;
 import com.livable.server.review.dto.Projection;
 import com.livable.server.review.dto.RestaurantReviewResponse;
 import com.querydsl.core.types.Projections;
@@ -22,54 +21,9 @@ import static com.livable.server.entity.QReviewImage.reviewImage;
 import static com.livable.server.entity.QReviewMenuMap.reviewMenuMap;
 
 @RequiredArgsConstructor
-public class RestaurantReviewCustomRepositoryImpl implements RestaurantReviewCustomRepository {
+public class RestaurantReviewQueryDslRepositoryImpl implements RestaurantReviewQueryDslRepository {
 
     private final JPAQueryFactory queryFactory;
-
-    @Override
-    public Page<RestaurantReviewResponse.ListDTO> findRestaurantReviewByBuildingId(Long buildingId, Pageable pageable) {
-
-        final QReview review = QReview.review;
-        final QRestaurantReview restaurantReview = QRestaurantReview.restaurantReview;
-        final QMember member = QMember.member;
-        final QRestaurant restaurant = QRestaurant.restaurant;
-        final QBuildingRestaurantMap buildingRestaurantMap = QBuildingRestaurantMap.buildingRestaurantMap;
-
-        JPAQuery<RestaurantReviewResponse.ListDTO> query = queryFactory
-                .select(Projections.constructor(RestaurantReviewResponse.ListDTO.class,
-                        review.id,
-                        review.createdAt,
-                        review.description,
-                        restaurantReview.taste,
-                        restaurantReview.amount,
-                        restaurantReview.service,
-                        restaurantReview.speed,
-                        restaurantReview.restaurant.id,
-                        restaurant.name,
-                        review.member.id,
-                        member.name
-                ))
-                .from(review)
-                .innerJoin(restaurantReview).on(review.id.eq(restaurantReview.id))
-                .innerJoin(member).on(review.member.id.eq(member.id))
-                .innerJoin(restaurant).on(restaurantReview.restaurant.id.eq(restaurant.id))
-                .where(restaurantReview.restaurant.id.in(
-                        JPAExpressions
-                                .select(buildingRestaurantMap.restaurant.id)
-                                .from(buildingRestaurantMap)
-                                .where(buildingRestaurantMap.building.id.eq(buildingId))
-                ))
-                .orderBy(review.createdAt.desc());
-
-        List<RestaurantReviewResponse.ListDTO> content = query
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchJoin().fetch();
-
-        long total = query.fetchCount();
-
-        return new PageImpl<>(content, pageable, total);
-    }
 
     @Override
     public Page<RestaurantReviewResponse.ListForMenuDTO> findRestaurantReviewByMenuId(Long menuId, Pageable pageable) {
