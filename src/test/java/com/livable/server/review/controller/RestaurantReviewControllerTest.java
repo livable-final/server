@@ -1,7 +1,6 @@
 package com.livable.server.review.controller;
 
 import com.livable.server.core.util.TestConfig;
-import com.livable.server.review.dto.MyReviewResponse;
 import com.livable.server.review.dto.RestaurantReviewResponse;
 import com.livable.server.review.service.RestaurantReviewService;
 import org.junit.jupiter.api.DisplayName;
@@ -56,7 +55,6 @@ class RestaurantReviewControllerTest {
                     RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(9L).build(),
                     RestaurantReviewResponse.ListForBuildingDTO.builder().reviewId(10L).build()
             );
-            Pageable pageable = PageRequest.of(0, 10);
 
             Mockito.when(restaurantReviewService.getAllListForBuilding(
                     ArgumentMatchers.anyLong(),
@@ -66,7 +64,46 @@ class RestaurantReviewControllerTest {
             // When
             // Then
             mockMvc.perform(MockMvcRequestBuilders.get(uri)
-                    .accept(MediaType.APPLICATION_JSON))
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.length()").value(10));
+        }
+    }
+
+    @Nested
+    @DisplayName("특정 음식점에 대한 레스토랑 리뷰 리스트 컨트롤러 단위 테스트")
+    class listForRestaurant {
+
+        @DisplayName("성공")
+        @Test
+        void success_Test() throws Exception {
+            // Given
+            String uri = "/api/reviews/restaurants/1";
+
+            List<RestaurantReviewResponse.ListForRestaurantDTO> mockList = List.of(
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(1L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(2L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(3L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(4L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(6L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(5L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(7L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(8L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(9L).build(),
+                    RestaurantReviewResponse.ListForRestaurantDTO.builder().reviewId(10L).build()
+            );
+
+            Mockito.when(restaurantReviewService.getAllListForRestaurant(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(Pageable.class)
+            )).thenReturn(mockList);
+
+            // When
+            // Then
+            mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                            .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())

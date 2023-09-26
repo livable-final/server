@@ -87,6 +87,49 @@ class RestaurantReviewServiceTest {
     }
 
     @Nested
+    @DisplayName("특정 음식점에 대한 리뷰 리스트 서비스 단위 테스트")
+    class listForRestaurant {
+
+        @DisplayName("성공")
+        @Test
+        void success_Test() {
+            // Given
+            Long restaurantId = 1L;
+
+            List<RestaurantReviewProjection> mockList = List.of(
+                    RestaurantReviewProjection.builder().reviewId(1L).build(),
+                    RestaurantReviewProjection.builder().reviewId(2L).build(),
+                    RestaurantReviewProjection.builder().reviewId(3L).build(),
+                    RestaurantReviewProjection.builder().reviewId(4L).build(),
+                    RestaurantReviewProjection.builder().reviewId(5L).build(),
+                    RestaurantReviewProjection.builder().reviewId(6L).build(),
+                    RestaurantReviewProjection.builder().reviewId(7L).build(),
+                    RestaurantReviewProjection.builder().reviewId(8L).build(),
+                    RestaurantReviewProjection.builder().reviewId(9L).build(),
+                    RestaurantReviewProjection.builder().reviewId(10L).build()
+            );
+            Pageable pageable = PageRequest.of(0, 10);
+
+            Mockito.when(imageSeparator.separateConcatenatedImages(null))
+                    .thenReturn(new ArrayList<>());
+
+            Mockito.when(restaurantReviewProjectionRepository.findRestaurantReviewProjectionByRestaurantId(
+                    ArgumentMatchers.anyLong(),
+                    ArgumentMatchers.any(Pageable.class)
+            )).thenReturn(mockList);
+
+            // When
+            List<ListForRestaurantDTO> actual =
+                    restaurantReviewService.getAllListForRestaurant(restaurantId, pageable);
+
+            // Then
+            Assertions.assertAll(
+                    () -> Assertions.assertEquals(10, actual.size())
+            );
+        }
+    }
+
+    @Nested
     @DisplayName("특정 메뉴에 대한 레스토랑 리뷰 리스트 서비스 단위 테스트")
     class listForMenu {
 
