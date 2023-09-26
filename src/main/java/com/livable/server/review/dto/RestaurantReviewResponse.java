@@ -48,6 +48,42 @@ public class RestaurantReviewResponse {
 
     @Getter
     @Builder
+    public static class ListForRestaurantDTO {
+
+        private final String memberName;
+
+        private final Long restaurantId;
+        private final String restaurantName;
+
+        private final Long reviewId;
+        private final LocalDateTime reviewCreatedAt;
+        private final String reviewDescription;
+        private final Evaluation reviewTaste;
+        private final Evaluation reviewAmount;
+        private final Evaluation reviewService;
+        private final Evaluation reviewSpeed;
+
+        private List<String> reviewImages;
+
+        public static ListForRestaurantDTO valueOf(RestaurantReviewProjection restaurantReviewList, ImageSeparator imageSeparator) {
+            return ListForRestaurantDTO.builder()
+                    .memberName(restaurantReviewList.getMemberName())
+                    .restaurantId(restaurantReviewList.getRestaurantId())
+                    .restaurantName(restaurantReviewList.getRestaurantName())
+                    .reviewId(restaurantReviewList.getReviewId())
+                    .reviewCreatedAt(restaurantReviewList.getReviewCreatedAt())
+                    .reviewDescription(restaurantReviewList.getReviewDescription())
+                    .reviewTaste(restaurantReviewList.getReviewTaste())
+                    .reviewAmount(restaurantReviewList.getReviewAmount())
+                    .reviewService(restaurantReviewList.getReviewService())
+                    .reviewSpeed(restaurantReviewList.getReviewSpeed())
+                    .reviewImages(imageSeparator.separateConcatenatedImages(restaurantReviewList.getImages()))
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ListForMenuDTO {
