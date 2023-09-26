@@ -28,4 +28,8 @@ public class Visitor extends BaseTimeEntity {
 
     @Column
     private LocalDateTime firstVisitedTime;
+
+    public void updateFirstVisitedTime() {
+        this.firstVisitedTime = LocalDateTime.now();
+    }
 }
