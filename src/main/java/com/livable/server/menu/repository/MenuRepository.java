@@ -13,10 +13,10 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     @Query("SELECT distinct new com.livable.server.menu.dto.RouletteMenuProjection(menu.id, menu.name, mc.name) " +
             "FROM Member m " +
-            "JOIN Building b " +
-            "ON b.id = m.id " +
+            "JOIN Company c " +
+            "ON c.id = m.company.id " +
             "JOIN BuildingRestaurantMap brm " +
-            "ON brm.building.id = b.id " +
+            "ON brm.building.id = c.building.id " +
             "JOIN RestaurantMenuMap rmm " +
             "ON brm.restaurant.id = rmm.restaurant.id " +
             "JOIN Menu menu " +
