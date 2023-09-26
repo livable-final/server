@@ -21,9 +21,9 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
 
-    public List<RouletteMenuDTO> getRouletteMenus(Long buildingId) {
+    public List<RouletteMenuDTO> getRouletteMenus(Long memberId) {
 
-        List<RouletteMenuProjection> rouletteMenuProjections = menuRepository.findRouletteMenus(buildingId);
+        List<RouletteMenuProjection> rouletteMenuProjections = menuRepository.findRouletteMenus(memberId);
 
 				isValidateRouletteMenus(rouletteMenuProjections);
 
