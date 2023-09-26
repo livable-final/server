@@ -14,6 +14,16 @@ public class VisitorService {
 
     private final VisitorRepository visitorRepository;
 
+    public void updateFirstEntranceTime(final Long visitorId) {
+
+        Visitor visitor = visitorRepository.findById(visitorId)
+                .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
+
+        if (visitor.getFirstVisitedTime() == null) {
+            visitor.updateFirstVisitedTime();
+        }
+    }
+
     public Long findInvitationId(final Long visitorId) {
         return visitorRepository.findById(visitorId)
                 .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND))

@@ -29,8 +29,9 @@ public class VisitationFacadeService {
         return visitationService.createQrCode(invitationTime.getStartDateTime(), invitationTime.getEndDateTime());
     }
 
-    public void validateQrCode(final String qr) {
+    public void validateQrCode(final String qr, final Long visitorId) {
         visitationService.validateQrCode(qr);
+        visitorService.updateFirstEntranceTime(visitorId);
     }
 
     @Transactional

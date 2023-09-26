@@ -46,10 +46,12 @@ public class VisitationController {
 
     @PostMapping("/qr")
     public ResponseEntity<ApiResponse.Success<Object>> validateQrCode(
-            @RequestBody @Valid VisitationRequest.ValidateQrCodeDto validateQrCodeDto
+            @RequestBody @Valid VisitationRequest.ValidateQrCodeDto validateQrCodeDto,
+            @LoginActor Actor actor
     ) {
+        JwtTokenProvider.checkVisitorToken(actor);
 
-        visitationFacadeService.validateQrCode(validateQrCodeDto.getQr());
+        visitationFacadeService.validateQrCode(validateQrCodeDto.getQr(), actor.getId());
 
         return ApiResponse.success(HttpStatus.OK);
     }
