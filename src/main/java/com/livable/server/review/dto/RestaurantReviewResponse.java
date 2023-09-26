@@ -36,6 +36,7 @@ public class RestaurantReviewResponse {
                     .restaurantName(restaurantReviewList.getRestaurantName())
                     .reviewId(restaurantReviewList.getReviewId())
                     .reviewCreatedAt(restaurantReviewList.getReviewCreatedAt())
+                    .reviewDescription(restaurantReviewList.getReviewDescription())
                     .reviewTaste(restaurantReviewList.getReviewTaste())
                     .reviewAmount(restaurantReviewList.getReviewAmount())
                     .reviewService(restaurantReviewList.getReviewService())
