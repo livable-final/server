@@ -1,8 +1,8 @@
 package com.livable.server.member.repository;
 
 import com.livable.server.entity.Member;
-import com.livable.server.home.dto.HomeResponse.BuildingInfoDto;
 import com.livable.server.member.dto.AccessCardProjection;
+import com.livable.server.member.dto.BuildingInfoProjection;
 import com.livable.server.member.dto.MyPageProjection;
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +27,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             "WHERE m.id = :memberId")
     List<AccessCardProjection> findAccessCardData(@Param("memberId") Long memberId);
 
-    @Query("SELECT b.id AS buildingId, b.name AS buildingName, b.hasCafeteria AS hasCafeteria " +
+    @Query("SELECT new com.livable.server.member.dto.BuildingInfoProjection (b.id, b.name, b.hasCafeteria) " +
             "FROM Member m " +
             "JOIN Company c " +
             "ON m.company = c " +
-            "JOIN FETCH Building b " +
+            "JOIN Building b " +
             "ON c.building = b " +
             "WHERE m.id = :memberId")
-	  Optional<BuildingInfoDto> findBuildingInfoByMemberId(@Param("memberId") Long memberId);
+    Optional<BuildingInfoProjection> findBuildingInfoByMemberId(@Param("memberId") Long memberId);
 
 }
