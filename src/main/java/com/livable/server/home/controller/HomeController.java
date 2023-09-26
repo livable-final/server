@@ -25,6 +25,7 @@ public class HomeController {
 		JwtTokenProvider.checkMemberToken(actor);
 
 		Long memberId = actor.getId();
+
 		BuildingInfoDto buildingInfoDto = memberService.getBuildingInfo(memberId);
 
 		return ApiResponse.success(buildingInfoDto, HttpStatus.OK);

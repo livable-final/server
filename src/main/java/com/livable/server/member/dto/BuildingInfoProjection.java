@@ -10,4 +10,5 @@ public class BuildingInfoProjection {
     Long buildingId;
     String buildingName;
     Boolean hasCafeteria;
+
 }
