@@ -6,7 +6,7 @@ import com.livable.server.member.domain.MemberErrorCode;
 import java.util.Arrays;
 
 public enum ActorType {
-    MEMBER, VISITOR;
+    MEMBER, VISITOR, ADMIN;
 
     public static ActorType of(String type) {
         return Arrays.stream(values())
