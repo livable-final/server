@@ -3,8 +3,6 @@ package com.livable.server.home.dto;
 import com.livable.server.member.dto.AccessCardProjection;
 import com.livable.server.member.dto.BuildingInfoProjection;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,12 +11,21 @@ import lombok.NoArgsConstructor;
 public class HomeResponse {
 
 	@Getter
-	@AllArgsConstructor
+	@Builder
 	public static class BuildingInfoDto {
 
 		private Long buildingId;
 		private String buildingName;
 		private Boolean hasCafeteria;
+
+		public static BuildingInfoDto from(BuildingInfoProjection buildingInfoProjection) {
+			return BuildingInfoDto.builder()
+					.buildingId(buildingInfoProjection.getBuildingId())
+					.buildingName(buildingInfoProjection.getBuildingName())
+					.hasCafeteria(buildingInfoProjection.getHasCafeteria())
+					.build();
+		}
+
 	}
 
 	@Getter
