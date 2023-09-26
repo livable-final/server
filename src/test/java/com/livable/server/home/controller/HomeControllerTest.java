@@ -12,6 +12,7 @@ import com.livable.server.core.util.JwtTokenProvider;
 import com.livable.server.core.util.TestConfig;
 import com.livable.server.home.dto.HomeResponse.BuildingInfoDto;
 import com.livable.server.member.domain.MemberErrorCode;
+import com.livable.server.member.dto.BuildingInfoProjection;
 import com.livable.server.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,11 @@ class HomeControllerTest {
 		// given
 		Long memberId = 1L;
 		String token = tokenProvider.createActorToken(ActorType.MEMBER, memberId, new Date(new Date().getTime() + 10000000));
+
+		BuildingInfoProjection buildingInfoProjection = new BuildingInfoProjection(1L, "테라 타워", true);
+
 		given(memberService.getBuildingInfo(memberId))
-				.willReturn(new BuildingInfoDto(1L, "테라 타워", true));
+				.willReturn(BuildingInfoDto.from(buildingInfoProjection));
 
 		// when & then
 		mockMvc.perform(
