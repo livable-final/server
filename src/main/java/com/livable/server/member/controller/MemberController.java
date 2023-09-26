@@ -1,6 +1,9 @@
 package com.livable.server.member.controller;
 
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.core.util.Actor;
+import com.livable.server.core.util.JwtTokenProvider;
+import com.livable.server.core.util.LoginActor;
 import com.livable.server.member.dto.MemberResponse;
 import com.livable.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +19,11 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/api/members")
-    public ResponseEntity<ApiResponse.Success<MemberResponse.MyPageDTO>> myPage() {
+    public ResponseEntity<ApiResponse.Success<MemberResponse.MyPageDTO>> myPage(@LoginActor Actor actor) {
 
-        Long memberId = 1L; // TODO: JWT 구현 후 토큰에서 값 추출 예정
+        JwtTokenProvider.checkMemberToken(actor);
+
+        Long memberId = actor.getId();
         MemberResponse.MyPageDTO myPageDTO = memberService.getMyPageData(memberId);
 
         return ApiResponse.success(myPageDTO, HttpStatus.OK);

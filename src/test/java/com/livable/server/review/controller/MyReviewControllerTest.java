@@ -1,5 +1,8 @@
 package com.livable.server.review.controller;
 
+import com.livable.server.core.util.ActorType;
+import com.livable.server.core.util.JwtTokenProvider;
+import com.livable.server.core.util.TestConfig;
 import com.livable.server.review.dto.MyReviewResponse;
 import com.livable.server.review.service.MyReviewService;
 import org.junit.jupiter.api.DisplayName;
@@ -10,16 +13,23 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Date;
+
+@Import(TestConfig.class)
 @WebMvcTest(MyReviewController.class)
 class MyReviewControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @MockBean
     private MyReviewService myReviewService;
@@ -33,6 +43,7 @@ class MyReviewControllerTest {
         void success_Test() throws Exception {
             // Given
             String uri = "/api/reviews/restaurant/1/members";
+            String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 10000000));
 
             MyReviewResponse.DetailDTO mockResponse
                     = MyReviewResponse.DetailDTO.builder().build();
@@ -45,6 +56,7 @@ class MyReviewControllerTest {
             // When
             // Then
             mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                            .header("Authorization", "Bearer " + token)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists());
@@ -60,6 +72,7 @@ class MyReviewControllerTest {
         void success_Test() throws Exception {
             // Given
             String uri = "/api/reviews/cafeteria/1/members";
+            String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 10000000));
 
             MyReviewResponse.DetailDTO mockResponse
                     = MyReviewResponse.DetailDTO.builder().build();
@@ -72,6 +85,7 @@ class MyReviewControllerTest {
             // When
             // Then
             mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                            .header("Authorization", "Bearer " + token)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists());
@@ -86,6 +100,7 @@ class MyReviewControllerTest {
         @Test
         void success_Test() throws Exception {
             // Given
+            String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 10000000));
             String uri = "/api/reviews/lunchbox/1/members";
 
             MyReviewResponse.DetailDTO mockResponse
@@ -99,6 +114,7 @@ class MyReviewControllerTest {
             // When
             // Then
             mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                            .header("Authorization", "Bearer " + token)
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists());
