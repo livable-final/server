@@ -38,6 +38,18 @@ public class RestaurantReviewService {
     }
 
     @Transactional(readOnly = true)
+    public List<RestaurantReviewResponse.ListForRestaurantDTO> getAllListForRestaurant(Long restaurantId, Pageable pageable) {
+
+        List<RestaurantReviewProjection> reviewProjections =
+                restaurantProjectionRepository.findRestaurantReviewProjectionByRestaurantId(restaurantId, pageable);
+
+        return reviewProjections.stream()
+                .map(reviewProjection ->
+                        RestaurantReviewResponse.ListForRestaurantDTO.valueOf(reviewProjection, imageSeparator))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public Page<RestaurantReviewResponse.ListForMenuDTO> getAllListForMenu(Long menuId, Pageable pageable) {
         return restaurantReviewRepository.findRestaurantReviewByMenuId(menuId, pageable);
     }
