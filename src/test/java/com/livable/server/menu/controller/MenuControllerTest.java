@@ -47,7 +47,7 @@ class MenuControllerTest {
 
 		List<RouletteMenuDTO> mockResponse = new ArrayList<>();
 
-		given(menuService.getRouletteMenus(anyLong()))
+		given(menuService.getRouletteMenus())
 				.willReturn(mockResponse);
 
 		//when & then
@@ -66,7 +66,7 @@ class MenuControllerTest {
 
 		List<RouletteMenuDTO> mockResponse = new ArrayList<>();
 
-		given(menuService.getRouletteMenus(anyLong()))
+		given(menuService.getRouletteMenus())
 				.willThrow(new GlobalRuntimeException(MenuErrorCode.RETRIEVE_ROULETTE_MENU_FAILED));
 
 		//when & then
