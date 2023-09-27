@@ -28,9 +28,6 @@ public class AdminService {
             Pageable pageable, VisitationQuery visitationQuery, Long adminId
     ) {
         visitationQuery.validate();
-        /**
-         * 필요 테스트 1:
-         */
 
         Optional<Admin> optionalAdmin = adminRepository.findById(adminId);
         Admin admin = optionalAdmin.orElseThrow(
