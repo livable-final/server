@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
@@ -24,27 +24,36 @@ class QrCodeManagerTest {
     @InjectMocks
     QrCodeManager qrCodeManager;
 
-    @Spy
-    ObjectMapper objectMapper;
+    @Mock
+    QrCodeEncoder qrCodeEncoder;
+
+    @Mock
+    QrCodeDecoder qrCodeDecoder;
 
     @DisplayName("QrCodeManager.createQrCode 성공 테스트")
     @Test
-    void createQrCodeSuccessTest() throws JsonProcessingException {
+    void createQrCodeSuccessTest() {
 
         // Given
-        // When
+        String qrCode = "QR_CODE";
         LocalDateTime startDate = LocalDateTime.now().minusDays(1);
         LocalDateTime endDate = LocalDateTime.now().plusDays(1);
-        String qrCode = qrCodeManager.createQrCode(startDate, endDate);
+        BufferedImage bufferedImage = new BufferedImage(10, 10, 1);
+        given(qrCodeEncoder.createQrCodeBufferdImage(any(LocalDateTime.class), any(LocalDateTime.class))).willReturn(bufferedImage);
+        given(qrCodeEncoder.encodeQrcodeToBase64(any(BufferedImage.class))).willReturn(qrCode);
+
+        // When
+        String result = qrCodeManager.createQrCode(startDate, endDate);
 
         // Then
-        assertThat(qrCode).isNotNull();
-        then(objectMapper).should(times(1)).writeValueAsString(any());
+        assertThat(result).isEqualTo(qrCode);
+        then(qrCodeEncoder).should(times(1)).createQrCodeBufferdImage(any(LocalDateTime.class), any(LocalDateTime.class));
+        then(qrCodeEncoder).should(times(1)).encodeQrcodeToBase64(any(BufferedImage.class));
     }
 
     @DisplayName("QrCodeManager.createQrCode 실패 테스트_1")
     @Test
-    void createQrCodeFailTest_1() throws JsonProcessingException {
+    void createQrCodeFailTest_1() {
 
         // Given
         LocalDateTime startDate = LocalDateTime.now().plusDays(1);
@@ -59,7 +68,7 @@ class QrCodeManagerTest {
 
     @DisplayName("QrCodeManager.createQrCode 실패 테스트_2")
     @Test
-    void createQrCodeFailTest_2() throws JsonProcessingException {
+    void createQrCodeFailTest_2() {
 
         // Given
         LocalDateTime startDate = LocalDateTime.now().minusDays(2);
