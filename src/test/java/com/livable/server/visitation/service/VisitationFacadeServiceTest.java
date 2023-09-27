@@ -91,6 +91,7 @@ class VisitationFacadeServiceTest {
 
         // Given
         willDoNothing().given(visitationService).validateQrCode(anyString());
+        willDoNothing().given(visitorService).doEntrance(anyLong());
 
         // When
         visitationFacadeService.validateQrCode(QR_CODE, 1L);

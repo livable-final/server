@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -111,54 +111,34 @@ class VisitorServiceTest {
         then(visitorRepository).should(times(1)).findVisitationDetailInformationById(anyLong());
     }
 
-    @DisplayName("VisitorService.updateFirstEntranceTime 성공 테스트")
+    @DisplayName("VisitorService.doEntrance 성공 테스트")
     @Test
-    void updateFirstEntranceTimeSuccessTest_1() {
+    void doEntranceSuccessTest() {
         // given
-        Visitor visitor = mock(Visitor.class);
+        Visitor visitor = spy(Visitor.class);
         given(visitorRepository.findById(anyLong())).willReturn(Optional.of(visitor));
-        given(visitor.getFirstVisitedTime()).willReturn(null);
-        willDoNothing().given(visitor).updateFirstVisitedTime();
+        willDoNothing().given(visitor).entrance();
 
         // when
-        visitorService.updateFirstEntranceTime(1L);
+        visitorService.doEntrance(1L);
 
         // then
         then(visitorRepository).should(times(1)).findById(anyLong());
-        then(visitor).should(times(1)).getFirstVisitedTime();
-        then(visitor).should(times(1)).updateFirstVisitedTime();
+        then(visitor).should(times(1)).entrance();
     }
 
-    @DisplayName("VisitorService.updateFirstEntranceTime 성공 테스트")
+    @DisplayName("VisitorService.doEntrance 실패 테스트")
     @Test
-    void updateFirstEntranceTimeSuccessTest_2() {
-        // given
-        Visitor visitor = mock(Visitor.class);
-        given(visitorRepository.findById(anyLong())).willReturn(Optional.of(visitor));
-        given(visitor.getFirstVisitedTime()).willReturn(LocalDateTime.now());
-
-        // when
-        visitorService.updateFirstEntranceTime(1L);
-
-        // then
-        then(visitorRepository).should(times(1)).findById(anyLong());
-        then(visitor).should(times(1)).getFirstVisitedTime();
-        then(visitor).should(times(0)).updateFirstVisitedTime();
-    }
-
-    @DisplayName("VisitorService.updateFirstEntranceTime 실패 테스트")
-    @Test
-    void updateFirstEntranceTimeFailTest() {
+    void doEntranceFailTest() {
         // given
         given(visitorRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         GlobalRuntimeException globalRuntimeException =
-                assertThrows(
-                        GlobalRuntimeException.class, () -> visitorService.updateFirstEntranceTime(1L)
-                );
+                assertThrows(GlobalRuntimeException.class, () -> visitorService.doEntrance(1L));
+
         // then
-        assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.NOT_FOUND);
         then(visitorRepository).should(times(1)).findById(anyLong());
+        assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.NOT_FOUND);
     }
 }

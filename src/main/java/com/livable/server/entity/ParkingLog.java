@@ -31,4 +31,11 @@ public class ParkingLog extends BaseTimeEntity {
 
     @Column
     private Integer stayTime;
+
+    public static ParkingLog create(Visitor visitor, String carNumber) {
+        return ParkingLog.builder()
+                .carNumber(carNumber)
+                .visitor(visitor)
+                .build();
+    }
 }
