@@ -71,4 +71,15 @@ class QrCodeManagerTest {
         // Then
         assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.INVALID_QR_PERIOD);
     }
+
+    @DisplayName("QrCodeManager.validateQrCode 성공 테스트")
+    @Test
+    void validateQrCodeSuccessTest() {
+        LocalDateTime startDate = LocalDateTime.now().minusDays(1);
+        LocalDateTime endDate = LocalDateTime.now().plusDays(1);
+
+        String qrCode = qrCodeManager.createQrCode(startDate, endDate);
+
+        qrCodeManager.validateQrCode(qrCode);
+    }
 }
