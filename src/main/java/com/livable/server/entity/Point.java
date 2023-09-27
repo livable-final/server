@@ -21,4 +21,8 @@ public class Point extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer balance;
+
+    public void plusPoint(Integer amount) {
+        this.balance += amount;
+    }
 }

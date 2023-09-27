@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -30,5 +31,15 @@ public class PointController {
 
         PointResponse.ReviewCountDTO myReviewCount = pointService.getMyReviewCount(memberId, currentDate);
         return ApiResponse.success(myReviewCount, HttpStatus.OK);
+    }
+
+    @PostMapping("/api/points/logs/members")
+    public ResponseEntity<ApiResponse.Success<Object>> getAchievementPoint() {
+
+        Long memberId = 1L; // TODO: 토큰에서 값을 추출할 것
+        LocalDateTime requestDateTime = LocalDateTime.now();
+
+        pointService.getAchievementPoint(memberId, requestDateTime);
+        return ApiResponse.success(HttpStatus.CREATED);
     }
 }
