@@ -59,7 +59,8 @@ public class RestaurantService {
         return getRestaurantsByMenu(restaurantByMenuProjections);
     }
 
-    private List<RestaurantsByMenuDto> getRestaurantsByMenu(List<RestaurantByMenuProjection> restaurantByMenuProjections) {
+    private List<RestaurantsByMenuDto> getRestaurantsByMenu(
+        List<RestaurantByMenuProjection> restaurantByMenuProjections) {
 
         List<RestaurantsByMenuDto> restaurantsByMenuDtos = new ArrayList<>();
 
