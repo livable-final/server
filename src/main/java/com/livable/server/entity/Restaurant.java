@@ -1,8 +1,38 @@
 package com.livable.server.entity;
 
-import lombok.*;
+import com.livable.server.restaurant.dto.RestaurantByMenuProjection;
+import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SqlResultSetMapping;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+@SqlResultSetMapping(
+    name ="RestaurantsByMenuMapping",
+    classes = @ConstructorResult(
+        targetClass = RestaurantByMenuProjection.class,
+        columns = {
+            @ColumnResult(name = "restaurantId", type = Long.class),
+            @ColumnResult(name = "restaurantName", type = String.class),
+            @ColumnResult(name = "restaurantThumbnailUrl", type = String.class),
+            @ColumnResult(name = "address", type = String.class),
+            @ColumnResult(name = "inBuilding", type = Boolean.class),
+            @ColumnResult(name = "distance", type = Integer.class),
+            @ColumnResult(name = "review", type = String.class),
+            @ColumnResult(name = "tastePercentage", type = Integer.class),
+        }
+    )
+)
 
 @Getter
 @Builder
