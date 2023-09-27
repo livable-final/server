@@ -1,6 +1,5 @@
 package com.livable.server.visitation.domain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.visitation.mock.MockQrPayload;
 import org.junit.jupiter.api.DisplayName;
