@@ -19,10 +19,7 @@ public class ParkingLogService {
     }
 
     public void registerParkingLog(final Visitor visitor, final String carNumber) {
-        ParkingLog parkingLog = ParkingLog.builder()
-                .carNumber(carNumber)
-                .visitor(visitor)
-                .build();
+        ParkingLog parkingLog = ParkingLog.create(visitor, carNumber);
 
         parkingLogRepository.save(parkingLog);
     }
