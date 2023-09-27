@@ -49,7 +49,7 @@ class PointServiceTest {
             Mockito.when(dateFactory.getMonthRangeOf(ArgumentMatchers.any(LocalDateTime.class)))
                     .thenReturn(dateRange);
 
-            Mockito.when(pointRepository.findByMember_Id(ArgumentMatchers.anyLong()))
+            Mockito.when(pointRepository.findByMemberId(ArgumentMatchers.anyLong()))
                     .thenReturn(Optional.of(point));
 
             Mockito.when(pointRepository.findPointCountById(
@@ -73,7 +73,7 @@ class PointServiceTest {
             Long memberId = 1L;
             LocalDateTime currentDate = LocalDateTime.now();
 
-            Mockito.when(pointRepository.findByMember_Id(ArgumentMatchers.anyLong()))
+            Mockito.when(pointRepository.findByMemberId(ArgumentMatchers.anyLong()))
                     .thenReturn(Optional.empty());
 
             // When
