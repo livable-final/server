@@ -31,7 +31,7 @@ public class VisitationFacadeService {
 
     public void validateQrCode(final String qr, final Long visitorId) {
         visitationService.validateQrCode(qr);
-        visitorService.updateFirstEntranceTime(visitorId);
+        visitorService.doEntrance(visitorId);
     }
 
     @Transactional
