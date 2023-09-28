@@ -60,7 +60,6 @@ public class PointService {
         // 금일 이미 목표 달성 포인트를 지급받았는지 확인
         LocalDate requestDate = dateFactory.getPureDate(requestDateTime);
         List<PointLog> logsByDate = pointLogRepository.findLogsByDate(requestDate);
-        System.out.println(logsByDate.get(0).getCode());
         logsByDate.forEach(pointLog -> {
             if (PointAchievement.POINT_CODES.contains(pointLog.getCode())) {
                 throw new GlobalRuntimeException(PointErrorCode.ACHIEVEMENT_POINT_PAID_ALREADY);
