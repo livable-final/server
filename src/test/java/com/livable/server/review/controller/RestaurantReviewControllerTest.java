@@ -134,11 +134,10 @@ class RestaurantReviewControllerTest {
                     RestaurantReviewResponse.ListForMenuDTO.builder().reviewId(10L).build()
             );
             Pageable pageable = PageRequest.of(0, 10);
-            Page<RestaurantReviewResponse.ListForMenuDTO> mockPage = new PageImpl<>(mockList, pageable, 1);
 
             Mockito.when(restaurantReviewService
                             .getAllListForMenu(ArgumentMatchers.anyLong(), ArgumentMatchers.any(Pageable.class)))
-                    .thenReturn(mockPage);
+                    .thenReturn(mockList);
 
             // When
             // Then
@@ -146,8 +145,8 @@ class RestaurantReviewControllerTest {
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(MockMvcResultMatchers.status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.content").isArray())
-                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.content.length()").value(10));
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data").isArray())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.data.size()").value(10));
         }
     }
 
