@@ -29,9 +29,9 @@ public class MenuService {
 
 		List<RouletteMenuProjection> rouletteMenuProjections = menuRepository.findRouletteMenus();
 
-				isValidateRouletteMenus(rouletteMenuProjections, MenuErrorCode.RETRIEVE_ROULETTE_MENU_FAILED);
+		isValidateRouletteMenus(rouletteMenuProjections, MenuErrorCode.RETRIEVE_ROULETTE_MENU_FAILED);
 
-				Map<String, List<RouletteMenu>> rouletteMenuMap =  getMenusGroupByMenuCategory(rouletteMenuProjections);
+		Map<String, List<RouletteMenu>> rouletteMenuMap = getMenusGroupByMenuCategory(rouletteMenuProjections);
 
 		return convertToDTO(rouletteMenuMap);
 	}
@@ -42,7 +42,7 @@ public class MenuService {
 		}
 	}
 
-	private  Map<String, List<RouletteMenu>> getMenusGroupByMenuCategory(List<RouletteMenuProjection> rouletteMenuProjections){
+	private Map<String, List<RouletteMenu>> getMenusGroupByMenuCategory(List<RouletteMenuProjection> rouletteMenuProjections){
 
 		Map<String, List<RouletteMenu>> menuGroupByMenuCategoryMap = new LinkedHashMap<>();
 
