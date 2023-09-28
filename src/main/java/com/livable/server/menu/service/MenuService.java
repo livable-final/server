@@ -1,8 +1,11 @@
 package com.livable.server.menu.service;
 
+import com.livable.server.core.exception.ErrorCode;
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.menu.domain.MenuErrorCode;
+import com.livable.server.menu.dto.MenuResponse.MostSelectedMenuDTO;
 import com.livable.server.menu.dto.MenuResponse.RouletteMenuDTO;
+import com.livable.server.menu.dto.MostSelectedMenuProjection;
 import com.livable.server.menu.dto.RouletteMenu;
 import com.livable.server.menu.dto.RouletteMenuProjection;
 import com.livable.server.menu.repository.MenuRepository;
@@ -12,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -19,53 +24,77 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MenuService {
 
-    private final MenuRepository menuRepository;
+	private final MenuRepository menuRepository;
 
-    public List<RouletteMenuDTO> getRouletteMenus() {
+	public List<RouletteMenuDTO> getRouletteMenus() {
 
-        List<RouletteMenuProjection> rouletteMenuProjections = menuRepository.findRouletteMenus();
+		List<RouletteMenuProjection> rouletteMenuProjections = menuRepository.findRouletteMenus();
 
-				isValidateRouletteMenus(rouletteMenuProjections);
+				isValidateRouletteMenus(rouletteMenuProjections, MenuErrorCode.RETRIEVE_ROULETTE_MENU_FAILED);
 
 				Map<String, List<RouletteMenu>> rouletteMenuMap =  getMenusGroupByMenuCategory(rouletteMenuProjections);
 
-        return convertToDTO(rouletteMenuMap);
-    }
+		return convertToDTO(rouletteMenuMap);
+	}
 
-		private void isValidateRouletteMenus(List<RouletteMenuProjection> rouletteMenuProjections) {
-			if (rouletteMenuProjections.isEmpty()) {
-				throw new GlobalRuntimeException((MenuErrorCode.RETRIEVE_ROULETTE_MENU_FAILED));
-			}
+	private void isValidateRouletteMenus(List<?> projections, ErrorCode errorCode) {
+		if (projections.isEmpty()) {
+			throw new GlobalRuntimeException((errorCode));
 		}
-    
-    private  Map<String, List<RouletteMenu>> getMenusGroupByMenuCategory(List<RouletteMenuProjection> rouletteMenuProjections){
+	}
 
-			Map<String, List<RouletteMenu>> menuGroupByMenuCategoryMap = new LinkedHashMap<>();
+	private  Map<String, List<RouletteMenu>> getMenusGroupByMenuCategory(List<RouletteMenuProjection> rouletteMenuProjections){
 
-			for (RouletteMenuProjection rouletteMenuProjection : rouletteMenuProjections) {
+		Map<String, List<RouletteMenu>> menuGroupByMenuCategoryMap = new LinkedHashMap<>();
 
-				String menuCategoryName = rouletteMenuProjection.getMenuCategoryName();
+		for (RouletteMenuProjection rouletteMenuProjection : rouletteMenuProjections) {
 
-				RouletteMenu rouletteMenus = RouletteMenu.from(rouletteMenuProjection);
+			String menuCategoryName = rouletteMenuProjection.getMenuCategoryName();
 
-				menuGroupByMenuCategoryMap.computeIfAbsent(
-						menuCategoryName, k -> new ArrayList<>())
-						.add(rouletteMenus);
-			}
+			RouletteMenu rouletteMenus = RouletteMenu.from(rouletteMenuProjection);
 
-			return menuGroupByMenuCategoryMap;
-
+			menuGroupByMenuCategoryMap.computeIfAbsent(
+					menuCategoryName, k -> new ArrayList<>())
+					.add(rouletteMenus);
 		}
 
-		private List<RouletteMenuDTO> convertToDTO(Map<String, List<RouletteMenu>> menuGroupByMenuCategoryMap) {
+		return menuGroupByMenuCategoryMap;
+	}
 
-			List<RouletteMenuDTO> rouletteMenuDTOS = new ArrayList<>();
+	private List<RouletteMenuDTO> convertToDTO(Map<String, List<RouletteMenu>> menuGroupByMenuCategoryMap) {
 
-			menuGroupByMenuCategoryMap.forEach((key, value) ->
-				rouletteMenuDTOS.add(new RouletteMenuDTO(key, value))
-			);
+		List<RouletteMenuDTO> rouletteMenuDTOS = new ArrayList<>();
 
-			return rouletteMenuDTOS;
+		menuGroupByMenuCategoryMap.forEach((key, value) ->
+			rouletteMenuDTOS.add(new RouletteMenuDTO(key, value))
+		);
+
+		return rouletteMenuDTOS;
+	}
+    public List<MostSelectedMenuDTO> getMostSelectedMenu(Long buildingId, Integer limit) {
+
+		if (limit == 0) {
+		  	throw new GlobalRuntimeException(MenuErrorCode.BAD_PAGING_REQUEST);
 		}
+
+	  	Pageable pageable = PageRequest.of(0,limit);
+
+		List<MostSelectedMenuProjection> mostSelectedMenuProjections = menuRepository.findMostSelectedMenuOrderByCount(buildingId, pageable);
+
+		return convertToDTO(mostSelectedMenuProjections);
+	}
+
+	private List<MostSelectedMenuDTO> convertToDTO(List<MostSelectedMenuProjection> mostSelectedMenuProjections) {
+
+	  List<MostSelectedMenuDTO> mostSelectedMenus = new ArrayList<>();
+
+	  for (int i = 0; i < mostSelectedMenuProjections.size(); i++) {
+		int rank = i + 1;
+		MostSelectedMenuDTO mostSelectedMenuDTO = MostSelectedMenuDTO.from(mostSelectedMenuProjections.get(i), rank);
+		mostSelectedMenus.add(mostSelectedMenuDTO);
+	  }
+
+	  return mostSelectedMenus;
+	}
   
 }
