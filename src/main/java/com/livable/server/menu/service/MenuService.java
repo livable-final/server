@@ -72,10 +72,6 @@ public class MenuService {
 	}
     public List<MostSelectedMenuDTO> getMostSelectedMenu(Long buildingId, Pageable pageable) {
 
-		if (pageable.getPageSize() == 0) {
-		  	throw new GlobalRuntimeException(MenuErrorCode.BAD_PAGING_REQUEST);
-		}
-
 		List<MostSelectedMenuProjection> mostSelectedMenuProjections = menuRepository.findMostSelectedMenuOrderByCount(buildingId, pageable);
 
 		return convertToDTO(mostSelectedMenuProjections);
