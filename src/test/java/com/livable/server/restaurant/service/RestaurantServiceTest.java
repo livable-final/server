@@ -1,13 +1,33 @@
 package com.livable.server.restaurant.service;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.domain.RandomGenerator;
+import com.livable.server.restaurant.dto.RestaurantByMenuProjection;
 import com.livable.server.restaurant.dto.RestaurantResponse;
+import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
 import com.livable.server.restaurant.repository.BuildingRestaurantMapRepository;
+import com.livable.server.restaurant.repository.RestaurantGroupByMenuProjectionRepository;
 import com.livable.server.restaurant.repository.RestaurantRepository;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.repository.VisitorRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,18 +36,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class RestaurantServiceTest {
@@ -39,6 +47,8 @@ class RestaurantServiceTest {
     RandomGenerator<Pageable> randomGenerator;
     @Mock
     RestaurantRepository restaurantRepository;
+    @Mock
+    RestaurantGroupByMenuProjectionRepository restaurantGroupByMenuProjectionRepository;
     @Mock
     VisitorRepository visitorRepository;
     @Mock
@@ -109,4 +119,62 @@ class RestaurantServiceTest {
         assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.NOT_FOUND);
         then(visitorRepository).should(times(1)).findBuildingIdById(anyLong());
     }
+
+    @DisplayName("SUCCESS - 메뉴별 식당 목록 응답 서비스 테스트")
+    @Test
+    void findRestaurantByMenuSuccess() {
+
+        //given
+        Long restaurantId = 1L;
+        String restaurantName = "레스토랑";
+        String restaurantThumbnailUrl = "/restaurantImg.com";
+        String address ="address for restaurant";
+        Boolean inBuilding = true;
+        Integer distance = 100;
+        String review = "this is review";
+        Integer tastePercentage = 30;
+
+        List<RestaurantByMenuProjection> projections = List.of(
+            new RestaurantByMenuProjection(restaurantId, restaurantName, restaurantThumbnailUrl,
+                address, inBuilding, distance, review, tastePercentage)
+        );
+
+        given(restaurantGroupByMenuProjectionRepository.findRestaurantByMenuId(anyLong(), anyLong()))
+            .willReturn(projections);
+
+        // when
+        List<RestaurantsByMenuDto> actual =
+            restaurantService.findRestaurantByMenuId(anyLong(), anyLong());
+
+        // then
+        assertAll(
+            () -> assertEquals(restaurantId, actual.get(0).getRestaurantId()),
+            () -> assertEquals(restaurantName, actual.get(0).getRestaurantName()),
+            () -> assertEquals(restaurantThumbnailUrl, actual.get(0).getRepresentativeImageUrl()),
+            () -> assertEquals(address, actual.get(0).getAddress()),
+            () -> assertEquals(inBuilding, actual.get(0).getInBuilding()),
+            () -> assertEquals(distance / 80, actual.get(0).getEstimatedTime()),
+            () -> assertEquals(review, actual.get(0).getReview()),
+            () -> assertEquals(tastePercentage, actual.get(0).getTastePercentage())
+        );
+
+    }
+
+    @DisplayName("FAIELD - 메뉴별 식당 목록 응답 서비스 테스트")
+    @Test
+    void findRestaurantByMenuFailed() {
+
+        // given
+
+
+        // when
+        given(restaurantGroupByMenuProjectionRepository.findRestaurantByMenuId(anyLong(), anyLong()))
+            .willReturn(new ArrayList<>());
+
+        // then
+        Assertions.assertThrows(GlobalRuntimeException.class, () ->
+            restaurantService.findRestaurantByMenuId(1L, 1L));
+
+    }
+
 }
