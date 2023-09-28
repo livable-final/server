@@ -139,34 +139,32 @@ class RestaurantReviewServiceTest {
             // Given
             Long menuId = 1L;
 
-            List<ListForMenuDTO> mockList = List.of(
-                    ListForMenuDTO.builder().reviewId(1L).build(),
-                    ListForMenuDTO.builder().reviewId(2L).build(),
-                    ListForMenuDTO.builder().reviewId(3L).build(),
-                    ListForMenuDTO.builder().reviewId(4L).build(),
-                    ListForMenuDTO.builder().reviewId(5L).build(),
-                    ListForMenuDTO.builder().reviewId(6L).build(),
-                    ListForMenuDTO.builder().reviewId(7L).build(),
-                    ListForMenuDTO.builder().reviewId(8L).build(),
-                    ListForMenuDTO.builder().reviewId(9L).build(),
-                    ListForMenuDTO.builder().reviewId(10L).build()
+            List<RestaurantReviewProjection> mockList = List.of(
+                    RestaurantReviewProjection.builder().reviewId(1L).build(),
+                    RestaurantReviewProjection.builder().reviewId(2L).build(),
+                    RestaurantReviewProjection.builder().reviewId(3L).build(),
+                    RestaurantReviewProjection.builder().reviewId(4L).build(),
+                    RestaurantReviewProjection.builder().reviewId(5L).build(),
+                    RestaurantReviewProjection.builder().reviewId(6L).build(),
+                    RestaurantReviewProjection.builder().reviewId(7L).build(),
+                    RestaurantReviewProjection.builder().reviewId(8L).build(),
+                    RestaurantReviewProjection.builder().reviewId(9L).build(),
+                    RestaurantReviewProjection.builder().reviewId(10L).build()
             );
             Pageable pageable = PageRequest.of(0, 10);
-            Page<ListForMenuDTO> mockPage = new PageImpl<>(mockList, pageable, 1);
 
-            Mockito.when(restaurantReviewRepository.findRestaurantReviewByMenuId(
+            Mockito.when(restaurantReviewProjectionRepository.findRestaurantReviewProjectionByMenuId(
                     ArgumentMatchers.anyLong(),
                     ArgumentMatchers.any(Pageable.class)
-            )).thenReturn(mockPage);
+            )).thenReturn(mockList);
 
             // When
-            Page<ListForMenuDTO> actual =
+            List<ListForMenuDTO> actual =
                     restaurantReviewService.getAllListForMenu(menuId, pageable);
 
             // Then
             Assertions.assertAll(
-                    () -> Assertions.assertEquals(10, actual.getSize()),
-                    () -> Assertions.assertEquals(1, actual.getTotalPages())
+                    () -> Assertions.assertEquals(10, actual.size())
             );
         }
     }
