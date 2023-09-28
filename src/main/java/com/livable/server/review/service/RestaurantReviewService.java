@@ -50,8 +50,14 @@ public class RestaurantReviewService {
     }
 
     @Transactional(readOnly = true)
-    public Page<RestaurantReviewResponse.ListForMenuDTO> getAllListForMenu(Long menuId, Pageable pageable) {
-        return restaurantReviewRepository.findRestaurantReviewByMenuId(menuId, pageable);
+    public List<RestaurantReviewResponse.ListForMenuDTO> getAllListForMenu(Long menuId, Pageable pageable) {
+        List<RestaurantReviewProjection> reviewProjections =
+                restaurantProjectionRepository.findRestaurantReviewProjectionByMenuId(menuId, pageable);
+
+        return reviewProjections.stream()
+                .map(reviewProjection ->
+                        RestaurantReviewResponse.ListForMenuDTO.valueOf(reviewProjection, imageSeparator))
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
