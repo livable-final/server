@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -71,13 +70,11 @@ public class MenuService {
 
 		return rouletteMenuDTOS;
 	}
-    public List<MostSelectedMenuDTO> getMostSelectedMenu(Long buildingId, Integer limit) {
+    public List<MostSelectedMenuDTO> getMostSelectedMenu(Long buildingId, Pageable pageable) {
 
-		if (limit == 0) {
+		if (pageable.getPageSize() == 0) {
 		  	throw new GlobalRuntimeException(MenuErrorCode.BAD_PAGING_REQUEST);
 		}
-
-	  	Pageable pageable = PageRequest.of(0,limit);
 
 		List<MostSelectedMenuProjection> mostSelectedMenuProjections = menuRepository.findMostSelectedMenuOrderByCount(buildingId, pageable);
 

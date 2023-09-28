@@ -12,6 +12,8 @@ import com.livable.server.menu.dto.MenuResponse.RouletteMenuDTO;
 import com.livable.server.menu.service.MenuService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +41,10 @@ public class MenuController {
 
         JwtTokenProvider.checkMemberToken(actor);
 
-        List<MostSelectedMenuDTO> mostSelectedMenu = menuService.getMostSelectedMenu(buildingId, MOST_SELECTED_MENU.getLimit());
+        //추후 가져 오는 메뉴 숫자 변경시 변경
+        Pageable pageable = PageRequest.of(0, MOST_SELECTED_MENU.getLimit());
+
+        List<MostSelectedMenuDTO> mostSelectedMenu = menuService.getMostSelectedMenu(buildingId, pageable);
 
         return ApiResponse.success(mostSelectedMenu, HttpStatus.OK);
     }
