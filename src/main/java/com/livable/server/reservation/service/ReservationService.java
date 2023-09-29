@@ -2,6 +2,7 @@ package com.livable.server.reservation.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.Member;
+import com.livable.server.invitation.repository.InvitationReservationMapRepository;
 import com.livable.server.member.domain.MemberErrorCode;
 import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.reservation.dto.AvailableReservationTimeProjection;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -23,12 +21,15 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
+    private final InvitationReservationMapRepository invitationReservationMapRepository;
 
     public List<ReservationResponse.AvailableReservationTimePerDateDto> findAvailableReservationTimes(
             Long memberId,
             Long commonPlaceId,
             LocalDate date
     ) {
+
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new GlobalRuntimeException(MemberErrorCode.MEMBER_NOT_EXIST));
 
@@ -41,8 +42,11 @@ public class ReservationService {
     private AvailableReservationTimeProjections getAvailableReservationTimeProjections(
             Long companyId, Long commonPlaceId, LocalDate date
     ) {
+        List<Long> usedReservationIds = invitationReservationMapRepository.findAllReservationId();
         List<AvailableReservationTimeProjection> timeProjections =
-                reservationRepository.findNotUsedReservationTime(companyId, commonPlaceId, date);
+                reservationRepository.findNotUsedReservationTimeByUsedReservationIds(
+                        companyId, commonPlaceId, date, usedReservationIds
+                );
 
         return new AvailableReservationTimeProjections(timeProjections);
     }

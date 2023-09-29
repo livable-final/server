@@ -2,7 +2,9 @@ package com.livable.server.reservation.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.Company;
+import com.livable.server.entity.InvitationReservationMap;
 import com.livable.server.entity.Member;
+import com.livable.server.invitation.repository.InvitationReservationMapRepository;
 import com.livable.server.member.domain.MemberErrorCode;
 import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.reservation.dto.AvailableReservationTimeProjection;
@@ -43,6 +45,9 @@ class ReservationServiceTest {
     @Mock
     MemberRepository memberRepository;
 
+    @Mock
+    InvitationReservationMapRepository invitationReservationMapRepository;
+
     @DisplayName("ReservationService.findAvailableReservationTimes 성공 테스트")
     @Test
     void findAvailableReservationTimesSuccessTest() {
@@ -66,8 +71,12 @@ class ReservationServiceTest {
 
         AvailableReservationTimeProjections projections = new AvailableReservationTimeProjections(queryResult);
 
+        given(invitationReservationMapRepository.findAllReservationId()).willReturn(List.of(1L, 2L, 3L));
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
-        given(reservationRepository.findNotUsedReservationTime(anyLong(), anyLong(), any(LocalDate.class)))
+        given(reservationRepository.findNotUsedReservationTimeByUsedReservationIds(
+                        anyLong(), anyLong(), any(LocalDate.class), any(List.class)
+                )
+        )
                 .willReturn(queryResult);
 
         // when
@@ -75,9 +84,10 @@ class ReservationServiceTest {
                 reservationService.findAvailableReservationTimes(1L, 1L, LocalDate.now());
 
         // then
+        then(invitationReservationMapRepository).should(times(1)).findAllReservationId();
         then(memberRepository).should(times(1)).findById(anyLong());
         then(reservationRepository).should(times(1))
-                .findNotUsedReservationTime(anyLong(), anyLong(), any(LocalDate.class));
+                .findNotUsedReservationTimeByUsedReservationIds(anyLong(), anyLong(), any(LocalDate.class), any(List.class));
 
         assertThat(result).usingRecursiveComparison().isEqualTo(projections.toDto());
     }
