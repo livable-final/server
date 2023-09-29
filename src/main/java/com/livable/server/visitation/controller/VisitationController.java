@@ -39,9 +39,9 @@ public class VisitationController {
         JwtTokenProvider.checkVisitorToken(actor);
 
         Long visitorId = actor.getId();
-        String base64QrCode = visitationFacadeService.createQrCode(visitorId);
+        VisitationResponse.Base64QrCode qrCode = visitationFacadeService.createQrCode(visitorId);
 
-        return ApiResponse.success(base64QrCode, HttpStatus.OK);
+        return ApiResponse.success(qrCode, HttpStatus.OK);
     }
 
     @PostMapping("/qr")

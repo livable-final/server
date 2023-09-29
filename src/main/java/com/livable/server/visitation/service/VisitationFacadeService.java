@@ -23,10 +23,14 @@ public class VisitationFacadeService {
         return visitorService.findVisitationDetailInformation(visitorId);
     }
 
-    public String createQrCode(final Long visitorId) {
+    public VisitationResponse.Base64QrCode createQrCode(final Long visitorId) {
         VisitationResponse.InvitationTimeDto invitationTime = invitationService.findInvitationTime(visitorId);
 
-        return visitationService.createQrCode(invitationTime.getStartDateTime(), invitationTime.getEndDateTime());
+        String base64QrCode = visitationService.createQrCode(
+                invitationTime.getStartDateTime(), invitationTime.getEndDateTime()
+        );
+
+        return VisitationResponse.Base64QrCode.of(base64QrCode);
     }
 
     public void validateQrCode(final String qr, final Long visitorId) {
