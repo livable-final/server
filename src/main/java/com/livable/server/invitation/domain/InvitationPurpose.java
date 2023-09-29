@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum InvitationPurpose {
 
-    MEETING("회의"),
-    INTERVIEW("면접"),
-    PERIOD_WORK("기간 근무"),
-    SEMINAR("세미나"),
-    AFTER_SERVICE("AS/점검"),
-    ETC("기타");
+    MEETING("meeting"),
+    INTERVIEW("interview"),
+    PERIOD_WORK("fixedTermWork"),
+    SEMINAR("seminar"),
+    AFTER_SERVICE("as"),
+    ETC("etc");
 
     private final String value;
 }

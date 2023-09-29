@@ -130,7 +130,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .visitors(List.of(
                         InvitationRequest.VisitorCreateDTO.builder().build(),
                         InvitationRequest.VisitorCreateDTO.builder().build()
@@ -150,7 +150,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
                 .build();
 
@@ -169,7 +169,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .startDate(LocalDateTime.of(2025, 10, 30, 0, 0, 0))
                 .endDate(LocalDateTime.of(2025, 10, 29, 0, 0, 0))
                 .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
@@ -192,7 +192,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
                 .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
@@ -215,7 +215,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 30, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
                 .visitors(List.of(InvitationRequest.VisitorCreateDTO.builder().build()))
@@ -238,7 +238,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .commonPlaceId(1L)
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
@@ -267,7 +267,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .commonPlaceId(null)
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 28, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
@@ -291,7 +291,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .commonPlaceId(null)
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 12, 14, 0))
@@ -315,7 +315,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .commonPlaceId(null)
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 28, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 12, 38, 0))
@@ -339,7 +339,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .commonPlaceId(1L)
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
@@ -373,7 +373,7 @@ class InvitationServiceTest {
         // Given
         Long memberId = 1L;
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .commonPlaceId(null)
                 .startDate(LocalDateTime.of(2025, 10, 30, 10, 0, 0))
                 .endDate(LocalDateTime.of(2025, 10, 30, 12, 0, 0))
@@ -584,7 +584,7 @@ class InvitationServiceTest {
         given(invitationRepository.findById(anyLong()))
                 .willReturn(Optional.of(Invitation.builder()
                         .id(invitationId)
-                        .purpose("면접")
+                        .purpose("interview")
                         .startDate(dateAfterRequestDate)
                         .member(member)
                         .build()
