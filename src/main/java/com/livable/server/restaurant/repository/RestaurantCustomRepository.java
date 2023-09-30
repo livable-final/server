@@ -13,4 +13,6 @@ public interface RestaurantCustomRepository {
             RestaurantCategory category,
             Pageable pageable
     );
+
+    List<RestaurantResponse.listMenuDTO> findMenuList(Long restaurantId);
 }

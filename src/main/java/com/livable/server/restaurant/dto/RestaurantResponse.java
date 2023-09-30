@@ -1,13 +1,11 @@
 package com.livable.server.restaurant.dto;
 
+import com.livable.server.entity.Menu;
 import com.livable.server.entity.RestaurantCategory;
+import lombok.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RestaurantResponse {
@@ -29,6 +27,13 @@ public class RestaurantResponse {
         private String url;
     }
 
+    @Getter
+    @AllArgsConstructor
+    public static class listMenuDTO {
+        private Long menuId;
+        private String menuName;
+    }
+    
     @Getter
     @Builder
     @NoArgsConstructor
@@ -78,14 +83,10 @@ public class RestaurantResponse {
                     if (address.contains("지하")) {
                         floor *= -1;
                     }
-
                 }
-
             }
 
             return floor;
         }
-
     }
-
 }

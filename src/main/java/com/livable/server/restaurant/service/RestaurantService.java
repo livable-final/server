@@ -1,7 +1,9 @@
 package com.livable.server.restaurant.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.entity.Member;
 import com.livable.server.entity.RestaurantCategory;
+import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.restaurant.domain.RandomGenerator;
 import com.livable.server.restaurant.domain.RestaurantErrorCode;
 import com.livable.server.restaurant.dto.RestaurantByMenuProjection;
@@ -10,6 +12,7 @@ import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto
 import com.livable.server.restaurant.repository.BuildingRestaurantMapRepository;
 import com.livable.server.restaurant.repository.RestaurantGroupByMenuProjectionRepository;
 import com.livable.server.restaurant.repository.RestaurantRepository;
+import com.livable.server.review.domain.ReviewErrorCode;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.repository.VisitorRepository;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +34,7 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final VisitorRepository visitorRepository;
     private final BuildingRestaurantMapRepository buildingRestaurantMapRepository;
+    private final MemberRepository memberRepository;
     private final RestaurantGroupByMenuProjectionRepository restaurantGroupByMenuProjectionRepository;
 
     public List<RestaurantResponse.NearRestaurantDto> findNearRestaurantByVisitorIdAndRestaurantCategory(
@@ -47,6 +52,19 @@ public class RestaurantService {
         return restaurantRepository.findRestaurantByBuildingIdAndRestaurantCategory(
                 buildingId, category, randomGenerator.getRandom(nearRestaurantCount)
         );
+    }
+
+
+    public List<RestaurantResponse.listMenuDTO> findMenuList(Long memberId, Long restaurantId) {
+        checkExistMemberById(memberId);
+
+        return restaurantRepository.findMenuList(restaurantId);
+    }
+
+    private Member checkExistMemberById(Long memberId) {
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+
+        return memberOptional.orElseThrow(() -> new GlobalRuntimeException(ReviewErrorCode.MEMBER_NOT_EXIST));
     }
 
     public List<RestaurantsByMenuDto> findRestaurantByMenuId(Long menuId, Long memberId) {
