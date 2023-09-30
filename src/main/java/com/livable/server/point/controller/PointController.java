@@ -26,7 +26,7 @@ public class PointController {
 
         JwtTokenProvider.checkMemberToken(actor);
 
-        Long memberId = actor.getId(); // TODO: 토큰에서 값을 추출할 것
+        Long memberId = actor.getId();
         LocalDateTime currentDate = LocalDateTime.now();
 
         PointResponse.ReviewCountDTO myReviewCount = pointService.getMyReviewCount(memberId, currentDate);
@@ -34,9 +34,11 @@ public class PointController {
     }
 
     @PostMapping("/api/points/logs/members")
-    public ResponseEntity<ApiResponse.Success<Object>> getAchievementPoint() {
+    public ResponseEntity<ApiResponse.Success<Object>> getAchievementPoint(@LoginActor Actor actor) {
 
-        Long memberId = 1L; // TODO: 토큰에서 값을 추출할 것
+        JwtTokenProvider.checkMemberToken(actor);
+
+        Long memberId = actor.getId();
         LocalDateTime requestDateTime = LocalDateTime.now();
 
         pointService.getAchievementPoint(memberId, requestDateTime);

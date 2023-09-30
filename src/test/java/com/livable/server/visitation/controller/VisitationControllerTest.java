@@ -8,6 +8,7 @@ import com.livable.server.core.util.JwtTokenProvider;
 import com.livable.server.core.util.TestConfig;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.dto.VisitationRequest;
+import com.livable.server.visitation.dto.VisitationResponse;
 import com.livable.server.visitation.mock.MockDetailInformationDto;
 import com.livable.server.visitation.mock.MockRegisterParkingDto;
 import com.livable.server.visitation.mock.MockValidateQrCodeDto;
@@ -75,9 +76,10 @@ class VisitationControllerTest {
     void createQrCodeSuccessTest() throws Exception {
         String token = tokenProvider.createActorToken(ActorType.VISITOR, 1L, new Date(new Date().getTime() + 10000000));
         String base64QrCode = "base64QrCode임 ㅋㅋ";
+        VisitationResponse.Base64QrCode result = VisitationResponse.Base64QrCode.of(base64QrCode);
 
         // given
-        given(visitationFacadeService.createQrCode(1L)).willReturn(base64QrCode);
+        given(visitationFacadeService.createQrCode(1L)).willReturn(result);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -89,7 +91,7 @@ class VisitationControllerTest {
         // then
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.data").value(base64QrCode));
+                .andExpect(jsonPath("$.data.qr").value(base64QrCode));
 
         then(visitationFacadeService).should(times(1)).createQrCode(1L);
     }

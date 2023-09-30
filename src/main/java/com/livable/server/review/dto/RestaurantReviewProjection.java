@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class RestaurantReviewProjection {
 
     private String memberName;
+    private String memberProfileImage;
 
     private Long restaurantId;
     private String restaurantName;
@@ -28,6 +29,7 @@ public class RestaurantReviewProjection {
     private String images;
 
     public RestaurantReviewProjection(String memberName,
+                                      String memberProfileImage,
                                       Long restaurantId,
                                       String restaurantName,
                                       Long reviewId,
@@ -40,6 +42,7 @@ public class RestaurantReviewProjection {
                                       String images) {
 
         this.memberName = memberName;
+        this.memberProfileImage = memberProfileImage;
         this.restaurantId = restaurantId;
         this.restaurantName = restaurantName;
         this.reviewId = reviewId;

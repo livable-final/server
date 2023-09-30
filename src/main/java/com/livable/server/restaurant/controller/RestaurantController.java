@@ -9,6 +9,7 @@ import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.dto.RestaurantResponse;
 import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
 import com.livable.server.restaurant.service.RestaurantService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,16 +43,32 @@ public class RestaurantController {
 
         return ApiResponse.success(result, HttpStatus.OK);
     }
+  
 
-    @GetMapping("/restaurants/menus/{menuId}")
-    public ResponseEntity<Success<List<RestaurantsByMenuDto>>> getRestaurantsByMenu(
-            @PathVariable("menuId") Long menuId, @LoginActor Actor actor
+    @GetMapping("/{restaurantId}/menus")
+    public ResponseEntity<ApiResponse.Success<List>> sellMenuByRestaurant (
+            @PathVariable Long restaurantId,
+            @LoginActor Actor actor
             ) {
-
+      
         JwtTokenProvider.checkMemberToken(actor);
 
         Long memberId = actor.getId();
 
+        List<RestaurantResponse.listMenuDTO> result = restaurantService.findMenuList(memberId, restaurantId);
+
+        return ApiResponse.success(result, HttpStatus.OK);
+    }
+  
+    @GetMapping("/restaurants/menus/{menuId}")
+    public ResponseEntity<Success<List<RestaurantsByMenuDto>>> getRestaurantsByMenu(
+            @PathVariable("menuId") Long menuId, @LoginActor Actor actor
+            ) {
+      
+        JwtTokenProvider.checkMemberToken(actor);
+
+        Long memberId = actor.getId();
+      
         List<RestaurantsByMenuDto> restaurantsByMenuDtos = restaurantService.findRestaurantByMenuId(menuId, memberId);
 
         return ApiResponse.success(restaurantsByMenuDtos, HttpStatus.OK);

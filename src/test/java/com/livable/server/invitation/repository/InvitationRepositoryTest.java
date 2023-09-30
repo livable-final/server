@@ -81,7 +81,7 @@ class InvitationRepositoryTest {
                 .startTime(START_TIME)
                 .endTime(END_TIME)
                 .description("알아서 와")
-                .purpose("INTERVIEW")
+                .purpose("interview")
                 .officeName("패스트캠퍼스 사무실")
                 .build();
 

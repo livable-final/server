@@ -12,6 +12,19 @@ public class VisitationResponse {
 
     @Getter
     @NoArgsConstructor
+    public static class Base64QrCode {
+
+        private String qr;
+
+        public static Base64QrCode of(String base64QrCode) {
+            Base64QrCode code = new Base64QrCode();
+            code.qr = base64QrCode;
+            return code;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class DetailInformationDto {
 

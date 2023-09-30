@@ -4,7 +4,6 @@ import com.livable.server.core.response.ApiResponse;
 import com.livable.server.review.dto.RestaurantReviewResponse;
 import com.livable.server.review.service.RestaurantReviewService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -35,11 +34,11 @@ public class RestaurantReviewController {
     }
 
     @GetMapping("/menus/{menuId}")
-    public ResponseEntity<ApiResponse.Success<Page<RestaurantReviewResponse.ListForMenuDTO>>> listForMenu(
+    public ResponseEntity<ApiResponse.Success<List<RestaurantReviewResponse.ListForMenuDTO>>> listForMenu(
             @PathVariable Long menuId,
             @PageableDefault Pageable pageable) {
 
-        Page<RestaurantReviewResponse.ListForMenuDTO> allListForMenu =
+        List<RestaurantReviewResponse.ListForMenuDTO> allListForMenu =
                 restaurantReviewService.getAllListForMenu(menuId, pageable);
 
         return ApiResponse.success(allListForMenu, HttpStatus.OK);

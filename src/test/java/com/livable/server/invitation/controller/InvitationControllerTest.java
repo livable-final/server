@@ -120,7 +120,7 @@ class InvitationControllerTest {
     void createInvitationFail_01() throws Exception {
         // Given
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .officeName("공용 라운지")
                 .startDate(LocalDateTime.of(2023, 9, 18, 10, 0, 0))
                 .endDate(LocalDateTime.of(2030, 10, 30, 10, 30, 0))
@@ -152,7 +152,7 @@ class InvitationControllerTest {
     void createInvitationFail_02() throws Exception {
         // Given
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .officeName("공용 라운지")
                 .startDate(LocalDateTime.of(2030, 10, 30, 10, 0, 0))
                 .endDate(LocalDateTime.of(2030, 10, 30, 10, 30, 0))
@@ -184,7 +184,7 @@ class InvitationControllerTest {
         }
 
         InvitationRequest.CreateDTO dto = InvitationRequest.CreateDTO.builder()
-                .purpose("면접")
+                .purpose("interview")
                 .officeName("공용 라운지")
                 .startDate(LocalDateTime.of(2030, 10, 30, 10, 0, 0))
                 .endDate(LocalDateTime.of(2030, 10, 30, 10, 30, 0))

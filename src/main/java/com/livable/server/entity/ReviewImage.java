@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
                 targetClass = RestaurantReviewProjection.class,
                 columns = {
                         @ColumnResult(name = "memberName", type = String.class),
+                        @ColumnResult(name = "memberProfileImage", type = String.class),
                         @ColumnResult(name = "restaurantId", type = Long.class),
                         @ColumnResult(name = "restaurantName", type = String.class),
                         @ColumnResult(name = "reviewId", type = Long.class),

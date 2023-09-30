@@ -15,6 +15,7 @@ public class RestaurantReviewResponse {
     public static class ListForBuildingDTO {
 
         private final String memberName;
+        private final String memberProfileImage;
 
         private final Long restaurantId;
         private final String restaurantName;
@@ -32,6 +33,7 @@ public class RestaurantReviewResponse {
         public static ListForBuildingDTO valueOf(RestaurantReviewProjection restaurantReviewList, ImageSeparator imageSeparator) {
             return ListForBuildingDTO.builder()
                     .memberName(restaurantReviewList.getMemberName())
+                    .memberProfileImage(restaurantReviewList.getMemberProfileImage())
                     .restaurantId(restaurantReviewList.getRestaurantId())
                     .restaurantName(restaurantReviewList.getRestaurantName())
                     .reviewId(restaurantReviewList.getReviewId())
@@ -51,6 +53,7 @@ public class RestaurantReviewResponse {
     public static class ListForRestaurantDTO {
 
         private final String memberName;
+        private final String memberProfileImage;
 
         private final Long restaurantId;
         private final String restaurantName;
@@ -68,6 +71,7 @@ public class RestaurantReviewResponse {
         public static ListForRestaurantDTO valueOf(RestaurantReviewProjection restaurantReviewList, ImageSeparator imageSeparator) {
             return ListForRestaurantDTO.builder()
                     .memberName(restaurantReviewList.getMemberName())
+                    .memberProfileImage(restaurantReviewList.getMemberProfileImage())
                     .restaurantId(restaurantReviewList.getRestaurantId())
                     .restaurantName(restaurantReviewList.getRestaurantName())
                     .reviewId(restaurantReviewList.getReviewId())
@@ -84,24 +88,40 @@ public class RestaurantReviewResponse {
 
     @Getter
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class ListForMenuDTO {
 
-        private Long reviewId;
-        private LocalDateTime reviewCreatedAt;
-        private String reviewDescription;
+        private final String memberName;
+        private final String memberProfileImage;
 
-        private Evaluation reviewTaste;
-        private Evaluation reviewAmount;
-        private Evaluation reviewService;
-        private Evaluation reviewSpeed;
+        private final Long restaurantId;
+        private final String restaurantName;
 
-        private Long restaurantId;
-        private String restaurantName;
+        private final Long reviewId;
+        private final LocalDateTime reviewCreatedAt;
+        private final String reviewDescription;
+        private final Evaluation reviewTaste;
+        private final Evaluation reviewAmount;
+        private final Evaluation reviewService;
+        private final Evaluation reviewSpeed;
 
-        private Long memberId;
-        private String memberName;
+        private List<String> reviewImages;
+
+        public static ListForMenuDTO valueOf(RestaurantReviewProjection restaurantReviewList, ImageSeparator imageSeparator) {
+            return ListForMenuDTO.builder()
+                    .memberName(restaurantReviewList.getMemberName())
+                    .memberProfileImage(restaurantReviewList.getMemberProfileImage())
+                    .restaurantId(restaurantReviewList.getRestaurantId())
+                    .restaurantName(restaurantReviewList.getRestaurantName())
+                    .reviewId(restaurantReviewList.getReviewId())
+                    .reviewCreatedAt(restaurantReviewList.getReviewCreatedAt())
+                    .reviewDescription(restaurantReviewList.getReviewDescription())
+                    .reviewTaste(restaurantReviewList.getReviewTaste())
+                    .reviewAmount(restaurantReviewList.getReviewAmount())
+                    .reviewService(restaurantReviewList.getReviewService())
+                    .reviewSpeed(restaurantReviewList.getReviewSpeed())
+                    .reviewImages(imageSeparator.separateConcatenatedImages(restaurantReviewList.getImages()))
+                    .build();
+        }
     }
 
     @Getter
