@@ -290,7 +290,6 @@ public class InvitationService {
                 .orElseThrow(() -> new GlobalRuntimeException(InvitationErrorCode.INVITATION_NOT_EXIST));
 
         checkInvitationStartDate(invitation);
-
         checkModifiedCommonPlaceId(invitation, dto);
 
         boolean shouldSendToAlreadyVisitor = false;
