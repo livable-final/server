@@ -1,9 +1,6 @@
 package com.livable.server.restaurant.repository;
 
-import com.livable.server.entity.QBuilding;
-import com.livable.server.entity.QBuildingRestaurantMap;
-import com.livable.server.entity.QRestaurant;
-import com.livable.server.entity.RestaurantCategory;
+import com.livable.server.entity.*;
 import com.livable.server.restaurant.dto.RestaurantResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -73,4 +70,25 @@ public class RestaurantCustomRepositoryImpl implements RestaurantCustomRepositor
 
         return query.fetchJoin().fetch();
     }
+
+    @Override
+    public List<RestaurantResponse.listMenuDTO> findMenuList(Long restaurantId) {
+
+        final QMenu menu = QMenu.menu;
+        final QRestaurantMenuMap restaurantMenuMap = QRestaurantMenuMap.restaurantMenuMap;
+
+        JPAQuery<RestaurantResponse.listMenuDTO> query = queryFactory
+                .select(Projections.constructor(RestaurantResponse.listMenuDTO.class,
+                        menu.id,
+                        menu.name
+                        ))
+                .from(menu)
+                .innerJoin(restaurantMenuMap)
+                .on(menu.id.eq(restaurantMenuMap.menu.id))
+                .where(restaurantMenuMap.restaurant.id.eq(restaurantId));
+
+        return query.fetch();
+    }
+
+
 }
