@@ -634,6 +634,107 @@ class InvitationServiceTest {
         assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.INVALID_INVITATION_MAXIMUM_NUMBER);
     }
 
+    @DisplayName("[실패] 초대장 수정 - 기존 CommonPlaceId가 null 이고, 요청으로 들어온 commonPlaceId에 값이 있는 경우")
+    @Test
+    void updateInvitationFail_05() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(List.of(InvitationRequest.VisitorForUpdateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .member(member)
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(null);
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.updateInvitation(invitationId, dto, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 기존 CommonPlaceId에 값이 있고, 요청으로 들어온 commonPlaceId이 null 인 경우")
+    @Test
+    void updateInvitationFail_06() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Member member = Member.builder().id(memberId).build();
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(null)
+                .visitors(List.of(InvitationRequest.VisitorForUpdateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .member(member)
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(1L);
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.updateInvitation(invitationId, dto, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
+    }
+
+    @DisplayName("[실패] 초대장 수정 - 기존 CommonPlaceId에 값이 있고, 요청으로 들어온 commonPlaceId이 다른 값인 경우")
+    @Test
+    void updateInvitationFail_07() {
+        // Given
+        LocalDate requestDate = LocalDate.now();
+        LocalDate dateAfterRequestDate = requestDate.plusDays(1L);
+        Long invitationId = 1L;
+        Long memberId = 1L;
+        Long commonPlaceId = 1L;
+        Member member = Member.builder().id(memberId).build();
+        InvitationRequest.UpdateDTO dto = InvitationRequest.UpdateDTO.builder()
+                .commonPlaceId(commonPlaceId)
+                .visitors(List.of(InvitationRequest.VisitorForUpdateDTO.builder().build()))
+                .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+        given(invitationRepository.findById(anyLong()))
+                .willReturn(Optional.of(Invitation.builder()
+                        .id(invitationId)
+                        .purpose("회의")
+                        .startDate(dateAfterRequestDate)
+                        .member(member)
+                        .build()
+                ));
+        given(invitationRepository.getCommonPlaceIdByInvitationId(anyLong())).willReturn(2L);
+
+        // When
+        GlobalRuntimeException exception = assertThrows(GlobalRuntimeException.class,
+                () -> invitationService.updateInvitation(invitationId, dto, memberId));
+
+        // Then
+        assertThat(exception.getErrorCode()).isEqualTo(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
+    }
+
     @DisplayName("[성공] 초대장 수정 - 시간 변경 X, 인원 추가 X")
     @Test
     void updateInvitationSuccess_01() {
