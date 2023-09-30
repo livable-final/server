@@ -290,7 +290,9 @@ public class InvitationService {
                 .orElseThrow(() -> new GlobalRuntimeException(InvitationErrorCode.INVITATION_NOT_EXIST));
 
         checkInvitationStartDate(invitation);
-        checkModifiedCommonPlaceId(invitation, dto);
+
+        // TODO: NullPointerException 발생 (추후 리펙토링)
+        // checkModifiedCommonPlaceId(invitation, dto);
 
         boolean shouldSendToAlreadyVisitor = false;
         boolean shouldSendToAddedVisitor = checkAddedVisitorsCount(invitation, dto);
