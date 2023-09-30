@@ -291,8 +291,7 @@ public class InvitationService {
 
         checkInvitationStartDate(invitation);
 
-        // TODO: NullPointerException 발생 (추후 리펙토링)
-        // checkModifiedCommonPlaceId(invitation, dto);
+        checkModifiedCommonPlaceId(invitation, dto);
 
         boolean shouldSendToAlreadyVisitor = false;
         boolean shouldSendToAddedVisitor = checkAddedVisitorsCount(invitation, dto);
@@ -351,7 +350,7 @@ public class InvitationService {
     private void checkModifiedCommonPlaceId(Invitation invitation, InvitationRequest.UpdateDTO dto) {
         Long currentCommonPlaceId = invitationRepository.getCommonPlaceIdByInvitationId(invitation.getId());
 
-        if (!currentCommonPlaceId.equals(dto.getCommonPlaceId())) {
+        if (currentCommonPlaceId != null && !currentCommonPlaceId.equals(dto.getCommonPlaceId())) {
             throw new GlobalRuntimeException(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
         }
     }
