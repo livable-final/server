@@ -352,6 +352,10 @@ public class InvitationService {
         if (currentCommonPlaceId != null && !currentCommonPlaceId.equals(dto.getCommonPlaceId())) {
             throw new GlobalRuntimeException(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
         }
+
+        if (currentCommonPlaceId == null && dto.getCommonPlaceId() != null) {
+            throw new GlobalRuntimeException(InvitationErrorCode.CAN_NOT_CHANGED_COMMON_PLACE_OF_INVITATION);
+        }
     }
 
     private void reserveNewCommonPlaces(InvitationRequest.UpdateDTO dto, Invitation invitation) {
