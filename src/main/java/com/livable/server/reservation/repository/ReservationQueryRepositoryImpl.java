@@ -96,4 +96,25 @@ public class ReservationQueryRepositoryImpl implements ReservationQueryRepositor
                 )
                 .fetch();
     }
+
+    @Override
+    public List<AvailableReservationTimeProjection> findNotUsedReservationTimeByUsedReservationIds(
+            Long companyId, Long commonPlaceId, LocalDate date, List<Long> reservationIds
+    ) {
+        return queryFactory
+                .select(Projections.constructor(AvailableReservationTimeProjection.class,
+                                reservation.date,
+                                reservation.time
+                        )
+                )
+                .from(reservation)
+                .where(reservation.id.notIn(
+                                reservationIds
+                        ),
+                        reservation.company.id.eq(companyId),
+                        reservation.date.eq(date),
+                        reservation.commonPlace.id.eq(commonPlaceId)
+                )
+                .fetch();
+    }
 }
