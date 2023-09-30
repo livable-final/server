@@ -1,10 +1,8 @@
 package com.livable.server.restaurant.dto;
 
+import com.livable.server.entity.Menu;
 import com.livable.server.entity.RestaurantCategory;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RestaurantResponse {
@@ -24,5 +22,12 @@ public class RestaurantResponse {
         private Integer floor;
 
         private String url;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class listMenuDTO {
+        private Long menuId;
+        private String menuName;
     }
 }
