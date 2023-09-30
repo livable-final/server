@@ -1,11 +1,13 @@
 package com.livable.server.restaurant.controller;
 
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.core.response.ApiResponse.Success;
 import com.livable.server.core.util.Actor;
 import com.livable.server.core.util.JwtTokenProvider;
 import com.livable.server.core.util.LoginActor;
 import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.dto.RestaurantResponse;
+import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
 import com.livable.server.restaurant.service.RestaurantService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +19,12 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/restaurant")
+@RequestMapping("/api")
 public class RestaurantController {
 
     private final RestaurantService restaurantService;
 
-    @GetMapping
+    @GetMapping("/restaurant")
     public ResponseEntity<ApiResponse.Success<Object>> findRestaurantByCategory(
             @RequestParam("type") RestaurantCategory restaurantCategory, @LoginActor Actor actor
             ) {
@@ -42,7 +44,7 @@ public class RestaurantController {
             @PathVariable Long restaurantId,
             @LoginActor Actor actor
             ) {
-
+      
         JwtTokenProvider.checkMemberToken(actor);
 
         Long memberId = actor.getId();
@@ -50,5 +52,19 @@ public class RestaurantController {
         List<RestaurantResponse.listMenuDTO> result = restaurantService.findMenuList(memberId, restaurantId);
 
         return ApiResponse.success(result, HttpStatus.OK);
+    }
+  
+    @GetMapping("/restaurants")
+    public ResponseEntity<Success<List<RestaurantsByMenuDto>>> getRestaurantsByMenu(
+            @RequestParam("menuId") Long menuId, @LoginActor Actor actor
+            ) {
+      
+        JwtTokenProvider.checkMemberToken(actor);
+
+        Long memberId = actor.getId();
+
+        List<RestaurantsByMenuDto> restaurantsByMenuDtos = restaurantService.findRestaurantByMenuId(menuId, memberId);
+
+        return ApiResponse.success(restaurantsByMenuDtos, HttpStatus.OK);
     }
 }

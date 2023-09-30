@@ -4,6 +4,7 @@ import com.livable.server.entity.Invitation;
 import com.livable.server.entity.Member;
 import com.livable.server.entity.Visitor;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,8 @@ public class InvitationRequest {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class CreateDTO {
 
         @NotNull(message = NOT_NULL)
@@ -61,6 +64,8 @@ public class InvitationRequest {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class VisitorCreateDTO {
         @NotNull
         private String name;
@@ -80,6 +85,8 @@ public class InvitationRequest {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UpdateDTO {
         private Long commonPlaceId;
         private String description;
@@ -99,6 +106,8 @@ public class InvitationRequest {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class VisitorForUpdateDTO {
         @NotNull(message = NOT_NULL)
         private String name;

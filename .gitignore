@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### jacoco ###
+jacoco/
+
 ### STS ###
 .apt_generated
 .classpath
@@ -27,6 +30,7 @@ out/
 !**/src/test/**/out/
 application-dev.yml
 application-prod.yml
+/src/test/resources/test.properties
 
 ### NetBeans ###
 /nbproject/private/

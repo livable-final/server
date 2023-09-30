@@ -6,11 +6,67 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'jacoco' //jacoco
     id 'org.springframework.boot' version '2.7.15'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+/*jacoco setting start*/
+jacocoTestReport {
+    dependsOn test
+    reports {
+        html.required = true
+        xml.required = true
+    }
+
+    def Qdomains = []
+    for (qPattern in "**/QA".."**/QZ") {
+        Qdomains.add(qPattern + "*")
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [] + Qdomains
+            )
+        }))
+    }
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    def Qdomains = []
+    for (qPattern in "*.QA".."*.QZ") {
+        Qdomains.add(qPattern + "*")
+    }
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.30
+            }
+        }
+
+        rule {
+            enabled = true
+
+
+            limit {
+                counter = 'METHOD'
+                value = 'COVEREDRATIO'
+                minimum = 0.50
+            }
+
+            excludes = [] + Qdomains
+        }
+    }
+}
+/*jacoco setting end*/
 
 group = 'com.livable'
 version = '0.0.1-SNAPSHOT'
@@ -45,6 +101,7 @@ dependencies {
     annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.mockito:mockito-inline:3.6.0'
     implementation 'com.google.zxing:core:3.5.2'
     implementation 'com.google.zxing:javase:3.5.2'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
@@ -54,9 +111,14 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 }
 
+test {
+    systemProperty 'user.timezone', 'Asia/Seoul'
+}
+
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
 
 tasks.named('asciidoctor') {

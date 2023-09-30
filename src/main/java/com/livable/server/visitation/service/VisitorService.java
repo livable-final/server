@@ -14,14 +14,12 @@ public class VisitorService {
 
     private final VisitorRepository visitorRepository;
 
-    public void updateFirstEntranceTime(final Long visitorId) {
+    public void doEntrance(final Long visitorId) {
 
         Visitor visitor = visitorRepository.findById(visitorId)
                 .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
 
-        if (visitor.getFirstVisitedTime() == null) {
-            visitor.updateFirstVisitedTime();
-        }
+        visitor.entrance();
     }
 
     public Long findInvitationId(final Long visitorId) {

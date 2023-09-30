@@ -6,3 +6,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
+logging:
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSSz,Asia/Seoul

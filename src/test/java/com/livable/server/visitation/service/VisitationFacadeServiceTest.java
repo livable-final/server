@@ -72,17 +72,21 @@ class VisitationFacadeServiceTest {
                 .startTime(LocalTime.now())
                 .endTime(LocalTime.now())
                 .build();
+        VisitationResponse.Base64QrCode expected = VisitationResponse.Base64QrCode.of(QR_CODE);
 
         given(invitationService.findInvitationTime(anyLong())).willReturn(invitationTimeDto);
         given(visitationService.createQrCode(any(LocalDateTime.class), any(LocalDateTime.class))).willReturn(QR_CODE);
 
+
         // When
-        String qrCode = visitationFacadeService.createQrCode(1L);
+        VisitationResponse.Base64QrCode qrCode = visitationFacadeService.createQrCode(1L);
 
         // Then
-        assertThat(qrCode).isEqualTo(QR_CODE);
+        assertThat(qrCode).usingRecursiveComparison().isEqualTo(expected);
         then(invitationService).should(times(1)).findInvitationTime(anyLong());
-        then(visitationService).should(times(1)).createQrCode(any(LocalDateTime.class), any(LocalDateTime.class));
+        then(visitationService).should(times(1)).createQrCode(any(
+                LocalDateTime.class), any(LocalDateTime.class)
+        );
     }
 
     @DisplayName("VisitationFacadeService.validateQrCode 성공 테스트")
@@ -91,6 +95,7 @@ class VisitationFacadeServiceTest {
 
         // Given
         willDoNothing().given(visitationService).validateQrCode(anyString());
+        willDoNothing().given(visitorService).doEntrance(anyLong());
 
         // When
         visitationFacadeService.validateQrCode(QR_CODE, 1L);
