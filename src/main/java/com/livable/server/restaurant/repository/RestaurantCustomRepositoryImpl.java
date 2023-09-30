@@ -39,7 +39,7 @@ public class RestaurantCustomRepositoryImpl implements RestaurantCustomRepositor
 
 
         JPAQuery<RestaurantResponse.NearRestaurantDto> query = queryFactory
-                .selectDistinct(Projections.constructor(RestaurantResponse.NearRestaurantDto.class,
+                .select(Projections.constructor(RestaurantResponse.NearRestaurantDto.class,
                         restaurant.restaurantCategory,
                         restaurant.name,
                         restaurant.thumbnailImageUrl,

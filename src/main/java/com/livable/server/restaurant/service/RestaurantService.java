@@ -15,12 +15,12 @@ import com.livable.server.restaurant.repository.RestaurantRepository;
 import com.livable.server.review.domain.ReviewErrorCode;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.repository.VisitorRepository;
-import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +48,10 @@ public class RestaurantService {
                         buildingId,
                         category
                 );
+
+        if (nearRestaurantCount == 0) {
+            return List.of();
+        }
 
         return restaurantRepository.findRestaurantByBuildingIdAndRestaurantCategory(
                 buildingId, category, randomGenerator.getRandom(nearRestaurantCount)
