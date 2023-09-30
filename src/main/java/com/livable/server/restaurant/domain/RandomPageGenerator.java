@@ -16,7 +16,11 @@ public class RandomPageGenerator implements RandomGenerator<Pageable> {
 
     @Override
     public Pageable getRandom(int start, int end) {
-        int randomNumber = getRandomNumber(start, end - DEFAULT_PAGE_SIZE);
+        if (end < DEFAULT_PAGE_SIZE) {
+            return PageRequest.of(0, DEFAULT_PAGE_SIZE);
+        }
+
+        int randomNumber = getRandomNumber(start, end - DEFAULT_PAGE_SIZE + 1);
         return PageRequest.of(randomNumber, DEFAULT_PAGE_SIZE);
     }
 }
