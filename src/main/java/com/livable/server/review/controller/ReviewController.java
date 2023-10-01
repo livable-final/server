@@ -1,10 +1,12 @@
 package com.livable.server.review.controller;
 
 import com.livable.server.core.response.ApiResponse;
+import com.livable.server.core.response.ApiResponse.Success;
 import com.livable.server.core.util.Actor;
 import com.livable.server.core.util.JwtTokenProvider;
 import com.livable.server.core.util.LoginActor;
 import com.livable.server.review.dto.ReviewRequest;
+import com.livable.server.review.dto.ReviewResponse;
 import com.livable.server.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,10 +28,12 @@ public class ReviewController {
     @PostMapping(value = "/lunch-box", consumes = "multipart/form-data")
     public ResponseEntity<?> createLunchBoxReview(
             @Valid @RequestPart("data") ReviewRequest.LunchBoxCreateDTO lunchBoxCreateDTO,
-            @RequestPart(value = "imageFiles") List<MultipartFile> files
+            @RequestPart(value = "imageFiles") List<MultipartFile> files,
+            @LoginActor Actor actor
             ) throws IOException {
 
-        Long memberId = 1L;
+        JwtTokenProvider.checkMemberToken(actor);
+        Long memberId = actor.getId();
 
         reviewService.createLunchBoxReview(lunchBoxCreateDTO, memberId, files);
 
@@ -39,10 +43,12 @@ public class ReviewController {
     @PostMapping(value = "/cafeteria", consumes = "multipart/form-data")
     public ResponseEntity<?> createCafeteriaReview(
             @Valid @RequestPart("data") ReviewRequest.CafeteriaCreateDTO CafeteriaCreateDTO,
-            @RequestPart(value = "imageFiles") List<MultipartFile> files
+            @RequestPart(value = "imageFiles") List<MultipartFile> files,
+            @LoginActor Actor actor
     ) throws IOException {
 
-        Long memberId = 1L;
+        JwtTokenProvider.checkMemberToken(actor);
+        Long memberId = actor.getId();
 
         reviewService.createCafeteriaReview(CafeteriaCreateDTO, memberId, files);
 
@@ -62,5 +68,20 @@ public class ReviewController {
         reviewService.createRestaurantReview(restaurantCreateDTO, memberId, files);
 
         return ApiResponse.success(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/members")
+    public ResponseEntity<Success<List<ReviewResponse.CalendarListDTO>>> calendarListReview(
+        @RequestParam("year") String year,
+        @RequestParam("month") String month,
+        @LoginActor Actor actor
+    ) {
+
+        JwtTokenProvider.checkMemberToken(actor);
+        Long memberId = actor.getId();
+
+        List<ReviewResponse.CalendarListDTO> result = reviewService.findCalendarList(memberId, year, month);
+
+        return ApiResponse.success(result, HttpStatus.OK);
     }
 }
