@@ -32,9 +32,24 @@ public class PointLog extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer amount;
 
+    @Column(nullable = false)
+    private LocalDateTime paidAt;
+
+    @PrePersist
+    private void prePersist() {
+        paidAt = LocalDateTime.now();
+    }
+
+    public boolean isPaid(LocalDate date) {
+        LocalDateTime paidDateTime = this.getPaidAt();
+        LocalDate paidDate = LocalDate.of(paidDateTime.getYear(), paidDateTime.getMonth(), paidDateTime.getDayOfMonth());
+
+        return paidDate.equals(date);
+    }
+
     public boolean isCreated(LocalDate date) {
-        LocalDateTime createdAt = this.getCreatedAt();
-        LocalDate createdDate = LocalDate.of(createdAt.getYear(), createdAt.getMonth(), createdAt.getDayOfMonth());
+        LocalDateTime createdDateTime = this.getCreatedAt();
+        LocalDate createdDate = LocalDate.of(createdDateTime.getYear(), createdDateTime.getMonth(), createdDateTime.getDayOfMonth());
 
         return createdDate.equals(date);
     }
