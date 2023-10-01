@@ -18,6 +18,6 @@ public interface ReservationQueryRepository {
     );
 
     List<AvailableReservationTimeProjection> findNotUsedReservationTimeByUsedReservationIds(
-            Long companyId, Long commonPlaceId, LocalDate date, List<Long> reservationIds
+            Long companyId, Long commonPlaceId, LocalDate startDate, LocalDate endDate, List<Long> reservationIds
     );
 }

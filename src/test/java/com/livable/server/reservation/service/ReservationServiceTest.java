@@ -2,7 +2,6 @@ package com.livable.server.reservation.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
 import com.livable.server.entity.Company;
-import com.livable.server.entity.InvitationReservationMap;
 import com.livable.server.entity.Member;
 import com.livable.server.invitation.repository.InvitationReservationMapRepository;
 import com.livable.server.member.domain.MemberErrorCode;
@@ -74,20 +73,20 @@ class ReservationServiceTest {
         given(invitationReservationMapRepository.findAllReservationId()).willReturn(List.of(1L, 2L, 3L));
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(reservationRepository.findNotUsedReservationTimeByUsedReservationIds(
-                        anyLong(), anyLong(), any(LocalDate.class), any(List.class)
+                        anyLong(), anyLong(), any(LocalDate.class), any(LocalDate.class), any(List.class)
                 )
         )
                 .willReturn(queryResult);
 
         // when
         List<ReservationResponse.AvailableReservationTimePerDateDto> result =
-                reservationService.findAvailableReservationTimes(1L, 1L, LocalDate.now());
+                reservationService.findAvailableReservationTimes(1L, 1L, LocalDate.now(), LocalDate.now().plusDays(1));
 
         // then
         then(invitationReservationMapRepository).should(times(1)).findAllReservationId();
         then(memberRepository).should(times(1)).findById(anyLong());
         then(reservationRepository).should(times(1))
-                .findNotUsedReservationTimeByUsedReservationIds(anyLong(), anyLong(), any(LocalDate.class), any(List.class));
+                .findNotUsedReservationTimeByUsedReservationIds(anyLong(), anyLong(), any(LocalDate.class), any(LocalDate.class), any(List.class));
 
         assertThat(result).usingRecursiveComparison().isEqualTo(projections.toDto());
     }
@@ -101,7 +100,7 @@ class ReservationServiceTest {
 
         // when
         GlobalRuntimeException globalRuntimeException = assertThrows(GlobalRuntimeException.class, () ->
-                reservationService.findAvailableReservationTimes(1L, 1L, LocalDate.now())
+                reservationService.findAvailableReservationTimes(1L, 1L, LocalDate.now(), LocalDate.now())
         );
 
         // then

@@ -26,7 +26,8 @@ public class ReservationService {
     public List<ReservationResponse.AvailableReservationTimePerDateDto> findAvailableReservationTimes(
             Long memberId,
             Long commonPlaceId,
-            LocalDate date
+            LocalDate startDate,
+            LocalDate endDate
     ) {
 
 
@@ -34,18 +35,18 @@ public class ReservationService {
                 .orElseThrow(() -> new GlobalRuntimeException(MemberErrorCode.MEMBER_NOT_EXIST));
 
         AvailableReservationTimeProjections availableReservationTimeProjections =
-                getAvailableReservationTimeProjections(member.getCompany().getId(), commonPlaceId, date);
+                getAvailableReservationTimeProjections(member.getCompany().getId(), commonPlaceId, startDate, endDate);
 
         return availableReservationTimeProjections.toDto();
     }
 
     private AvailableReservationTimeProjections getAvailableReservationTimeProjections(
-            Long companyId, Long commonPlaceId, LocalDate date
+            Long companyId, Long commonPlaceId, LocalDate startDate, LocalDate endDate
     ) {
         List<Long> usedReservationIds = invitationReservationMapRepository.findAllReservationId();
         List<AvailableReservationTimeProjection> timeProjections =
                 reservationRepository.findNotUsedReservationTimeByUsedReservationIds(
-                        companyId, commonPlaceId, date, usedReservationIds
+                        companyId, commonPlaceId, startDate, endDate, usedReservationIds
                 );
 
         return new AvailableReservationTimeProjections(timeProjections);

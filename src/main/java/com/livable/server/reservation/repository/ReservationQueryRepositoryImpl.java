@@ -99,7 +99,7 @@ public class ReservationQueryRepositoryImpl implements ReservationQueryRepositor
 
     @Override
     public List<AvailableReservationTimeProjection> findNotUsedReservationTimeByUsedReservationIds(
-            Long companyId, Long commonPlaceId, LocalDate date, List<Long> reservationIds
+            Long companyId, Long commonPlaceId, LocalDate startDate, LocalDate endDate, List<Long> reservationIds
     ) {
         return queryFactory
                 .select(Projections.constructor(AvailableReservationTimeProjection.class,
@@ -112,7 +112,7 @@ public class ReservationQueryRepositoryImpl implements ReservationQueryRepositor
                                 reservationIds
                         ),
                         reservation.company.id.eq(companyId),
-                        reservation.date.eq(date),
+                        reservation.date.goe(startDate).and(reservation.date.loe(endDate)),
                         reservation.commonPlace.id.eq(commonPlaceId)
                 )
                 .fetch();
