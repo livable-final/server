@@ -66,7 +66,7 @@ public class PointService {
         PointAchievement pointAchievement = this.getPointAchievementFrom(pointLogs);
 
         // 목표 포인트 지급 요청 날짜가 포인트를 지급받을 수 있는 날짜인지 확인
-        if (!recentPointLog.isCreated(requestDate)) {
+        if (!recentPointLog.isPaid(requestDate)) {
             throw new GlobalRuntimeException(PointErrorCode.ACHIEVEMENT_POINT_PAID_FAILED);
         }
 
@@ -100,7 +100,7 @@ public class PointService {
      */
     private PointLog getRecentPointLogFrom(List<PointLog> pointLogs) throws GlobalRuntimeException {
         return pointLogs.stream().findFirst()
-                .orElseThrow(() -> new GlobalRuntimeException(PointErrorCode.POINT_NOT_EXIST));
+                .orElseThrow(() -> new GlobalRuntimeException(PointErrorCode.POINT_NOT_EXIST_FOR_CURRENT_MONTH));
     }
 
     /**
@@ -111,7 +111,7 @@ public class PointService {
      */
     private void validationAchievementPointAlreadyPaid(List<PointLog> pointLogs, LocalDate requestDate) {
         pointLogs.stream()
-                .filter(pointLog -> pointLog.isCreated(requestDate))
+                .filter(pointLog -> pointLog.isPaid(requestDate))
                 .forEach(pointLog -> {
                     if (PointAchievement.POINT_CODES.contains(pointLog.getCode())) {
                         throw new GlobalRuntimeException(PointErrorCode.ACHIEVEMENT_POINT_PAID_ALREADY);
@@ -139,7 +139,6 @@ public class PointService {
             throw new GlobalRuntimeException(PointErrorCode.ACHIEVEMENT_POINT_NOT_MATCHED);
         }
     }
-
 
     @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
     public void paidPoints(Point point, PointAchievement pointAchievement, Review review) {
