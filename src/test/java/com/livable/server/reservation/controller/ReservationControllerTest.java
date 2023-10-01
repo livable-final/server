@@ -58,7 +58,7 @@ class ReservationControllerTest {
                 )
                 .collect(Collectors.toList());
 
-        given(reservationService.findAvailableReservationTimes(anyLong(), anyLong(), any(LocalDate.class)))
+        given(reservationService.findAvailableReservationTimes(anyLong(), anyLong(), any(LocalDate.class), any(LocalDate.class)))
                 .willReturn(result);
 
         // when
@@ -66,7 +66,8 @@ class ReservationControllerTest {
                 get("/api/reservation/places/1")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .queryParam("date", "2023-09-22")
+                        .queryParam("startDate", "2023-09-22")
+                        .queryParam("endDate", "2023-09-22")
         );
 
         // then

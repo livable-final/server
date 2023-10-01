@@ -24,14 +24,15 @@ public class ReservationController {
     @GetMapping("/places/{commonPlaceId}")
     public ResponseEntity<ApiResponse.Success<Object>> findAvailableTimes(
             @PathVariable Long commonPlaceId,
-            @RequestParam("date") LocalDate localDate,
+            @RequestParam("startDate") LocalDate startDate,
+            @RequestParam("endDate") LocalDate endDate,
             @LoginActor Actor actor
             ) {
 
         JwtTokenProvider.checkMemberToken(actor);
 
         List<ReservationResponse.AvailableReservationTimePerDateDto> result =
-                reservationService.findAvailableReservationTimes(actor.getId(), commonPlaceId, localDate);
+                reservationService.findAvailableReservationTimes(actor.getId(), commonPlaceId, startDate, endDate);
         return ApiResponse.success(result, HttpStatus.OK);
     }
 }
