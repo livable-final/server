@@ -2,7 +2,7 @@ name: ssh for release deploy
 
 on:
   push:
-    branches: [ release ]
+    branches: [ develop ]
 
 jobs:
   build:
