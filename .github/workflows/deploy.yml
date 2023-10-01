@@ -1,0 +1,24 @@
+name: ssh for release deploy
+
+on:
+  push:
+    branches: [ release ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          timeout: 40s
+
+          script: |
+            echo "SSH 연결 되었다!"
