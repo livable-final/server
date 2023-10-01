@@ -1,5 +1,6 @@
 package com.livable.server.entity;
 
+import com.livable.server.review.dto.ReviewResponse;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
@@ -7,8 +8,21 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@SqlResultSetMapping(
+        name = "ReviewAllList",
+        classes = @ConstructorResult(
+                targetClass = ReviewResponse.CalendarListDTO.class,
+                columns = {
+                        @ColumnResult(name = "reviewId", type = Long.class),
+                        @ColumnResult(name = "type", type = String.class),
+                        @ColumnResult(name = "reviewImageUrl", type = String.class),
+                        @ColumnResult(name = "reviewDate", type = LocalDate.class)
+                }
+        )
+)
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,3 +55,4 @@ public class Review {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 }
+
