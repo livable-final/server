@@ -40,7 +40,8 @@ jobs:
 
               echo "6. 홈 경로 이동 후 프로젝트 재실행"
               cd ~
-              nohup java -jar ${{ secrets.PROJECT_ROOT }}/build/libs/server-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod &
+              nohup java -jar ${{ secrets.PROJECT_ROOT }}/build/libs/server-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod 2>&1 &
+              disown
             else
               echo "프로젝트 Build 실패"
               exit 1
