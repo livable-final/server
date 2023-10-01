@@ -45,8 +45,8 @@ public class RestaurantController {
     }
   
 
-    @GetMapping("/{restaurantId}/menus")
-    public ResponseEntity<ApiResponse.Success<List>> sellMenuByRestaurant (
+    @GetMapping("restaurant/{restaurantId}/menus")
+    public ResponseEntity<ApiResponse.Success<List<RestaurantResponse.listMenuDTO>>> sellMenuByRestaurant (
             @PathVariable Long restaurantId,
             @LoginActor Actor actor
             ) {
@@ -72,5 +72,19 @@ public class RestaurantController {
         List<RestaurantsByMenuDto> restaurantsByMenuDtos = restaurantService.findRestaurantByMenuId(menuId, memberId);
 
         return ApiResponse.success(restaurantsByMenuDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/restaurants/search")
+    public ResponseEntity<Success<List<RestaurantResponse.SearchRestaurantsDTO>>> searchRestaurant(
+            @RequestParam("query") String keyword,
+            @LoginActor Actor actor
+    ) {
+        JwtTokenProvider.checkMemberToken(actor);
+
+        Long memberId = actor.getId();
+
+        List<RestaurantResponse.SearchRestaurantsDTO> result = restaurantService.findRestaurantByKeyword(memberId, keyword);
+
+        return ApiResponse.success(result, HttpStatus.OK);
     }
 }
