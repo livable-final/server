@@ -46,11 +46,4 @@ public class PointLog extends BaseTimeEntity {
 
         return paidDate.equals(date);
     }
-
-    public boolean isCreated(LocalDate date) {
-        LocalDateTime createdDateTime = this.getCreatedAt();
-        LocalDate createdDate = LocalDate.of(createdDateTime.getYear(), createdDateTime.getMonth(), createdDateTime.getDayOfMonth());
-
-        return createdDate.equals(date);
-    }
 }
