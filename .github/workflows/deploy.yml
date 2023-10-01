@@ -21,4 +21,6 @@ jobs:
           timeout: 40s
 
           script: |
-            echo "SSH 연결 되었다!"
+            echo "Git Pull"
+            cd ~/livable/server
+            git pull origin develop
