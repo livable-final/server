@@ -6,6 +6,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
+import static com.livable.server.entity.QBuilding.building;
+import static com.livable.server.entity.QBuildingRestaurantMap.buildingRestaurantMap;
+import static com.livable.server.entity.QMenu.menu;
+import static com.livable.server.entity.QRestaurant.restaurant;
+import static com.livable.server.entity.QRestaurantMenuMap.restaurantMenuMap;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -90,5 +98,42 @@ public class RestaurantCustomRepositoryImpl implements RestaurantCustomRepositor
         return query.fetch();
     }
 
+    @Override
+    public List<RestaurantResponse.SearchRestaurantsDTO> findRestaurantByKeyword(Long buildingId, String keyword) {
 
+        // TODO : 성능테스트 필요
+
+//        List<Long> subQuery = queryFactory
+//                .select(restaurantMenuMap.restaurant.id)
+//                .from(menu)
+//                .innerJoin(restaurantMenuMap).on(menu.id.eq(restaurantMenuMap.menu.id))
+//                .where(menu.name.contains(keyword)
+//                        .or(restaurant.name.contains(keyword)))
+//                .fetch();
+
+        return queryFactory
+                .select(Projections.constructor(RestaurantResponse.SearchRestaurantsDTO.class,
+                        restaurant.id,
+                        restaurant.name,
+                        restaurant.restaurantCategory,
+                        buildingRestaurantMap.inBuilding,
+                        restaurant.thumbnailImageUrl,
+                        buildingRestaurantMap.distance,
+                        restaurant.address
+                ))
+                .from(building)
+                .innerJoin(buildingRestaurantMap).on(buildingRestaurantMap.building.id.eq(building.id))
+                .innerJoin(restaurant).on(restaurant.id.eq(buildingRestaurantMap.restaurant.id))
+                .where(
+                        restaurant.id.in(
+                                JPAExpressions
+                                        .select(restaurantMenuMap.restaurant.id)
+                                        .from(menu)
+                                        .innerJoin(restaurantMenuMap).on(menu.id.eq(restaurantMenuMap.menu.id))
+                                        .where(menu.name.contains(keyword)
+                                                .or(restaurant.name.contains(keyword)))
+                        )
+                )
+                .fetch();
+    }
 }

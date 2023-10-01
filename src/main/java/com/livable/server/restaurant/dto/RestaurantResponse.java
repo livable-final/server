@@ -1,6 +1,5 @@
 package com.livable.server.restaurant.dto;
 
-import com.livable.server.entity.Menu;
 import com.livable.server.entity.RestaurantCategory;
 import lombok.*;
 import java.util.regex.Matcher;
@@ -28,6 +27,7 @@ public class RestaurantResponse {
     }
 
     @Getter
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class listMenuDTO {
         private Long menuId;
@@ -63,30 +63,62 @@ public class RestaurantResponse {
                 .review(restaurantByMenuProjection.getReview())
                 .build();
         }
+    }
 
-        private static Integer calcEstimatedTime(Integer distance) {
-            int averageWalkSpeedPerMin = 80;
-            return distance / averageWalkSpeedPerMin;
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class SearchRestaurantsDTO {
+
+        private final Long restaurantId;
+        private final String restaurantName;
+        private final RestaurantCategory restaurantCategory;
+        private final Boolean inBuilding;
+        private final Integer estimatedTime;
+        private final Integer floor;
+        private final String thumbnailImageUrl;
+
+        public SearchRestaurantsDTO(
+                Long restaurantId,
+                String restaurantName,
+                RestaurantCategory restaurantCategory,
+                Boolean inBuilding,
+                String thumbnailImageUrl,
+                Integer distance,
+                String address
+                ) {
+                this.restaurantId = restaurantId;
+                this.restaurantName = restaurantName;
+                this.restaurantCategory = restaurantCategory;
+                this.inBuilding = inBuilding;
+                this.thumbnailImageUrl = thumbnailImageUrl;
+                this.floor = getFloorFromAddress(address);
+                this.estimatedTime = calcEstimatedTime(distance);
         }
+    }
 
-        private static Integer getFloorFromAddress(String address) {
+    private static Integer getFloorFromAddress(String address) {
 
-            int floor = 0;
+        int floor = 0;
 
-            if (address.contains("층")) {
-                String pattern = "\\s(\\d+)층";
-                Pattern regexPattern = Pattern.compile(pattern, Pattern.CANON_EQ);
-                Matcher matcher = regexPattern.matcher(address);
-                if (matcher.find() && matcher.group(1) != null) {
+        if (address.contains("층")) {
+            String pattern = "\\s(\\d+)층";
+            Pattern regexPattern = Pattern.compile(pattern, Pattern.CANON_EQ);
+            Matcher matcher = regexPattern.matcher(address);
+            if (matcher.find() && matcher.group(1) != null) {
 
-                    floor = Integer.parseInt(matcher.group(1));
-                    if (address.contains("지하")) {
-                        floor *= -1;
-                    }
+                floor = Integer.parseInt(matcher.group(1));
+                if (address.contains("지하")) {
+                    floor *= -1;
                 }
             }
-
-            return floor;
         }
+
+        return floor;
+    }
+
+    private static Integer calcEstimatedTime(Integer distance) {
+        int averageWalkSpeedPerMin = 80;
+        return distance / averageWalkSpeedPerMin;
     }
 }

@@ -15,4 +15,6 @@ public interface RestaurantCustomRepository {
     );
 
     List<RestaurantResponse.listMenuDTO> findMenuList(Long restaurantId);
+
+    List<RestaurantResponse.SearchRestaurantsDTO> findRestaurantByKeyword(Long buildingId, String keyword);
 }

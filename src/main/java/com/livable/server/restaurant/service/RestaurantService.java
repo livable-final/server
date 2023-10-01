@@ -1,6 +1,8 @@
 package com.livable.server.restaurant.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.entity.Building;
+import com.livable.server.entity.Company;
 import com.livable.server.entity.Member;
 import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.member.repository.MemberRepository;
@@ -93,4 +95,16 @@ public class RestaurantService {
         return restaurantsByMenuDtos;
     }
 
+    public List<RestaurantResponse.SearchRestaurantsDTO> findRestaurantByKeyword(Long memberId, String keyword) {
+        checkExistMemberById(memberId);
+
+        Long buildingId = getBuildingByMember(memberId);
+
+        return restaurantRepository.findRestaurantByKeyword(buildingId, keyword);
+    }
+
+    private Long getBuildingByMember(Long memberId) {
+
+        return memberRepository.findBuildingInfoByMemberId(memberId).get().getBuildingId();
+    }
 }
