@@ -3,6 +3,7 @@ package com.livable.server.reservation.controller;
 import com.livable.server.core.util.ActorType;
 import com.livable.server.core.util.JwtTokenProvider;
 import com.livable.server.core.util.TestConfig;
+import com.livable.server.reservation.domain.ReservationRequest;
 import com.livable.server.reservation.dto.ReservationResponse;
 import com.livable.server.reservation.service.ReservationService;
 import org.junit.jupiter.api.DisplayName;
@@ -58,7 +59,7 @@ class ReservationControllerTest {
                 )
                 .collect(Collectors.toList());
 
-        given(reservationService.findAvailableReservationTimes(anyLong(), anyLong(), any(LocalDate.class), any(LocalDate.class)))
+        given(reservationService.findAvailableReservationTimes(anyLong(), anyLong(), any(ReservationRequest.DateQuery.class)))
                 .willReturn(result);
 
         // when
