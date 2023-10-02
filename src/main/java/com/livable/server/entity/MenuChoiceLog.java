@@ -38,4 +38,8 @@ public class MenuChoiceLog extends BaseTimeEntity {
 
     @Column(nullable = false, name = "date")
     private LocalDate date;
+
+    public void updateMenu(Menu changedMenu) {
+        this.menu = changedMenu;
+    }
 }
