@@ -58,7 +58,7 @@ class ReservationControllerTest {
                         .build()
                 )
                 .collect(Collectors.toList());
-
+      
         given(reservationService.findAvailableReservationTimes(anyLong(), anyLong(), any(ReservationRequest.DateQuery.class)))
                 .willReturn(result);
 

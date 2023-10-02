@@ -83,7 +83,7 @@ class ReservationServiceTest {
 
         // when
         List<ReservationResponse.AvailableReservationTimePerDateDto> result =
-                reservationService.findAvailableReservationTimes(1L, 1L, dateQuery);
+                reservationService.findAvailableReservationTimes(1L, 1L, LocalDate.now(), LocalDate.now().plusDays(1));
 
         // then
         then(invitationReservationMapRepository).should(times(1)).findAllReservationId();
