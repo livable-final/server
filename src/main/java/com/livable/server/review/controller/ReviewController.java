@@ -28,7 +28,7 @@ public class ReviewController {
     @PostMapping(value = "/lunch-box", consumes = "multipart/form-data")
     public ResponseEntity<?> createLunchBoxReview(
             @Valid @RequestPart("data") ReviewRequest.LunchBoxCreateDTO lunchBoxCreateDTO,
-            @RequestPart(value = "imageFiles") List<MultipartFile> files,
+            @RequestPart(value = "imageFiles", required = false) List<MultipartFile> files,
             @LoginActor Actor actor
             ) throws IOException {
 
@@ -43,7 +43,7 @@ public class ReviewController {
     @PostMapping(value = "/cafeteria", consumes = "multipart/form-data")
     public ResponseEntity<?> createCafeteriaReview(
             @Valid @RequestPart("data") ReviewRequest.CafeteriaCreateDTO CafeteriaCreateDTO,
-            @RequestPart(value = "imageFiles") List<MultipartFile> files,
+            @RequestPart(value = "imageFiles", required = false) List<MultipartFile> files,
             @LoginActor Actor actor
     ) throws IOException {
 
@@ -58,7 +58,7 @@ public class ReviewController {
     @PostMapping(value = "/restaurant", consumes = "multipart/form-data")
     public ResponseEntity<?> createRestaurantReview(
             @Valid @RequestPart("data") ReviewRequest.RestaurantCreateDTO restaurantCreateDTO,
-            @RequestPart(value = "imageFiles") List<MultipartFile> files,
+            @RequestPart(value = "imageFiles", required = false) List<MultipartFile> files,
             @LoginActor Actor actor
     ) throws IOException {
 
