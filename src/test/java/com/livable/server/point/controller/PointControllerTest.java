@@ -63,4 +63,24 @@ class PointControllerTest {
                     .andExpect(MockMvcResultMatchers.jsonPath("$.data").exists());
         }
     }
+
+    @Nested
+    @DisplayName("목표 달성 포인트 지급 컨트롤러 단위 테스트")
+    class GetAchievementPoint {
+
+        @DisplayName("성공")
+        @Test
+        void success_Test() throws Exception {
+            // Given
+            String uri = "/api/points/logs/members";
+            String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 10000000));
+
+            // When
+            // Then
+            mockMvc.perform(MockMvcRequestBuilders.post(uri)
+                            .header("Authorization", "Bearer " + token)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+        }
+    }
 }
