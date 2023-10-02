@@ -1,5 +1,6 @@
 package com.livable.server.entity;
 
+import com.livable.server.review.dto.Projection;
 import com.livable.server.review.dto.ReviewResponse;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,6 +21,21 @@ import java.time.LocalDateTime;
                         @ColumnResult(name = "type", type = String.class),
                         @ColumnResult(name = "reviewImageUrl", type = String.class),
                         @ColumnResult(name = "reviewDate", type = LocalDate.class)
+                }
+        )
+)
+@SqlResultSetMapping(
+        name = "AllReviewDetailListMapping",
+        classes = @ConstructorResult(
+                targetClass = Projection.AllReviewDetailDTO.class,
+                columns = {
+                        @ColumnResult(name = "reviewTitle", type = String.class),
+                        @ColumnResult(name = "reviewTaste", type = String.class),
+                        @ColumnResult(name = "reviewDescription", type = String.class),
+                        @ColumnResult(name = "reviewCreatedAt", type = String.class),
+                        @ColumnResult(name = "location", type = String.class),
+                        @ColumnResult(name = "images", type = String.class),
+                        @ColumnResult(name = "reviewType", type = String.class)
                 }
         )
 )

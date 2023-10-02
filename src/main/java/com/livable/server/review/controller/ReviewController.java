@@ -84,4 +84,17 @@ public class ReviewController {
 
         return ApiResponse.success(result, HttpStatus.OK);
     }
+
+    @GetMapping("/detail/members")
+    public ResponseEntity<Success<List<ReviewResponse.DetailListDTO>>> findAllReviewDetail(
+            @RequestParam Integer year,
+            @RequestParam Integer month,
+            @LoginActor Actor actor) {
+
+        JwtTokenProvider.checkMemberToken(actor);
+        Long memberId = actor.getId();
+
+        List<ReviewResponse.DetailListDTO> result = reviewService.findAllReviewDetailList(memberId, year, month);
+        return ApiResponse.success(result, HttpStatus.OK);
+    }
 }
