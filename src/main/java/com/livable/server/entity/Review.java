@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
         classes = @ConstructorResult(
                 targetClass = Projection.AllReviewDetailDTO.class,
                 columns = {
+                        @ColumnResult(name = "reviewId", type = Long.class),
                         @ColumnResult(name = "reviewTitle", type = String.class),
                         @ColumnResult(name = "reviewTaste", type = String.class),
                         @ColumnResult(name = "reviewDescription", type = String.class),
