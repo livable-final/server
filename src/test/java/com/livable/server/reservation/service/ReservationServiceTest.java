@@ -6,6 +6,7 @@ import com.livable.server.entity.Member;
 import com.livable.server.invitation.repository.InvitationReservationMapRepository;
 import com.livable.server.member.domain.MemberErrorCode;
 import com.livable.server.member.repository.MemberRepository;
+import com.livable.server.reservation.domain.ReservationRequest;
 import com.livable.server.reservation.dto.AvailableReservationTimeProjection;
 import com.livable.server.reservation.dto.AvailableReservationTimeProjections;
 import com.livable.server.reservation.dto.ReservationResponse;
@@ -70,6 +71,8 @@ class ReservationServiceTest {
 
         AvailableReservationTimeProjections projections = new AvailableReservationTimeProjections(queryResult);
 
+        ReservationRequest.DateQuery dateQuery = new ReservationRequest.DateQuery(LocalDate.now(), LocalDate.now().plusDays(1));
+
         given(invitationReservationMapRepository.findAllReservationId()).willReturn(List.of(1L, 2L, 3L));
         given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
         given(reservationRepository.findNotUsedReservationTimeByUsedReservationIds(
@@ -97,10 +100,12 @@ class ReservationServiceTest {
         // given
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
+        ReservationRequest.DateQuery dateQuery =
+                new ReservationRequest.DateQuery(LocalDate.now(), LocalDate.now().plusDays(1));
 
         // when
         GlobalRuntimeException globalRuntimeException = assertThrows(GlobalRuntimeException.class, () ->
-                reservationService.findAvailableReservationTimes(1L, 1L, LocalDate.now(), LocalDate.now())
+                reservationService.findAvailableReservationTimes(1L, 1L, dateQuery)
         );
 
         // then

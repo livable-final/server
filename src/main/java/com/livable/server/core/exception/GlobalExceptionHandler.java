@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse.Error> methodMethodArgumentTypeMismatchExceptionHandle(MethodArgumentTypeMismatchException e) {
-        return ApiResponse.error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        return ApiResponse.error(GlobalErrorCode.INVALID_TYPE.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BindException.class)
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse.Error> runtimeExceptionHandle(RuntimeException e) {
         log.error("runtimeExceptionHandle", e);
 
-        return ApiResponse.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ApiResponse.error(e.getCause().getCause().getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)

@@ -4,6 +4,7 @@ import com.livable.server.core.response.ApiResponse;
 import com.livable.server.core.util.Actor;
 import com.livable.server.core.util.JwtTokenProvider;
 import com.livable.server.core.util.LoginActor;
+import com.livable.server.reservation.domain.ReservationRequest;
 import com.livable.server.reservation.dto.ReservationResponse;
 import com.livable.server.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,15 +24,14 @@ public class ReservationController {
     @GetMapping("/places/{commonPlaceId}")
     public ResponseEntity<ApiResponse.Success<Object>> findAvailableTimes(
             @PathVariable Long commonPlaceId,
-            @RequestParam("startDate") LocalDate startDate,
-            @RequestParam("endDate") LocalDate endDate,
+            @ModelAttribute ReservationRequest.DateQuery dateQuery,
             @LoginActor Actor actor
-            ) {
+    ) {
 
         JwtTokenProvider.checkMemberToken(actor);
 
         List<ReservationResponse.AvailableReservationTimePerDateDto> result =
-                reservationService.findAvailableReservationTimes(actor.getId(), commonPlaceId, startDate, endDate);
+                reservationService.findAvailableReservationTimes(actor.getId(), commonPlaceId, dateQuery);
         return ApiResponse.success(result, HttpStatus.OK);
     }
 }
