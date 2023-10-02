@@ -5,22 +5,30 @@ import com.livable.server.core.util.ImageSeparator;
 import com.livable.server.core.util.S3Uploader;
 import com.livable.server.entity.*;
 import com.livable.server.member.repository.MemberRepository;
+import com.livable.server.menu.repository.MenuRepository;
+import com.livable.server.point.repository.PointLogRepository;
 import com.livable.server.point.domain.DateFactory;
 import com.livable.server.point.domain.DateRange;
 import com.livable.server.restaurant.repository.RestaurantRepository;
+import com.livable.server.review.domain.PointReview;
 import com.livable.server.review.domain.ReviewErrorCode;
+import com.livable.server.review.dto.MenuRequest;
 import com.livable.server.review.dto.Projection;
 import com.livable.server.review.dto.ReviewRequest;
 import com.livable.server.review.dto.ReviewResponse;
 import com.livable.server.review.repository.ReviewImageRepository;
+import com.livable.server.review.repository.ReviewMenuMapRepository;
 import com.livable.server.review.repository.ReviewProjectionRepository;
 import com.livable.server.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -32,10 +40,13 @@ import static com.livable.server.review.domain.ReviewSelectType.*;
 @Service
 public class ReviewService {
 
+    private final MenuRepository menuRepository;
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
-    private final ReviewImageRepository reviewImageRepository;
+    private final PointLogRepository pointLogRepository;
     private final RestaurantRepository restaurantRepository;
+    private final ReviewImageRepository reviewImageRepository;
+    private final ReviewMenuMapRepository reviewMenuMapRepository;
     private final ReviewProjectionRepository reviewProjectionRepository;
     private final S3Uploader s3Uploader;
     private final DateFactory dateFactory;
@@ -50,9 +61,15 @@ public class ReviewService {
         List<String> images = s3Uploader.saveFile(files);
 
         if (!images.isEmpty()) {
-            // add point
-            // 하루에 리뷰 한개만 인지 체크
-            // 포인트 10점 넣기
+            // 날짜 비교, 오늘 리뷰 썻는지?
+            Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
+
+            if (reviewCount == 1) {
+                Point point = pointLogRepository.findByMemberId(memberId);
+
+                // add point
+                paidPoints(point, PointReview.LUNCHBOX_POINT, review);
+            }
 
             // register image
             List<ReviewImage> reviewImages = saveImageFiles(review, images);
@@ -71,7 +88,14 @@ public class ReviewService {
         List<String> images = s3Uploader.saveFile(files);
 
         if (!images.isEmpty()) {
-            // add point
+            Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
+
+            if (reviewCount == 1) {
+                Point point = pointLogRepository.findByMemberId(memberId);
+
+                // add point
+                paidPoints(point, PointReview.CAFETERIA_POINT, review);
+            }
 
             // register image
             List<ReviewImage> reviewImages = saveImageFiles(review, images);
@@ -84,43 +108,67 @@ public class ReviewService {
     public void createRestaurantReview(ReviewRequest.RestaurantCreateDTO restaurantCreateDTO, Long memberId, List<MultipartFile> files) throws IOException {
         String selectedDishes = "";
         StringBuffer sb = new StringBuffer();
+        List<Long> menuList = new ArrayList<>();
+        List<ReviewMenuMap> reviewMenuMapList =  new ArrayList<>();
 
-        List<Menu> menu = restaurantCreateDTO.getMenus();
+        // request menu
+        List<MenuRequest> menu = restaurantCreateDTO.getMenus();
         Long restaurantId = restaurantCreateDTO.getRestaurantId();
-        List<String> customMenu = restaurantCreateDTO.getCustomMenus();
 
         Member member = findMemberById(memberId);
         Restaurant restaurant = findRestaurantById(restaurantId);
 
-        if (menu.isEmpty() && customMenu.isEmpty()) {
+        // menu valid
+        if (menu.isEmpty()) {
             throw new GlobalRuntimeException(ReviewErrorCode.MENUS_NOT_CHOICE);
         }
 
-
+        // menu 리스트 순회
         menu.forEach(el -> {
-            if (sb.length() > 0) {
-                sb.append(",");
+            if (el.getMenuId() > 0) {
+                menuList.add(el.getMenuId());
             }
-            sb.append(el.getName());
-        });
 
-        customMenu.forEach(el -> {
+            // selected dishes 용
             if (sb.length() > 0) {
                 sb.append(",");
             }
-            sb.append(el);
+            sb.append(el.getMenuName());
         });
 
         selectedDishes = sb.substring(0, sb.length());
-
         Review review = restaurantCreateDTO.toEntity(member, restaurant, selectedDishes);
-        reviewRepository.save(review);
 
+        List<Menu> menus = menuRepository.findAllMenuByMenuId(menuList);
+
+        menus.forEach(el -> {
+            reviewMenuMapList.add(ReviewMenuMap.builder()
+                    .menu(el)
+                    .review(review)
+                    .build());
+        });
+
+        reviewRepository.save(review);
+        reviewMenuMapRepository.saveAll(reviewMenuMapList);
 
         List<String> images = s3Uploader.saveFile(files);
-        List<ReviewImage> reviewImages = saveImageFiles(review, images);
 
-        reviewImageRepository.saveAll(reviewImages);
+        if (!images.isEmpty()) {
+
+            // 날짜 비교, 오늘 리뷰 썻는지?
+            Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
+
+            if (reviewCount == 1) {
+                Point point = pointLogRepository.findByMemberId(memberId);
+
+                // add point
+                paidPoints(point, PointReview.RESTAURANT_POINT, review);
+            }
+
+            List<ReviewImage> reviewImages = saveImageFiles(review, images);
+            reviewImageRepository.saveAll(reviewImages);
+        }
+
     }
 
     private Restaurant findRestaurantById(Long restaurantId) {
@@ -166,6 +214,21 @@ public class ReviewService {
         return reviewProjectionRepository.findCalendarListByYearAndMonth(year, month);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, isolation = Isolation.SERIALIZABLE)
+    public void paidPoints(Point point, PointReview pointReview, Review review) {
+
+        point.plusPoint(pointReview.getAmount());
+
+        PointLog pointLog = PointLog.builder()
+                .point(point)
+                .review(review)
+                .code(pointReview.getPointCode())
+                .amount(pointReview.getAmount())
+                .build();
+
+        pointLogRepository.save(pointLog);
+    }
+  
     @Transactional(readOnly = true)
     public List<ReviewResponse.DetailListDTO> findAllReviewDetailList(Long memberId, Integer year, Integer month) {
 
