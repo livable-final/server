@@ -1,5 +1,6 @@
 package com.livable.server.visitation.mock;
 
+import com.livable.server.visitation.domain.PlaceType;
 import com.livable.server.visitation.dto.VisitationResponse;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class MockDetailInformationDto extends VisitationResponse.DetailInformati
             String buildingAddress,
             String buildingParkingCostInformation,
             String buildingScale,
+            String placeType,
             String invitationTip,
             String hostName,
             String hostCompanyName,
@@ -41,6 +43,7 @@ public class MockDetailInformationDto extends VisitationResponse.DetailInformati
                 buildingAddress,
                 buildingParkingCostInformation,
                 buildingScale,
+                placeType,
                 invitationTip,
                 hostName,
                 hostCompanyName,
