@@ -48,6 +48,7 @@ public class MenuController {
         //추후 가져 오는 메뉴 숫자 변경시 변경
         Pageable pageable = PageRequest.of(0, MOST_SELECTED_MENU.getLimit());
 
+
         List<MostSelectedMenuDTO> mostSelectedMenu = menuService.getMostSelectedMenu(buildingId, pageable);
 
         return ApiResponse.success(mostSelectedMenu, HttpStatus.OK);

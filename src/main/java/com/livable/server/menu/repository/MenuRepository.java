@@ -3,6 +3,7 @@ package com.livable.server.menu.repository;
 import com.livable.server.entity.Menu;
 import com.livable.server.menu.dto.MostSelectedMenuProjection;
 import com.livable.server.menu.dto.RouletteMenuProjection;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,11 +26,11 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
         "FROM MenuChoiceResult mcr " +
         "JOIN Menu m " +
         "ON m.id = mcr.menu.id " +
-        "WHERE mcr.building.id = :buildingId AND mcr.date = CURRENT_DATE " +
+        "WHERE mcr.building.id = :buildingId AND mcr.date = :referenceDate " +
         "GROUP BY mcr.date, mcr.menu.id, m.name, m.representativeImageUrl " +
         "ORDER BY mcr.count DESC "
     )
-    List<MostSelectedMenuProjection> findMostSelectedMenuOrderByCount(@Param("buildingId") Long buildingId, Pageable pageable);
+    List<MostSelectedMenuProjection> findMostSelectedMenuOrderByCount(@Param("buildingId") Long buildingId, @Param("referenceDate") LocalDate referenceDate, Pageable pageable);
 
     @Query(
             "SELECT m " +

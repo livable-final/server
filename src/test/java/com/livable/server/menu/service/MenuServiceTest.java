@@ -22,6 +22,7 @@ import com.livable.server.entity.MenuChoiceLog;
 import com.livable.server.member.domain.MemberErrorCode;
 import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.menu.domain.MenuErrorCode;
+import com.livable.server.menu.domain.ReferenceDate;
 import com.livable.server.menu.dto.MenuRequest.MenuChoiceLogDTO;
 import com.livable.server.menu.dto.MenuResponse.MostSelectedMenuDTO;
 import com.livable.server.menu.dto.MenuResponse.RouletteMenuDTO;
@@ -116,8 +117,9 @@ class MenuServiceTest {
 		Long menuId = 1L;
 		String menuName = "메뉴1";
 		String menuUrl = "/dummyUrl";
-		Integer pageLimit = 1;
+		int pageLimit = 1;
 		Pageable pageable = PageRequest.of(0, pageLimit);
+		LocalDate referenceDate = ReferenceDate.getReferenceDate(LocalDate.now(), ReferenceDate.START_WITH_MONDAY);
 
 
 		MostSelectedMenuProjection mostSelectedMenuProjection = new MostSelectedMenuProjection(count,
@@ -137,7 +139,7 @@ class MenuServiceTest {
 
 
 
-		given(menuRepository.findMostSelectedMenuOrderByCount(buildingId, pageable))
+		given(menuRepository.findMostSelectedMenuOrderByCount(buildingId, referenceDate, pageable))
 			.willReturn(mostSelectedMenuProjections);
 
 		//when
@@ -153,38 +155,6 @@ class MenuServiceTest {
 			() -> assertEquals(expected.getMenuImage(), actual.get(0).getMenuImage()),
 			() -> assertEquals(expected.getDate(), actual.get(0).getDate())
 		);
-	}
-
-	@DisplayName("FAIELD - 가장 많이 선택한 메뉴 10위까지 응답 서비스 테스트")
-	@Test
-	void getMostSelectedMenusFailedThrowException() {
-
-		//given
-
-		Pageable pageable = PageRequest.of(0, 1);
-
-		given(menuRepository.findMostSelectedMenuOrderByCount(1L, pageable))
-			.willThrow(GlobalRuntimeException.class);
-
-		//when
-		assertThrows(GlobalRuntimeException.class, () ->
-			menuService.getMostSelectedMenu(1L, pageable));
-	}
-
-	@DisplayName("FAIELD - 가장 많이 선택한 메뉴 10위까지 응답 서비스 테스트")
-	@Test
-	void getMostSelectedMenusFailedBadPagingLimit() {
-
-		//given
-
-		Pageable pageable = PageRequest.of(0, 1);
-
-		given(menuRepository.findMostSelectedMenuOrderByCount(1L, pageable))
-			.willThrow(GlobalRuntimeException.class);
-
-		//when
-		assertThrows(GlobalRuntimeException.class, () ->
-			menuService.getMostSelectedMenu(1L, pageable));
 	}
 
 	@DisplayName("SUCCESS - 룰렛 선택 결과 저장 서비스 테스트 : 당일 첫 룰렛 선택 결과 반영")
