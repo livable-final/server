@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,6 +46,7 @@ public class InvitationRequest {
         @FutureOrPresent(message = REQUIRED_FUTURE_DATE)
         private LocalDateTime endDate;
 
+        @Valid
         @Size(min = 1, max = 30, message = REQUIRED_VISITOR_COUNT)
         private List<VisitorCreateDTO> visitors;
 
@@ -67,10 +69,15 @@ public class InvitationRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class VisitorCreateDTO {
-        @NotNull
+
+        @Pattern(regexp = "^[가-힣]*$", message = VISITOR_NAME_FORMAT)
+        @Size(min = 2, message = VISITOR_NAME_MIN_SIZE)
+        @NotNull(message = NOT_NULL)
         private String name;
 
-        @NotNull
+        @Pattern(regexp = "^[0-9]*$", message = VISITOR_CONTACT_FORMAT)
+        @Size(min = 10, message = VISITOR_CONTACT_MIN_SIZE)
+        @NotNull(message = NOT_NULL)
         private String contact;
 
         public Visitor toEntity(Invitation invitation) {
@@ -109,9 +116,14 @@ public class InvitationRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class VisitorForUpdateDTO {
+
+        @Pattern(regexp = "^[가-힣]*$", message = VISITOR_NAME_FORMAT)
+        @Size(min = 2, message = VISITOR_NAME_MIN_SIZE)
         @NotNull(message = NOT_NULL)
         private String name;
 
+        @Pattern(regexp = "^[0-9]*$", message = VISITOR_CONTACT_FORMAT)
+        @Size(min = 10, message = VISITOR_CONTACT_MIN_SIZE)
         @NotNull(message = NOT_NULL)
         private String contact;
 
