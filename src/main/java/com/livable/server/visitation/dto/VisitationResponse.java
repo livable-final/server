@@ -1,6 +1,7 @@
 package com.livable.server.visitation.dto;
 
 import com.livable.server.invitation.dto.InvitationDetailTimeDto;
+import com.livable.server.visitation.domain.PlaceType;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -25,7 +26,6 @@ public class VisitationResponse {
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class DetailInformationDto {
 
         private LocalDate invitationStartDate;
@@ -41,13 +41,33 @@ public class VisitationResponse {
         private String buildingParkingCostInformation;
         private String buildingScale;
 
-//        private String placeImageUrl;
+        private PlaceType placeType;
         private String invitationTip;
 
         private String hostName;
         private String hostCompanyName;
         private String hostContact;
         private String hostBusinessCardImageUrl;
+
+        public DetailInformationDto(LocalDate invitationStartDate, LocalTime invitationStartTime, LocalDate invitationEndDate, LocalTime invitationEndTime, String invitationBuildingName, String invitationOfficeName, String buildingRepresentativeImageUrl, String buildingName, String buildingAddress, String buildingParkingCostInformation, String buildingScale, String placeType, String invitationTip, String hostName, String hostCompanyName, String hostContact, String hostBusinessCardImageUrl) {
+            this.invitationStartDate = invitationStartDate;
+            this.invitationStartTime = invitationStartTime;
+            this.invitationEndDate = invitationEndDate;
+            this.invitationEndTime = invitationEndTime;
+            this.invitationBuildingName = invitationBuildingName;
+            this.invitationOfficeName = invitationOfficeName;
+            this.buildingRepresentativeImageUrl = buildingRepresentativeImageUrl;
+            this.buildingName = buildingName;
+            this.buildingAddress = buildingAddress;
+            this.buildingParkingCostInformation = buildingParkingCostInformation;
+            this.buildingScale = buildingScale;
+            this.placeType = PlaceType.valueOf(placeType);
+            this.invitationTip = invitationTip;
+            this.hostName = hostName;
+            this.hostCompanyName = hostCompanyName;
+            this.hostContact = hostContact;
+            this.hostBusinessCardImageUrl = hostBusinessCardImageUrl;
+        }
     }
 
 

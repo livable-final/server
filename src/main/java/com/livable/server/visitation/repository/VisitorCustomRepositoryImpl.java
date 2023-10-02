@@ -1,8 +1,10 @@
 package com.livable.server.visitation.repository;
 
 import com.livable.server.entity.*;
+import com.livable.server.visitation.domain.PlaceType;
 import com.livable.server.visitation.dto.VisitationResponse;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,9 @@ public class VisitorCustomRepositoryImpl implements VisitorCustomRepository {
                         building.address,
                         building.parkingCostInformation,
                         building.scale,
+                        new CaseBuilder().when(invitation.officeName.contains("사무실"))
+                                .then(PlaceType.COMPANY.name())
+                                .otherwise(PlaceType.COMMON_PLACE.name()),
                         invitation.description,
                         member.name,
                         company.name,

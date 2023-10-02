@@ -2,6 +2,7 @@ package com.livable.server.visitation.repository;
 
 import com.livable.server.core.config.QueryDslConfig;
 import com.livable.server.entity.*;
+import com.livable.server.visitation.domain.PlaceType;
 import com.livable.server.visitation.dto.VisitationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -113,6 +114,7 @@ class VisitorRepositoryTest {
                 () -> assertThat(detailInformationDto.getHostName()).isEqualTo(member.getName()),
                 () -> assertThat(detailInformationDto.getHostContact()).isEqualTo(member.getContact()),
                 () -> assertThat(detailInformationDto.getBuildingAddress()).isEqualTo(building.getAddress()),
+                () -> assertThat(detailInformationDto.getPlaceType()).isEqualTo(PlaceType.COMPANY),
                 () -> assertThat(detailInformationDto.getBuildingName()).isEqualTo(building.getName()),
                 () -> assertThat(detailInformationDto.getBuildingParkingCostInformation()).isEqualTo(building.getParkingCostInformation()),
                 () -> assertThat(detailInformationDto.getBuildingRepresentativeImageUrl()).isEqualTo(building.getRepresentativeImageUrl())
