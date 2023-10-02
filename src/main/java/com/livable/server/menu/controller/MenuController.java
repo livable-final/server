@@ -61,10 +61,6 @@ public class MenuController {
         Long memberId = actor.getId();
 
         //오늘 이미 룰렛을 돌렸다면 결과를 반영하지 않고 201 return
-        if (menuService.isRouletteSelectedToday(memberId)) {
-            return ApiResponse.success(HttpStatus.CREATED);
-        }
-
         menuService.createMenuChoiceLog(memberId, menuChoiceLogDTO);
 
         return ApiResponse.success(HttpStatus.CREATED);

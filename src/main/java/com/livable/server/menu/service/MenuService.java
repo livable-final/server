@@ -107,6 +107,29 @@ public class MenuService {
 	@Transactional
 	public void createMenuChoiceLog(Long memberId, MenuChoiceLogDTO menuChoiceLogDTO) {
 
+	  	Optional<MenuChoiceLog> menuChoiceLogOptional = findMenuChoiceLogOfToday(memberId);
+
+		MenuChoiceLog menuChoiceLog = getMenuchoiceLog(memberId, menuChoiceLogDTO);
+
+		if(menuChoiceLogOptional.isPresent()) {
+			menuChoiceLog = menuChoiceLogOptional.get();
+			updateMenuChoiceLog(menuChoiceLog, menuChoiceLogDTO);
+		}
+
+		menuChoiceLogRepository.save(menuChoiceLog);
+
+	}
+
+	private void updateMenuChoiceLog(MenuChoiceLog menuChoiceLog, MenuChoiceLogDTO menuChoiceLogDTO) {
+		Long selectedId = menuChoiceLogDTO.getMenuId();
+
+		Menu selectedMenu = menuRepository.findById(selectedId)
+			.orElseThrow(() -> new GlobalRuntimeException(MenuErrorCode.MENU_NOT_EXIST));
+
+		menuChoiceLog.updateMenu(selectedMenu);
+	}
+
+	private MenuChoiceLog getMenuchoiceLog(Long memberId, MenuChoiceLogDTO menuChoiceLogDTO) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new GlobalRuntimeException(
 				MemberErrorCode.MEMBER_NOT_EXIST));
@@ -117,19 +140,16 @@ public class MenuService {
 
 		Long menuId = menuChoiceLogDTO.getMenuId();
 
-	  	Menu menu = getMenu(menuId);
+		Menu menu = getMenu(menuId);
 
 		LocalDate date = menuChoiceLogDTO.getDate();
 
-		MenuChoiceLog menuChoiceLog = MenuChoiceLog.builder()
+		return MenuChoiceLog.builder()
 			.member(member)
 			.building(building)
 			.menu(menu)
 			.date(date)
 			.build();
-
-		menuChoiceLogRepository.save(menuChoiceLog);
-
 	}
 
 	private Menu getMenu(Long menuId) {
@@ -139,10 +159,8 @@ public class MenuService {
 			);
 	}
 
-	public boolean isRouletteSelectedToday(Long memberId) {
+	public Optional<MenuChoiceLog> findMenuChoiceLogOfToday(Long memberId) {
 
-		Optional<MenuChoiceLog> menuChoiceLog = menuChoiceLogRepository.findByMemberIdAndDate(memberId, LocalDate.now());
-
-	  	return menuChoiceLog.isPresent();
+		return menuChoiceLogRepository.findByMemberIdAndDate(memberId, LocalDate.now());
 	}
 }
