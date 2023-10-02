@@ -29,6 +29,7 @@ public class ReviewResponse {
     @Builder
     public static class DetailListDTO {
 
+        private Long reviewId;
         private String reviewTitle;
         private Evaluation reviewTaste;
         private String reviewDescription;
@@ -39,6 +40,7 @@ public class ReviewResponse {
 
         public static DetailListDTO valueOf(Projection.AllReviewDetailDTO detailDTO, ImageSeparator imageSeparator) {
             return DetailListDTO.builder()
+                    .reviewId(detailDTO.getReviewId())
                     .reviewTitle(detailDTO.getReviewTitle())
                     .reviewTaste(detailDTO.getReviewTaste())
                     .reviewDescription(detailDTO.getReviewDescription())

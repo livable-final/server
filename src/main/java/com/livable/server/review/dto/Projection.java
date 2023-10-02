@@ -55,6 +55,7 @@ public class Projection {
     @AllArgsConstructor
     public static class AllReviewDetailDTO {
 
+        private Long reviewId;
         private String reviewTitle;
         private Evaluation reviewTaste;
         private String reviewDescription;
@@ -63,8 +64,9 @@ public class Projection {
         private String images;
         private String reviewType;
 
-        public AllReviewDetailDTO(String reviewTitle, String reviewTaste, String reviewDescription, String reviewCreatedAt, String location, String images, String reviewType) {
+        public AllReviewDetailDTO(Long reviewId, String reviewTitle, String reviewTaste, String reviewDescription, String reviewCreatedAt, String location, String images, String reviewType) {
 
+            this.reviewId = reviewId;
             this.reviewTitle = reviewTitle;
             this.reviewTaste = Objects.isNull(reviewTaste) ? null : Evaluation.valueOf(reviewTaste);
             this.reviewDescription = reviewDescription;
