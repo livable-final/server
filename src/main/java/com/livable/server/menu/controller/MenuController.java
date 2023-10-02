@@ -19,9 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -40,8 +40,8 @@ public class MenuController {
         return ApiResponse.success(rouletteMenuDTOs, HttpStatus.OK);
     }
 
-    @GetMapping("/api/menus/buildings/{buildingId}")
-    public ResponseEntity<Success<List<MostSelectedMenuDTO>>> getMostSelectedMenu(@PathVariable("buildingId") Long buildingId, @LoginActor Actor actor) {
+    @GetMapping("/api/menus/choices")
+    public ResponseEntity<Success<List<MostSelectedMenuDTO>>> getMostSelectedMenu(@RequestParam("buildingId") Long buildingId, @LoginActor Actor actor) {
 
         JwtTokenProvider.checkMemberToken(actor);
 
