@@ -62,6 +62,7 @@ public class ReviewProjectionRepository {
         FIND_ALL_REVIEW_DETAIL_BETWEEN_DATE_QUERY = "SELECT * " +
                 "FROM (" +
                 "SELECT " +
+                "review.id as reviewId, " +
                 "review.selected_dishes as reviewTitle, " +
                 "restaurant_review.taste as reviewTaste, " +
                 "review.description as reviewDescription, " +
@@ -77,6 +78,7 @@ public class ReviewProjectionRepository {
                 "GROUP BY review.id, review.member_id " +
                 "UNION " +
                 "SELECT " +
+                "review.id as reviewId, " +
                 "review.selected_dishes as reviewTitle, " +
                 "cafeteria_review.taste as reviewTaste, " +
                 "review.description as reviewDescription, " +
@@ -92,6 +94,7 @@ public class ReviewProjectionRepository {
                 "GROUP BY review.id, review.member_id " +
                 "UNION " +
                 "SELECT " +
+                "review.id as reviewId, " +
                 "review.selected_dishes as reviewTitle, " +
                 "NULL as reviewTaste, " +
                 "review.description as reviewDescription, " +
