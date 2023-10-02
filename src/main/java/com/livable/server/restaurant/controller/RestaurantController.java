@@ -9,7 +9,7 @@ import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.dto.RestaurantResponse;
 import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
 import com.livable.server.restaurant.service.RestaurantService;
-import lombok.Getter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -60,9 +57,9 @@ public class RestaurantController {
         return ApiResponse.success(result, HttpStatus.OK);
     }
   
-    @GetMapping("/restaurants/menus/{menuId}")
+    @GetMapping("/restaurants")
     public ResponseEntity<Success<List<RestaurantsByMenuDto>>> getRestaurantsByMenu(
-            @PathVariable("menuId") Long menuId, @LoginActor Actor actor
+            @RequestParam("menuId") Long menuId, @LoginActor Actor actor
             ) {
       
         JwtTokenProvider.checkMemberToken(actor);

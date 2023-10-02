@@ -108,7 +108,7 @@ class MenuControllerTest {
 
 		//when & then
 		mockMvc.perform(
-			  get("/api/menus/buildings/{buildingId}", 1)
+			  get("/api/menus/choices?buildingId=1")
 					.header("Authorization", "Bearer " + token)
 					.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk());

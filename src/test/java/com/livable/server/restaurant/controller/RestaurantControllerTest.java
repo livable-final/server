@@ -91,7 +91,7 @@ class RestaurantControllerTest {
             .willReturn(result);
 
         // when & then
-        mockMvc.perform(get("/api/restaurants/menus/{menuId}", 1)
+        mockMvc.perform(get("/api/restaurants?menuId=1")
             .header("Authorization", "Bearer " + token)
         )
             .andExpect(status().isOk())
@@ -112,7 +112,7 @@ class RestaurantControllerTest {
                 new GlobalRuntimeException(RestaurantErrorCode.NOT_FOUND_RESTAURANT_BY_MENU));
 
         // when & then
-        mockMvc.perform(get("/api/restaurants/menus/{menuId}", 1)
+        mockMvc.perform(get("/api/restaurants?menuId=1")
                 .header("Authorization", "Bearer " + token)
             )
             .andExpect(status().isBadRequest())
