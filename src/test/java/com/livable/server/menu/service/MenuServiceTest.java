@@ -1,22 +1,39 @@
 package com.livable.server.menu.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.entity.Building;
+import com.livable.server.entity.Company;
+import com.livable.server.entity.Member;
+import com.livable.server.entity.Menu;
+import com.livable.server.entity.MenuChoiceLog;
+import com.livable.server.member.domain.MemberErrorCode;
+import com.livable.server.member.repository.MemberRepository;
+import com.livable.server.menu.domain.MenuErrorCode;
+import com.livable.server.menu.dto.MenuRequest.MenuChoiceLogDTO;
 import com.livable.server.menu.dto.MenuResponse.MostSelectedMenuDTO;
 import com.livable.server.menu.dto.MenuResponse.RouletteMenuDTO;
 import com.livable.server.menu.dto.MostSelectedMenuProjection;
 import com.livable.server.menu.dto.RouletteMenu;
 import com.livable.server.menu.dto.RouletteMenuProjection;
+import com.livable.server.menu.repository.MenuChoiceLogRepository;
 import com.livable.server.menu.repository.MenuRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +51,10 @@ class MenuServiceTest {
 
 	@Mock
 	MenuRepository menuRepository;
+	@Mock
+	MenuChoiceLogRepository menuChoiceLogRepository;
+	@Mock
+	MemberRepository memberRepository;
 
 	@DisplayName("SUCCESS - 룰렛에 사용되는 카테고리, 메뉴 응답 서비스 테스트")
 	@Test
@@ -165,4 +186,93 @@ class MenuServiceTest {
 		assertThrows(GlobalRuntimeException.class, () ->
 			menuService.getMostSelectedMenu(1L, pageable));
 	}
+
+	@DisplayName("SUCCESS - 룰렛 선택 결과 저장 서비스 테스트 : 당일 첫 룰렛 선택 결과 반영")
+	@Test
+	void createMenuChoiceLog() {
+		//given
+		Long memberId = 1L;
+		MenuChoiceLogDTO menuChoiceLogDTO = new MenuChoiceLogDTO(1L, LocalDate.now());
+
+		Member mockMember = mock(Member.class);
+		Company mockCompany = mock(Company.class);
+		Building mockBuilding = mock(Building.class);
+		Menu mockMenu = mock(Menu.class);
+		MenuChoiceLog mockMenuChoiceLog = mock(MenuChoiceLog.class);
+
+		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(mockMember));
+		when(menuRepository.findById(anyLong())).thenReturn(Optional.of(mockMenu));
+		when(mockMember.getCompany()).thenReturn(mockCompany);
+		when(mockCompany.getBuilding()).thenReturn(mockBuilding);
+		when(menuChoiceLogRepository.save(any(MenuChoiceLog.class))).thenReturn(mockMenuChoiceLog);
+
+		//when
+		menuService.createMenuChoiceLog(memberId, menuChoiceLogDTO);
+
+		//then
+	  	verify(menuChoiceLogRepository).save(any(MenuChoiceLog.class));
+	}
+
+	@DisplayName("SUCCESS - 룰렛 선택 결과 저장 서비스 테스트 : 룰렛 선택 결과 업데이트 반영")
+	@Test
+	void updateMenuChoiceLog() {
+		//given
+		Long memberId = 1L;
+		MenuChoiceLogDTO menuChoiceLogDTO = new MenuChoiceLogDTO(1L, LocalDate.now());
+
+		Member mockMember = mock(Member.class);
+		Company mockCompany = mock(Company.class);
+		Building mockBuilding = mock(Building.class);
+		Menu mockMenu = mock(Menu.class);
+		MenuChoiceLog mockExistingMenuChoiceLog = mock(MenuChoiceLog.class);
+
+
+		when(memberRepository.findById(anyLong())).thenReturn(Optional.of(mockMember));
+		when(menuRepository.findById(anyLong())).thenReturn(Optional.of(mockMenu));
+		when(mockMember.getCompany()).thenReturn(mockCompany);
+		when(mockCompany.getBuilding()).thenReturn(mockBuilding);
+		when(menuChoiceLogRepository.findByMemberIdAndDate(anyLong(), any(LocalDate.class))).thenReturn(Optional.of(mockExistingMenuChoiceLog));
+
+		//when
+		menuService.createMenuChoiceLog(memberId, menuChoiceLogDTO);
+
+		//then
+		verify(menuChoiceLogRepository).findByMemberIdAndDate(anyLong(), any(LocalDate.class));
+		verify(menuChoiceLogRepository).save(any(MenuChoiceLog.class));
+	}
+
+	@DisplayName("FAILED - 룰렛 선택 결과 저장 서비스 테스트 : 잘못된 요청 - 존재 하지 않는 유저")
+	@Test
+	void createMenuChoiceLogInvalidMember() {
+		//given
+		Long memberId = 1L;
+		MenuChoiceLogDTO menuChoiceLogDTO = new MenuChoiceLogDTO(1L, LocalDate.now());
+
+		//when & then
+		GlobalRuntimeException globalRuntimeException = assertThrows(GlobalRuntimeException.class, () ->
+			menuService.createMenuChoiceLog(memberId, menuChoiceLogDTO));
+		assertEquals(MemberErrorCode.MEMBER_NOT_EXIST, globalRuntimeException.getErrorCode());
+	}
+
+	@DisplayName("FAILED - 룰렛 선택 결과 저장 서비스 테스트 : 잘못된 요청 - 존재 하지 않는 메뉴")
+	@Test
+	void createMenuChoiceLogInvalidMenu() {
+		//given
+		Long memberId = 1L;
+		MenuChoiceLogDTO menuChoiceLogDTO = new MenuChoiceLogDTO(1L, LocalDate.now());
+
+		Member mockMember = mock(Member.class);
+		Company mockCompany = mock(Company.class);
+		Building mockBuilding = mock(Building.class);
+
+		when(mockMember.getCompany()).thenReturn(mockCompany);
+		when(mockCompany.getBuilding()).thenReturn(mockBuilding);
+		when(memberRepository.findById(memberId)).thenReturn(Optional.of(mockMember));
+
+		//when & then
+		GlobalRuntimeException globalRuntimeException = assertThrows(GlobalRuntimeException.class, () ->
+			menuService.createMenuChoiceLog(memberId, menuChoiceLogDTO));
+		assertEquals(MenuErrorCode.MENU_NOT_EXIST, globalRuntimeException.getErrorCode());
+	}
+
 }

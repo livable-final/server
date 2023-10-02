@@ -4,6 +4,7 @@ import com.livable.server.entity.Evaluation;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Projection {
 
@@ -47,5 +48,30 @@ public class Projection {
         private Evaluation reviewSpeed;
 
         private String images;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class AllReviewDetailDTO {
+
+        private String reviewTitle;
+        private Evaluation reviewTaste;
+        private String reviewDescription;
+        private String reviewCreatedAt;
+        private String location;
+        private String images;
+        private String reviewType;
+
+        public AllReviewDetailDTO(String reviewTitle, String reviewTaste, String reviewDescription, String reviewCreatedAt, String location, String images, String reviewType) {
+
+            this.reviewTitle = reviewTitle;
+            this.reviewTaste = Objects.isNull(reviewTaste) ? null : Evaluation.valueOf(reviewTaste);
+            this.reviewDescription = reviewDescription;
+            this.reviewCreatedAt = reviewCreatedAt;
+            this.location = location;
+            this.images = images;
+            this.reviewType = reviewType;
+        }
     }
 }

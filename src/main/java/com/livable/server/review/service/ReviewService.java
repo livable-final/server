@@ -1,15 +1,19 @@
 package com.livable.server.review.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
+import com.livable.server.core.util.ImageSeparator;
 import com.livable.server.core.util.S3Uploader;
 import com.livable.server.entity.*;
 import com.livable.server.member.repository.MemberRepository;
 import com.livable.server.menu.repository.MenuRepository;
 import com.livable.server.point.repository.PointLogRepository;
+import com.livable.server.point.domain.DateFactory;
+import com.livable.server.point.domain.DateRange;
 import com.livable.server.restaurant.repository.RestaurantRepository;
 import com.livable.server.review.domain.PointReview;
 import com.livable.server.review.domain.ReviewErrorCode;
 import com.livable.server.review.dto.MenuRequest;
+import com.livable.server.review.dto.Projection;
 import com.livable.server.review.dto.ReviewRequest;
 import com.livable.server.review.dto.ReviewResponse;
 import com.livable.server.review.repository.ReviewImageRepository;
@@ -25,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,6 +49,8 @@ public class ReviewService {
     private final ReviewMenuMapRepository reviewMenuMapRepository;
     private final ReviewProjectionRepository reviewProjectionRepository;
     private final S3Uploader s3Uploader;
+    private final DateFactory dateFactory;
+    private final ImageSeparator imageSeparator;
 
     @Transactional
     public void createLunchBoxReview(ReviewRequest.LunchBoxCreateDTO lunchBoxCreateDTO, Long memberId, List<MultipartFile> files) throws IOException {
@@ -220,5 +227,19 @@ public class ReviewService {
                 .build();
 
         pointLogRepository.save(pointLog);
+    }
+  
+    @Transactional(readOnly = true)
+    public List<ReviewResponse.DetailListDTO> findAllReviewDetailList(Long memberId, Integer year, Integer month) {
+
+        LocalDateTime requestTime = LocalDateTime.of(year, month, 1, 0, 0, 0);
+
+        DateRange requestDateRange = dateFactory.getMonthRangeOf(requestTime);
+        List<Projection.AllReviewDetailDTO> allReviewDetailDTOS = reviewProjectionRepository.findAllReviewDetailBetween(
+                memberId, requestDateRange.getStartDate(), requestDateRange.getEndDate());
+
+        return allReviewDetailDTOS.stream()
+                .map(detailDTO -> ReviewResponse.DetailListDTO.valueOf(detailDTO, imageSeparator))
+                .collect(Collectors.toList());
     }
 }
