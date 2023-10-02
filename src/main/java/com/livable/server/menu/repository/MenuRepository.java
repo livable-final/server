@@ -30,4 +30,11 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
         "ORDER BY mcr.count DESC "
     )
     List<MostSelectedMenuProjection> findMostSelectedMenuOrderByCount(@Param("buildingId") Long buildingId, Pageable pageable);
+
+    @Query(
+            "SELECT m " +
+            "FROM Menu m " +
+            "WHERE m.id in :menuList"
+    )
+    List<Menu> findAllMenuByMenuId(@Param("menuList") List<Long> menuList);
 }
