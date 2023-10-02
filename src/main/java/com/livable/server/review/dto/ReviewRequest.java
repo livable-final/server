@@ -3,19 +3,17 @@ package com.livable.server.review.dto;
 import com.livable.server.entity.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.validation.constraints.NotNull;
 
 import java.util.List;
-
-import static com.livable.server.entity.Evaluation.GOOD;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReviewRequest {
 
     @Getter
     @Builder
+    @Jacksonized
     public static class LunchBoxCreateDTO {
         // JWT 토큰 오고 => MemberId
         @NotNull(message = "내용을 입력해 주세요.")
@@ -65,8 +63,7 @@ public class ReviewRequest {
         private Evaluation speed;
         private Evaluation service;
 
-        private List<Menu> menus;
-        private List<String> customMenus;
+        private List<MenuRequest> menus;
 
 
         public RestaurantReview toEntity(Member member, Restaurant restaurant, String selectedDishes) {
