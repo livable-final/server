@@ -1,5 +1,6 @@
 package com.livable.server.point.repository;
 
+import com.livable.server.entity.Point;
 import com.livable.server.entity.PointLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,12 @@ public interface PointLogRepository extends JpaRepository<PointLog, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+
+
+    @Query(value = "SELECT p " +
+            "FROM Point p " +
+            "WHERE p.member.id = :memberId"
+
+    )
+    Point findByMemberId(@Param("memberId") Long memberId);
 }
