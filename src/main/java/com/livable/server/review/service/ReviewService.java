@@ -56,13 +56,18 @@ public class ReviewService {
     public void createLunchBoxReview(ReviewRequest.LunchBoxCreateDTO lunchBoxCreateDTO, Long memberId, List<MultipartFile> files) throws IOException {
         Member member = findMemberById(memberId);
         Review review = lunchBoxCreateDTO.toEntity(member, LUNCH_BOX.getMessage());
-        reviewRepository.save(review);
+        Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
+
+        if (reviewCount == 0) {
+            reviewRepository.save(review);
+        } else {
+            throw new GlobalRuntimeException(ReviewErrorCode.ALREADY_HAVE_A_REVIEW);
+        }
 
         List<String> images = s3Uploader.saveFile(files);
 
         if (!images.isEmpty()) {
             // 날짜 비교, 오늘 리뷰 썻는지?
-            Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
 
             if (reviewCount == 1) {
                 Point point = pointLogRepository.findByMemberId(memberId);
@@ -83,12 +88,17 @@ public class ReviewService {
         Member member = findMemberById(memberId);
         Building building = getBuildingByMember(member);
         Review review = cafeteriaCreateDTO.toEntity(member, building, CAFETERIA.getMessage());
-        reviewRepository.save(review);
+        Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
+
+        if (reviewCount == 0) {
+            reviewRepository.save(review);
+        } else {
+            throw new GlobalRuntimeException(ReviewErrorCode.ALREADY_HAVE_A_REVIEW);
+        }
 
         List<String> images = s3Uploader.saveFile(files);
 
         if (!images.isEmpty()) {
-            Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
 
             if (reviewCount == 1) {
                 Point point = pointLogRepository.findByMemberId(memberId);
@@ -117,6 +127,8 @@ public class ReviewService {
 
         Member member = findMemberById(memberId);
         Restaurant restaurant = findRestaurantById(restaurantId);
+
+        Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
 
         // menu valid
         if (menu.isEmpty()) {
@@ -148,7 +160,12 @@ public class ReviewService {
                     .build());
         });
 
-        reviewRepository.save(review);
+        if (reviewCount == 0) {
+            reviewRepository.save(review);
+        } else {
+            throw new GlobalRuntimeException(ReviewErrorCode.ALREADY_HAVE_A_REVIEW);
+        }
+
         reviewMenuMapRepository.saveAll(reviewMenuMapList);
 
         List<String> images = s3Uploader.saveFile(files);
@@ -156,7 +173,6 @@ public class ReviewService {
         if (!images.isEmpty()) {
 
             // 날짜 비교, 오늘 리뷰 썻는지?
-            Long reviewCount = reviewRepository.findBymemberIdAndDate(memberId);
 
             if (reviewCount == 1) {
                 Point point = pointLogRepository.findByMemberId(memberId);
