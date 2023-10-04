@@ -56,6 +56,17 @@ public class VisitationController {
         return ApiResponse.success(HttpStatus.OK);
     }
 
+    @GetMapping("/parking")
+    public ResponseEntity<ApiResponse.Success<Object>> findCarNumber(@LoginActor Actor actor) {
+
+        JwtTokenProvider.checkVisitorToken(actor);
+
+        Long visitorId = actor.getId();
+        VisitationResponse.CarNumber result = visitationFacadeService.findCarNumber(visitorId);
+
+        return ApiResponse.success(result, HttpStatus.OK);
+    }
+
     @PostMapping("/parking")
     public ResponseEntity<ApiResponse.Success<Object>> registerParking(
             @RequestBody @Valid VisitationRequest.RegisterParkingDto registerParkingDto, @LoginActor Actor actor
@@ -68,5 +79,4 @@ public class VisitationController {
 
         return ApiResponse.success(HttpStatus.CREATED);
     }
-
 }
