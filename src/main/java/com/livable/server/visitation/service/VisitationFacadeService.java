@@ -33,6 +33,7 @@ public class VisitationFacadeService {
         return VisitationResponse.Base64QrCode.of(base64QrCode);
     }
 
+    @Transactional
     public void validateQrCode(final String qr, final Long visitorId) {
         visitationService.validateQrCode(qr);
         visitorService.doEntrance(visitorId);
