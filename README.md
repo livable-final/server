@@ -25,8 +25,14 @@
   <img src="https://img.shields.io/badge/Java (JDK 11)-C70D2C?style=flat&logo=openjdk&logoColor=white">
   <img src="https://img.shields.io/badge/SpringBoot (2.7.15)-6DB33F?style=flat&logo=springboot&logoColor=white">
   <img src="https://img.shields.io/badge/Spring Data JPA-6DB33F?style=flat&logo=spring&logoColor=white">
+  <img src="https://img.shields.io/badge/QueryDSL-00529B?style=flat&logo=querydsl&logoColor=white">
   <img src="https://img.shields.io/badge/MySQL (8.0.34)-4479A1?style=flat&logo=mysql&logoColor=white">
+</p>
+
+<p align=center>
   <img src="https://img.shields.io/badge/JUnit5-25A162?style=flat&logo=junit5&logoColor=white">
+  <img src="https://img.shields.io/badge/jacoco-BD081C?style=flat&logo=jacoco&logoColor=white">
+  <img src="https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white">
 </p>
 
 <p align=center>
@@ -40,6 +46,7 @@
   <img src="https://img.shields.io/badge/IntelliJ IDEA-000000?style=flat&logo=IntelliJ IDEA&logoColor=white">
   <img src="https://img.shields.io/badge/notion-000000?style=flat&logo=notion&logoColor=white">
   <img src="https://img.shields.io/badge/slack-4A154B?style=flat&logo=slack&logoColor=white">
+  <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white">
 </p>
 
 
