@@ -26,6 +26,22 @@ public class VisitationResponse {
 
     @Getter
     @NoArgsConstructor
+    public static class CarNumber {
+
+        private Long visitorId;
+        private String carNumber;
+
+        public static CarNumber of(Long visitorId, String carNumber) {
+            CarNumber carNumberDto = new CarNumber();
+            carNumberDto.visitorId = visitorId;
+            carNumberDto.carNumber = carNumber;
+
+            return carNumberDto;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
     public static class DetailInformationDto {
 
         private LocalDate invitationStartDate;

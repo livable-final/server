@@ -18,6 +18,10 @@ public class ParkingLogService {
         return parkingLogRepository.findParkingLogByVisitorId(visitorId);
     }
 
+    public Optional<String> findCarNumberByVisitorId(final Long visitorId) {
+        return parkingLogRepository.findCarNumberByVisitorId(visitorId);
+    }
+
     public void registerParkingLog(final Visitor visitor, final String carNumber) {
         ParkingLog parkingLog = ParkingLog.create(visitor, carNumber);
 

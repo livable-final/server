@@ -50,4 +50,11 @@ public class VisitationFacadeService {
             throw new GlobalRuntimeException(VisitationErrorCode.ALREADY_REGISTER_PARKING);
         }
     }
+
+    public VisitationResponse.CarNumber getCarNumber(Long visitorId) {
+        String carNumber = parkingLogService.findCarNumberByVisitorId(visitorId)
+                .orElse(null);
+
+        return VisitationResponse.CarNumber.of(visitorId, carNumber);
+    }
 }

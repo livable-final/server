@@ -18,4 +18,7 @@ public interface ParkingLogRepository extends JpaRepository<ParkingLog, Long> {
     @Modifying
     @Query("delete from ParkingLog p where p.visitor.id in :visitorIds")
     void deleteByVisitorIdsIn(@Param("visitorIds") List<Long> visitorIds);
+
+    @Query("select p.carNumber from ParkingLog p where p.visitor.id in :visitorId")
+    Optional<String> findCarNumberByVisitorId(@Param("visitorId") final Long visitorId);
 }
