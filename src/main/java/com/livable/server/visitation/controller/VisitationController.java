@@ -62,9 +62,9 @@ public class VisitationController {
         JwtTokenProvider.checkVisitorToken(actor);
 
         Long visitorId = actor.getId();
-        VisitationResponse.CarNumber result = visitationFacadeService.getCarNumber(visitorId);
+        VisitationResponse.CarNumber result = visitationFacadeService.findCarNumber(visitorId);
 
-        return ApiResponse.success(result, HttpStatus.CREATED);
+        return ApiResponse.success(result, HttpStatus.OK);
     }
 
     @PostMapping("/parking")

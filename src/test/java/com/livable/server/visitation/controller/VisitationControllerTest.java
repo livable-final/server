@@ -151,6 +151,36 @@ class VisitationControllerTest {
         then(visitationFacadeService).should(times(1)).validateQrCode(anyString(), anyLong());
     }
 
+    @DisplayName("[GET][/api/visitation/parking] - 차량 조회 성공")
+    @Test
+    void findCarNumberSuccess() throws Exception {
+        // given
+        String token = tokenProvider.createActorToken(ActorType.VISITOR, 1L, new Date(new Date().getTime() + 10000000));
+        String carNumber = "12가1234";
+        VisitationResponse.CarNumber result = VisitationResponse.CarNumber.of(1L, carNumber);
+
+
+        given(visitationFacadeService.findCarNumber(1L)).willReturn(result);
+
+        // when
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/visitation/parking")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.visitorId").isNumber())
+                .andExpect(jsonPath("$.data.carNumber").isString())
+                .andExpect(jsonPath("$.data.visitorId").value(1))
+                .andExpect(jsonPath("$.data.carNumber").value("12가1234"));
+
+        then(visitationFacadeService)
+                .should(times(1))
+                .findCarNumber(1L);
+    }
+
     @DisplayName("[POST][/api/visitation/parking] - 차량 등록 성공")
     @Test
     void registerParking() throws Exception {

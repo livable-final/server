@@ -51,7 +51,7 @@ public class VisitationFacadeService {
         }
     }
 
-    public VisitationResponse.CarNumber getCarNumber(Long visitorId) {
+    public VisitationResponse.CarNumber findCarNumber(Long visitorId) {
         String carNumber = parkingLogService.findCarNumberByVisitorId(visitorId)
                 .orElse(null);
 

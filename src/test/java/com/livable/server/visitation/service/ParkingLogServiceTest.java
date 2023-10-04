@@ -79,4 +79,22 @@ class ParkingLogServiceTest {
 
         parkingLogMockedStatic.close();
     }
+
+    @DisplayName("ParkingLogService.findCarNumberByVisitorId 성공 테스트")
+    @Test
+    void findCarNumberByVisitorIdSuccessTest() {
+
+        String carNumber = "testCarNumber";
+        Optional<String> optionalCarNumber = Optional.of(carNumber);
+
+        // Given
+        given(parkingLogRepository.findCarNumberByVisitorId(anyLong())).willReturn(optionalCarNumber);
+
+        // When
+        Optional<String> result = parkingLogService.findCarNumberByVisitorId(1L);
+
+        // Then
+        then(parkingLogRepository).should(times(1)).findCarNumberByVisitorId(anyLong());
+        assertThat(optionalCarNumber).isEqualTo(result);
+    }
 }

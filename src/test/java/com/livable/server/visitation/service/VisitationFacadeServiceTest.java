@@ -142,4 +142,21 @@ class VisitationFacadeServiceTest {
         then(parkingLogService).should(times(1)).findParkingLogByVisitorId(any());
         assertThat(globalRuntimeException.getErrorCode()).isEqualTo(VisitationErrorCode.ALREADY_REGISTER_PARKING);
     }
+
+    @DisplayName("VisitationFacadeService.findCarNumber 성공 테스트")
+    @Test
+    void findCarNumberSuccessTest() {
+        // Given
+        String carNumber = "12가1234";
+        VisitationResponse.CarNumber dto = VisitationResponse.CarNumber.of(1L, carNumber);
+        given(parkingLogService.findCarNumberByVisitorId(any())).willReturn(Optional.of("12가1234"));
+
+        // When
+
+        VisitationResponse.CarNumber expectedCarNumber = visitationFacadeService.findCarNumber(1L);
+
+        // Then
+        then(parkingLogService).should(times(1)).findCarNumberByVisitorId(any());
+        assertThat(dto).usingRecursiveComparison().isEqualTo(expectedCarNumber);
+    }
 }
