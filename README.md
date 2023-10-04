@@ -80,19 +80,24 @@
 <br><br><br><br>
 
 
-<div align=center><h2>시작하기</h2></div>
+<div align=center><h2>프로젝트 실행하기</h2></div>
 
+### application.yml
 ``` yaml
 # Spring, DB propertiesg setting
 spring:
-  config:
-    activate:
-      on-profile: dev
   datasource:
     url: #DB Address
     driver-class-name: #DB Driver
     username: #DB Username
     password: #DB Password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
 
 # S3 propertiesg setting
 cloud:
@@ -111,6 +116,17 @@ cloud:
 jwt:
   secret: #JWT key
 ```
+
+### build and test
+```bash
+$ ./gradlew clean build
+```
+
+### run
+```bash
+$ java -jar ./build/libs/server-0.0.1-SNAPSHOT.jar
+```
+
 
 <br><br><br><br>
 
