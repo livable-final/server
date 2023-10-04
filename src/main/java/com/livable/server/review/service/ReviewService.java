@@ -67,14 +67,10 @@ public class ReviewService {
         List<String> images = s3Uploader.saveFile(files);
 
         if (!images.isEmpty()) {
-            // 날짜 비교, 오늘 리뷰 썻는지?
+            Point point = pointLogRepository.findByMemberId(memberId);
 
-            if (reviewCount == 1) {
-                Point point = pointLogRepository.findByMemberId(memberId);
-
-                // add point
-                paidPoints(point, PointReview.LUNCHBOX_POINT, review);
-            }
+            // add point
+            paidPoints(point, PointReview.LUNCHBOX_POINT, review);
 
             // register image
             List<ReviewImage> reviewImages = saveImageFiles(review, images);
@@ -99,13 +95,10 @@ public class ReviewService {
         List<String> images = s3Uploader.saveFile(files);
 
         if (!images.isEmpty()) {
+            Point point = pointLogRepository.findByMemberId(memberId);
 
-            if (reviewCount == 1) {
-                Point point = pointLogRepository.findByMemberId(memberId);
-
-                // add point
-                paidPoints(point, PointReview.CAFETERIA_POINT, review);
-            }
+            // add point
+            paidPoints(point, PointReview.CAFETERIA_POINT, review);
 
             // register image
             List<ReviewImage> reviewImages = saveImageFiles(review, images);
@@ -132,6 +125,7 @@ public class ReviewService {
 
         // menu valid
         if (menu.isEmpty()) {
+
             throw new GlobalRuntimeException(ReviewErrorCode.MENUS_NOT_CHOICE);
         }
 
@@ -171,20 +165,14 @@ public class ReviewService {
         List<String> images = s3Uploader.saveFile(files);
 
         if (!images.isEmpty()) {
+            Point point = pointLogRepository.findByMemberId(memberId);
 
-            // 날짜 비교, 오늘 리뷰 썻는지?
-
-            if (reviewCount == 1) {
-                Point point = pointLogRepository.findByMemberId(memberId);
-
-                // add point
-                paidPoints(point, PointReview.RESTAURANT_POINT, review);
-            }
+            // add point
+            paidPoints(point, PointReview.RESTAURANT_POINT, review);
 
             List<ReviewImage> reviewImages = saveImageFiles(review, images);
             reviewImageRepository.saveAll(reviewImages);
         }
-
     }
 
     private Restaurant findRestaurantById(Long restaurantId) {
