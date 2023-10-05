@@ -165,7 +165,10 @@ $ java -jar ./build/libs/server-0.0.1-SNAPSHOT.jar
         - Kakao 알림톡 적용<br>
       </td>
       <td>
-        - 맡은 역할을 적어주세요.
+        - 데이터베이스 설계<br>
+        - API 명세서 설계<br>
+        - 자동화 배포환경 구성<br>
+        - 방문증 API 구현<br>
       </td>
       <td>
         - 맡은 역할을 적어주세요.
