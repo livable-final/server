@@ -99,6 +99,10 @@ public class MenuService {
 
 	private List<MostSelectedMenuDTO> convertToDTO(List<MostSelectedMenuProjection> mostSelectedMenuProjections) {
 
+		if (mostSelectedMenuProjections.isEmpty()) {
+		  return List.of();
+		}
+
 		List<MostSelectedMenuDTO> mostSelectedMenus = new ArrayList<>();
 
 		for (int i = 0; i < mostSelectedMenuProjections.size(); i++) {
