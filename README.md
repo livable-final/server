@@ -99,6 +99,13 @@ spring:
       hibernate:
         default_batch_fetch_size: 100
 
+  quartz:
+  auto-startup: true
+  job-store-type: jdbc
+  jdbc:
+    initialize-schema: never
+  overwrite-existing-jobs: false
+
 # S3 propertiesg setting
 cloud:
   aws:
@@ -115,6 +122,8 @@ cloud:
 # JWT properties setting
 jwt:
   secret: #JWT key
+
+#
 ```
 
 ### build and test
