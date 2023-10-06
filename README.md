@@ -153,7 +153,12 @@ $ java -jar ./build/libs/server-0.0.1-SNAPSHOT.jar
     </tr>
     <tr>
       <td>
-        - 맡은 역할을 적어주세요.
+        - 데이터베이스 설계<br>
+        - API 명세서 설계<br>
+        - S3 업로드 환경 구성<br>
+        - 포인트 기능 구현<br>
+        - 식당 리뷰 기능 구현<br>
+        - 다중 이미지 처리 구현<br>
       </td>
       <td>
         - 데이터베이스 설계<br>
