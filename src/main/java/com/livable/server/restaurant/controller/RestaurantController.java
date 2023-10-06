@@ -7,7 +7,8 @@ import com.livable.server.core.util.JwtTokenProvider;
 import com.livable.server.core.util.LoginActor;
 import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.dto.RestaurantResponse;
-import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
+import com.livable.server.restaurant.dto.RestaurantResponse.ListMenuDTO;
+import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsDto;
 import com.livable.server.restaurant.service.RestaurantService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class RestaurantController {
   
 
     @GetMapping("restaurant/{restaurantId}/menus")
-    public ResponseEntity<ApiResponse.Success<List<RestaurantResponse.listMenuDTO>>> sellMenuByRestaurant (
+    public ResponseEntity<ApiResponse.Success<List<ListMenuDTO>>> sellMenuByRestaurant (
             @PathVariable Long restaurantId,
             @LoginActor Actor actor
             ) {
@@ -52,13 +53,13 @@ public class RestaurantController {
 
         Long memberId = actor.getId();
 
-        List<RestaurantResponse.listMenuDTO> result = restaurantService.findMenuList(memberId, restaurantId);
+        List<ListMenuDTO> result = restaurantService.findMenuList(memberId, restaurantId);
 
         return ApiResponse.success(result, HttpStatus.OK);
     }
   
     @GetMapping("/restaurants")
-    public ResponseEntity<Success<List<RestaurantsByMenuDto>>> getRestaurantsByMenu(
+    public ResponseEntity<Success<List<RestaurantsDto>>> getRestaurantsByMenu(
             @RequestParam("menuId") Long menuId, @LoginActor Actor actor
             ) {
       
@@ -66,9 +67,23 @@ public class RestaurantController {
 
         Long memberId = actor.getId();
       
-        List<RestaurantsByMenuDto> restaurantsByMenuDtos = restaurantService.findRestaurantByMenuId(menuId, memberId);
+        List<RestaurantsDto> restaurantsDtos = restaurantService.findRestaurantByMenuId(menuId, memberId);
 
-        return ApiResponse.success(restaurantsByMenuDtos, HttpStatus.OK);
+        return ApiResponse.success(restaurantsDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/restaurants/near")
+    public ResponseEntity<Success<List<RestaurantsDto>>> getRestaurantsByBuilding(
+            @RequestParam("buildingId") Long buildingId, @LoginActor Actor actor
+         ) {
+
+        JwtTokenProvider.checkMemberToken(actor);
+
+        Long memberId = actor.getId();
+
+        List<RestaurantsDto> restaurantsDtos = restaurantService.findRestaurantByBuildingId(buildingId, memberId);
+
+        return ApiResponse.success(restaurantsDtos, HttpStatus.OK);
     }
 
     @GetMapping("/restaurants/search")
@@ -84,4 +99,5 @@ public class RestaurantController {
 
         return ApiResponse.success(result, HttpStatus.OK);
     }
+
 }

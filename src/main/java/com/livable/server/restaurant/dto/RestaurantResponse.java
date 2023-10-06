@@ -29,7 +29,7 @@ public class RestaurantResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class listMenuDTO {
+    public static class ListMenuDTO {
         private Long menuId;
         private String menuName;
     }
@@ -38,7 +38,7 @@ public class RestaurantResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RestaurantsByMenuDto {
+    public static class RestaurantsDto {
 
         Long restaurantId;
         String restaurantName;
@@ -50,8 +50,8 @@ public class RestaurantResponse {
         Integer estimatedTime;
         String review;
 
-        public static RestaurantsByMenuDto from(RestaurantByMenuProjection restaurantByMenuProjection) {
-            return RestaurantsByMenuDto.builder()
+        public static RestaurantsDto from(RestaurantByMenuProjection restaurantByMenuProjection) {
+            return RestaurantsDto.builder()
                 .restaurantId(restaurantByMenuProjection.getRestaurantId())
                 .restaurantName(restaurantByMenuProjection.getRestaurantName())
                 .tastePercentage(restaurantByMenuProjection.getTastePercentage())
