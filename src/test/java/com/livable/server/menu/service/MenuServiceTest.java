@@ -21,8 +21,8 @@ import com.livable.server.entity.Menu;
 import com.livable.server.entity.MenuChoiceLog;
 import com.livable.server.member.domain.MemberErrorCode;
 import com.livable.server.member.repository.MemberRepository;
+import com.livable.server.menu.domain.MenuChoiceResultDateRange;
 import com.livable.server.menu.domain.MenuErrorCode;
-import com.livable.server.menu.domain.ReferenceDate;
 import com.livable.server.menu.dto.MenuRequest.MenuChoiceLogDTO;
 import com.livable.server.menu.dto.MenuResponse.MostSelectedMenuDTO;
 import com.livable.server.menu.dto.MenuResponse.RouletteMenuDTO;
@@ -119,7 +119,7 @@ class MenuServiceTest {
 		String menuUrl = "/dummyUrl";
 		int pageLimit = 1;
 		Pageable pageable = PageRequest.of(0, pageLimit);
-		LocalDate referenceDate = ReferenceDate.getReferenceDate(LocalDate.now(), ReferenceDate.START_WITH_MONDAY);
+		MenuChoiceResultDateRange referenceDate = MenuChoiceResultDateRange.getDateRange(LocalDate.now());
 
 
 		MostSelectedMenuProjection mostSelectedMenuProjection = new MostSelectedMenuProjection(count,
@@ -139,7 +139,7 @@ class MenuServiceTest {
 
 
 
-		given(menuRepository.findMostSelectedMenuOrderByCount(buildingId, referenceDate, pageable))
+		given(menuRepository.findMostSelectedMenuOrderByCount(buildingId, referenceDate.getStartDate(), pageable))
 			.willReturn(mostSelectedMenuProjections);
 
 		//when
