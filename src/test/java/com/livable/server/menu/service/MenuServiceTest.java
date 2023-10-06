@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -31,6 +33,7 @@ import com.livable.server.menu.dto.RouletteMenu;
 import com.livable.server.menu.dto.RouletteMenuProjection;
 import com.livable.server.menu.repository.MenuChoiceLogRepository;
 import com.livable.server.menu.repository.MenuRepository;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,9 +41,11 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -118,8 +123,8 @@ class MenuServiceTest {
 		String menuName = "메뉴1";
 		String menuUrl = "/dummyUrl";
 		int pageLimit = 1;
-		Pageable pageable = PageRequest.of(0, pageLimit);
-		MenuChoiceResultDateRange referenceDate = MenuChoiceResultDateRange.getDateRange(LocalDate.now());
+		Pageable pageable = PageRequest.of(5, pageLimit);
+		MenuChoiceResultDateRange referenceDate = MenuChoiceResultDateRange.getDateRange(date);
 
 
 		MostSelectedMenuProjection mostSelectedMenuProjection = new MostSelectedMenuProjection(count,
@@ -137,9 +142,7 @@ class MenuServiceTest {
 
 		MostSelectedMenuDTO expected = new MostSelectedMenuDTO(date, count, pageLimit, menuId, menuName, menuUrl);
 
-
-
-		given(menuRepository.findMostSelectedMenuOrderByCount(buildingId, referenceDate.getStartDate(), pageable))
+		given(menuRepository.findMostSelectedMenuOrderByCount(buildingId, referenceDate.getEndDate(), pageable))
 			.willReturn(mostSelectedMenuProjections);
 
 		//when
@@ -155,6 +158,7 @@ class MenuServiceTest {
 			() -> assertEquals(expected.getMenuImage(), actual.get(0).getMenuImage()),
 			() -> assertEquals(expected.getDate(), actual.get(0).getDate())
 		);
+
 	}
 
 	@DisplayName("SUCCESS - 룰렛 선택 결과 저장 서비스 테스트 : 당일 첫 룰렛 선택 결과 반영")
