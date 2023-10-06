@@ -1,8 +1,6 @@
 package com.livable.server.restaurant.service;
 
 import com.livable.server.core.exception.GlobalRuntimeException;
-import com.livable.server.entity.Building;
-import com.livable.server.entity.Company;
 import com.livable.server.entity.Member;
 import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.member.repository.MemberRepository;
@@ -10,7 +8,8 @@ import com.livable.server.restaurant.domain.RandomGenerator;
 import com.livable.server.restaurant.domain.RestaurantErrorCode;
 import com.livable.server.restaurant.dto.RestaurantByMenuProjection;
 import com.livable.server.restaurant.dto.RestaurantResponse;
-import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
+import com.livable.server.restaurant.dto.RestaurantResponse.ListMenuDTO;
+import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsDto;
 import com.livable.server.restaurant.repository.BuildingRestaurantMapRepository;
 import com.livable.server.restaurant.repository.RestaurantGroupByMenuProjectionRepository;
 import com.livable.server.restaurant.repository.RestaurantRepository;
@@ -61,7 +60,7 @@ public class RestaurantService {
     }
 
 
-    public List<RestaurantResponse.listMenuDTO> findMenuList(Long memberId, Long restaurantId) {
+    public List<ListMenuDTO> findMenuList(Long memberId, Long restaurantId) {
         checkExistMemberById(memberId);
 
         return restaurantRepository.findMenuList(restaurantId);
@@ -73,7 +72,7 @@ public class RestaurantService {
         return memberOptional.orElseThrow(() -> new GlobalRuntimeException(ReviewErrorCode.MEMBER_NOT_EXIST));
     }
 
-    public List<RestaurantsByMenuDto> findRestaurantByMenuId(Long menuId, Long memberId) {
+    public List<RestaurantsDto> findRestaurantByMenuId(Long menuId, Long memberId) {
         List<RestaurantByMenuProjection> restaurantByMenuProjections = restaurantGroupByMenuProjectionRepository.findRestaurantByMenuId(menuId, memberId);
 
         if (restaurantByMenuProjections.isEmpty()) {
@@ -83,16 +82,26 @@ public class RestaurantService {
         return getRestaurantsByMenu(restaurantByMenuProjections);
     }
 
-    private List<RestaurantsByMenuDto> getRestaurantsByMenu(
-        List<RestaurantByMenuProjection> restaurantByMenuProjections) {
+    public List<RestaurantsDto> findRestaurantByBuildingId(Long buildingId, Long memberId) {
+        List<RestaurantByMenuProjection> restaurantByMenuProjections = restaurantGroupByMenuProjectionRepository.findRestaurantByBuildingId(buildingId, memberId);
 
-        List<RestaurantsByMenuDto> restaurantsByMenuDtos = new ArrayList<>();
-
-        for (RestaurantByMenuProjection restaurantByMenuProjection : restaurantByMenuProjections) {
-            restaurantsByMenuDtos.add(RestaurantsByMenuDto.from(restaurantByMenuProjection));
+        if (restaurantByMenuProjections.isEmpty()) {
+            throw new GlobalRuntimeException(RestaurantErrorCode.NOT_FOUND_RESTAURANT_BY_MENU);
         }
 
-        return restaurantsByMenuDtos;
+        return getRestaurantsByMenu(restaurantByMenuProjections);
+    }
+
+    private List<RestaurantsDto> getRestaurantsByMenu(
+        List<RestaurantByMenuProjection> restaurantByMenuProjections) {
+
+        List<RestaurantsDto> restaurantsDtos = new ArrayList<>();
+
+        for (RestaurantByMenuProjection restaurantByMenuProjection : restaurantByMenuProjections) {
+            restaurantsDtos.add(RestaurantsDto.from(restaurantByMenuProjection));
+        }
+
+        return restaurantsDtos;
     }
 
     public List<RestaurantResponse.SearchRestaurantsDTO> findRestaurantByKeyword(Long memberId, String keyword) {
@@ -107,4 +116,5 @@ public class RestaurantService {
 
         return memberRepository.findBuildingInfoByMemberId(memberId).get().getBuildingId();
     }
+
 }
