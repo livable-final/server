@@ -151,42 +151,23 @@ $ java -jar ./build/libs/server-0.0.1-SNAPSHOT.jar
         <img src="https://avatars.githubusercontent.com/u/61049995?v=4" width="200px;" alt=""/><br /><sub><b>배종윤</b></sub></a><br />
       </td>
     </tr>
-    <tr>
-      <td>
-        - 데이터베이스 설계<br>
-        - API 명세서 설계<br>
-        - S3 업로드 환경 구성<br>
-        - 포인트 API 구현<br>
-        - 식당 리뷰 API 구현<br>
-        - 다중 이미지 처리 구현<br>
-      </td>
-      <td>
-        - 데이터베이스 설계<br>
-        - API 명세서 설계<br>
-        - EC2 서버환경 구성<br>
-        - 자동화 배포환경 구성<br>
-        - SSL 적용 (HTTPS)<br>
-        - 초대장 CRUD 구현<br>
-        - Kakao 알림톡 적용<br>
-      </td>
-      <td>
-        - 데이터베이스 설계<br>
-        - API 명세서 설계<br>
-        - 자동화 배포환경 구성<br>
-        - 방문증 API 구현<br>
-      </td>
-      <td>
-        - 데이터 베이스 설계<br>
-        - API 명세서 설계<br>
-        - 식당 리뷰 API 구현<br>
-      </td>
-      <td>
-        - 데이터 베이스 설계<br>
-        - API 명세서 설계<br>
-        - 홈 화면 API 구현<br>
-        - 오늘 점심 뭐먹지 룰렛 API 구현<br>
-        - Spring Quartz 스케쥴러를 이용한 집계 기능 구현<br>
-      </td>
-    </tr>
   </tbody>
 </table>
+
+<br><br><br><br>
+
+<div align=center><h2>팀원 역할</h2></div>
+
+<div align=center>
+  
+  | 이름 | 역할 |
+  | :-----------------: | -------------------------------- |
+  | 정현수<br>`팀장`            | - 데이터베이스 설계<br>- API 명세서 설계<br>- S3 업로드 환경 구성<br>- 포인트 API 구현<br>- 식당 리뷰 API 구현<br>- 다중 이미지 처리 구현<br>   |
+  | 김훈섭            | - 데이터베이스 설계<br>- API 명세서 설계<br>- EC2 서버환경 구성<br>- 자동화 배포환경 구성<br>- SSL 적용 (HTTPS)<br>- 초대장 CRUD 구현<br>- Kakao 알림톡 적용<br>   |
+  | 최태윤            | - 데이터베이스 설계<br>- API 명세서 설계<br>- 자동화 배포환경 구성<br>- 방문증 API 구현<br>   |
+  | 김태일            | - 데이터 베이스 설계<br>- API 명세서 설계<br>- 식당 리뷰 API 구현<br>   |
+  | 배종윤            |  - 데이터 베이스 설계<br>- API 명세서 설계<br>- 홈 화면 API 구현<br>- 오늘 점심 뭐먹지 룰렛 API 구현<br>- Spring Quartz 스케쥴러를 이용한 집계 기능 구현<br>  |
+
+</div>
+
+
