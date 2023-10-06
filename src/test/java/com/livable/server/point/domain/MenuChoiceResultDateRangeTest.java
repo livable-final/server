@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-class DateRangeTest {
+class MenuChoiceResultDateRangeTest {
 
     @DisplayName("생성자 테스트 - 성공")
     @Test

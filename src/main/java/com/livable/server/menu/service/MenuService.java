@@ -9,8 +9,8 @@ import com.livable.server.entity.Menu;
 import com.livable.server.entity.MenuChoiceLog;
 import com.livable.server.member.domain.MemberErrorCode;
 import com.livable.server.member.repository.MemberRepository;
+import com.livable.server.menu.domain.MenuChoiceResultDateRange;
 import com.livable.server.menu.domain.MenuErrorCode;
-import com.livable.server.menu.domain.ReferenceDate;
 import com.livable.server.menu.dto.MenuRequest.MenuChoiceLogDTO;
 import com.livable.server.menu.dto.MenuResponse.MostSelectedMenuDTO;
 import com.livable.server.menu.dto.MenuResponse.RouletteMenuDTO;
@@ -87,10 +87,12 @@ public class MenuService {
 	}
     public List<MostSelectedMenuDTO> getMostSelectedMenu(Long buildingId, Pageable pageable) {
 
-		//기준일(지난주 월~일)
-		LocalDate referenceDate = ReferenceDate.getReferenceDate(LocalDate.now(), ReferenceDate.START_WITH_MONDAY);
+		//기준일(오늘, 지난주 월-일)
+	  	LocalDate referenceDate = LocalDate.now();
 
-	    List<MostSelectedMenuProjection> mostSelectedMenuProjections = menuRepository.findMostSelectedMenuOrderByCount(buildingId, referenceDate, pageable);
+	  	MenuChoiceResultDateRange menuChoiceResultDateRange = MenuChoiceResultDateRange.getDateRange(referenceDate);
+
+	    List<MostSelectedMenuProjection> mostSelectedMenuProjections = menuRepository.findMostSelectedMenuOrderByCount(buildingId, menuChoiceResultDateRange.getEndDate(), pageable);
 
 		return convertToDTO(mostSelectedMenuProjections);
 	}

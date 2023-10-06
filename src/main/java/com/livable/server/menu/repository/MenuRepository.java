@@ -22,20 +22,20 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     List<RouletteMenuProjection> findRouletteMenus();
 
     @Query(
-        "SELECT new com.livable.server.menu.dto.MostSelectedMenuProjection(mcr.count, mcr.date, mcr.menu.id, m.name,  m.representativeImageUrl) " +
-        "FROM MenuChoiceResult mcr " +
+        "SELECT new com.livable.server.menu.dto.MostSelectedMenuProjection(mcwr.count, mcwr.date, mcwr.menu.id, m.name,  m.representativeImageUrl) " +
+        "FROM MenuChoiceWeeklyResult mcwr " +
         "JOIN Menu m " +
-        "ON m.id = mcr.menu.id " +
-        "WHERE mcr.building.id = :buildingId AND mcr.date = :referenceDate " +
-        "GROUP BY mcr.date, mcr.menu.id, m.name, m.representativeImageUrl " +
-        "ORDER BY mcr.count DESC "
+        "ON m.id = mcwr.menu.id " +
+        "WHERE mcwr.building.id = :buildingId AND mcwr.date = :referenceDate " +
+        "GROUP BY mcwr.date, mcwr.menu.id, m.name, m.representativeImageUrl " +
+        "ORDER BY mcwr.count DESC "
     )
     List<MostSelectedMenuProjection> findMostSelectedMenuOrderByCount(@Param("buildingId") Long buildingId, @Param("referenceDate") LocalDate referenceDate, Pageable pageable);
 
     @Query(
-            "SELECT m " +
-            "FROM Menu m " +
-            "WHERE m.id in :menuList"
+        "SELECT m " +
+        "FROM Menu m " +
+        "WHERE m.id in :menuList"
     )
     List<Menu> findAllMenuByMenuId(@Param("menuList") List<Long> menuList);
 }
