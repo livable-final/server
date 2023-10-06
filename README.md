@@ -181,7 +181,11 @@ $ java -jar ./build/libs/server-0.0.1-SNAPSHOT.jar
         - 식당 리뷰 API 구현<br>
       </td>
       <td>
-        - 맡은 역할을 적어주세요.
+        - 데이터 베이스 설계<br>
+        - API 명세서 설계<br>
+        - 홈 화면 API 구현<br>
+        - 오늘 점심 뭐먹지 룰렛 API 구현<br>
+        - Spring Quartz 스케쥴러를 이용한 집계 기능 구현<br>
       </td>
     </tr>
   </tbody>
