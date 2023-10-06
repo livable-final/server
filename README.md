@@ -176,7 +176,9 @@ $ java -jar ./build/libs/server-0.0.1-SNAPSHOT.jar
         - 방문증 API 구현<br>
       </td>
       <td>
-        - 맡은 역할을 적어주세요.
+        - 데이터 베이스 설계<br>
+        - API 명세서 설계<br>
+        - 식당 리뷰 API 구현<br>
       </td>
       <td>
         - 맡은 역할을 적어주세요.
