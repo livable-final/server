@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -58,7 +59,8 @@ public class RestaurantGroupByMenuProjectionRepository {
 		"ON res.id = rmm.restaurant_id " +
 		"LEFT JOIN restaurant_review rsv ON res.id = rsv.restaurant_id " +
 		"WHERE brm.building_id = :buildingId AND m.id = :memberId " +
-		"GROUP BY res.id, res.name, res.thumbnail_image_url, res.address, brm.in_building, brm.distance";
+		"GROUP BY res.id, res.name, res.thumbnail_image_url, res.address, brm.in_building, brm.distance " +
+		"Limit :page";
   }
 
   @PersistenceContext
@@ -73,11 +75,12 @@ public class RestaurantGroupByMenuProjectionRepository {
 	return (List<RestaurantByMenuProjection>) query.getResultList();
   }
 
-  public List<RestaurantByMenuProjection> findRestaurantByBuildingId(Long buildingId, Long memberId) {
+  public List<RestaurantByMenuProjection> findRestaurantByBuildingId(Long buildingId, Long memberId, Pageable pageable) {
 
 	Query query = entityManager.createNativeQuery(FIND_RESTAURANT_BY_BUILDING_ID_QUERY, "RestaurantsByMenuMapping")
 		.setParameter("buildingId", buildingId)
-		.setParameter("memberId", memberId);
+		.setParameter("memberId", memberId)
+		.setParameter("page", pageable.getPageSize());
 
 	return (List<RestaurantByMenuProjection>) query.getResultList();
   }
