@@ -16,14 +16,13 @@ import com.livable.server.restaurant.repository.RestaurantRepository;
 import com.livable.server.review.domain.ReviewErrorCode;
 import com.livable.server.visitation.domain.VisitationErrorCode;
 import com.livable.server.visitation.repository.VisitorRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -44,11 +43,7 @@ public class RestaurantService {
         Long buildingId = visitorRepository.findBuildingIdById(visitorId)
                 .orElseThrow(() -> new GlobalRuntimeException(VisitationErrorCode.NOT_FOUND));
 
-        Integer nearRestaurantCount =
-                buildingRestaurantMapRepository.countBuildingRestaurantMapByBuildingIdAndRestaurant_RestaurantCategory(
-                        buildingId,
-                        category
-                );
+        Integer nearRestaurantCount =getNearRestaurantCount(buildingId, category);
 
         if (nearRestaurantCount == 0) {
             return List.of();
@@ -59,6 +54,12 @@ public class RestaurantService {
         );
     }
 
+    private Integer getNearRestaurantCount(Long buildingId, RestaurantCategory category) {
+        return buildingRestaurantMapRepository.countBuildingRestaurantMapByBuildingIdAndRestaurant_RestaurantCategory(
+                buildingId,
+                category
+            );
+    }
 
     public List<ListMenuDTO> findMenuList(Long memberId, Long restaurantId) {
         checkExistMemberById(memberId);
@@ -83,7 +84,10 @@ public class RestaurantService {
     }
 
     public List<RestaurantsDto> findRestaurantByBuildingId(Long buildingId, Long memberId) {
-        List<RestaurantByMenuProjection> restaurantByMenuProjections = restaurantGroupByMenuProjectionRepository.findRestaurantByBuildingId(buildingId, memberId);
+
+        Integer nearRestaurantCount = getNearRestaurantCount(buildingId, RestaurantCategory.RESTAURANT);
+
+        List<RestaurantByMenuProjection> restaurantByMenuProjections = restaurantGroupByMenuProjectionRepository.findRestaurantByBuildingId(buildingId, memberId, randomGenerator.getRandom(nearRestaurantCount));
 
         if (restaurantByMenuProjections.isEmpty()) {
             throw new GlobalRuntimeException(RestaurantErrorCode.NOT_FOUND_RESTAURANT_BY_MENU);
