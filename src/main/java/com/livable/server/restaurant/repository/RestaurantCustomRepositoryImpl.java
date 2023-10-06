@@ -2,6 +2,7 @@ package com.livable.server.restaurant.repository;
 
 import com.livable.server.entity.*;
 import com.livable.server.restaurant.dto.RestaurantResponse;
+import com.livable.server.restaurant.dto.RestaurantResponse.ListMenuDTO;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -80,13 +81,13 @@ public class RestaurantCustomRepositoryImpl implements RestaurantCustomRepositor
     }
 
     @Override
-    public List<RestaurantResponse.listMenuDTO> findMenuList(Long restaurantId) {
+    public List<ListMenuDTO> findMenuList(Long restaurantId) {
 
         final QMenu menu = QMenu.menu;
         final QRestaurantMenuMap restaurantMenuMap = QRestaurantMenuMap.restaurantMenuMap;
 
-        JPAQuery<RestaurantResponse.listMenuDTO> query = queryFactory
-                .select(Projections.constructor(RestaurantResponse.listMenuDTO.class,
+        JPAQuery<ListMenuDTO> query = queryFactory
+                .select(Projections.constructor(ListMenuDTO.class,
                         menu.id,
                         menu.name
                         ))
