@@ -16,7 +16,7 @@ import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.domain.RandomGenerator;
 import com.livable.server.restaurant.dto.RestaurantByMenuProjection;
 import com.livable.server.restaurant.dto.RestaurantResponse;
-import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
+import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsDto;
 import com.livable.server.restaurant.repository.BuildingRestaurantMapRepository;
 import com.livable.server.restaurant.repository.RestaurantGroupByMenuProjectionRepository;
 import com.livable.server.restaurant.repository.RestaurantRepository;
@@ -143,7 +143,7 @@ class RestaurantServiceTest {
             .willReturn(projections);
 
         // when
-        List<RestaurantsByMenuDto> actual =
+        List<RestaurantsDto> actual =
             restaurantService.findRestaurantByMenuId(anyLong(), anyLong());
 
         // then

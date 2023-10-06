@@ -13,9 +13,9 @@ import com.livable.server.core.util.TestConfig;
 import com.livable.server.entity.RestaurantCategory;
 import com.livable.server.restaurant.domain.RestaurantErrorCode;
 import com.livable.server.restaurant.dto.RestaurantResponse;
-import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsByMenuDto;
+import com.livable.server.restaurant.dto.RestaurantResponse.RestaurantsDto;
 import com.livable.server.restaurant.mock.MockNearRestaurantDto;
-import com.livable.server.restaurant.mock.MockRestaurantByMenuDto;
+import com.livable.server.restaurant.mock.MockRestaurantDto;
 import com.livable.server.restaurant.service.RestaurantService;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +31,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @Import(TestConfig.class)
 @WebMvcTest(RestaurantController.class)
@@ -82,9 +81,9 @@ class RestaurantControllerTest {
         // given
         String token = tokenProvider.createActorToken(ActorType.MEMBER, 1L, new Date(new Date().getTime() + 10000000));
 
-        List<RestaurantsByMenuDto> result =
+        List<RestaurantsDto> result =
             IntStream.range(1, 10)
-                .mapToObj(idx -> new MockRestaurantByMenuDto())
+                .mapToObj(idx -> new MockRestaurantDto())
                 .collect(Collectors.toList());
 
         given(restaurantService.findRestaurantByMenuId(anyLong(), anyLong()))
