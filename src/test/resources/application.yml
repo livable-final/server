@@ -6,6 +6,9 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  mvc:
+    path match:
+      matching-strategy: ant_path_matcher
 
 logging:
   pattern:
