@@ -1,0 +1,47 @@
+name: ssh for release deploy
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          timeout: 40s
+
+          script: |
+            echo "1. project root로 이동"
+            cd ~/livable/server
+
+            echo "2. git pull"
+            git pull origin develop
+
+            echo "3. project build"
+            ./gradlew clean build
+
+            if [ $? -eq 0 ]; then
+              # 빌드 성공 시
+              echo "4. 실행중인 프로세스 확인"
+              CURRENT_PID=$(pgrep -f ${{ secrets.PROJECT_ROOT }}/build/libs/server-0.0.1-SNAPSHOT.jar)
+
+              echo "5. 실행중인 프로세스 중지"
+              sudo kill -9 $CURRENT_PID
+
+              echo "6. 홈 경로 이동 후 프로젝트 재실행"
+              cd ~
+              nohup java -jar ${{ secrets.PROJECT_ROOT }}/build/libs/server-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > nohup.out 2> nohup.err < /dev/null &
+            else
+              echo "프로젝트 Build 실패"
+              exit 1
+            fi
